@@ -7,5 +7,6 @@ public class CategoryRequestDto {
     private String name;
     private String description;
     private String icon;
+    private Long parent_id;
     private int level;
 }
