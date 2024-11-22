@@ -71,4 +71,11 @@ public class CategoryService {
 
         categoryRepository.save(category);
     }
+    
+    // 카테고리 삭제
+    public void deleteCategory(Long id) {
+        Category category = categoryRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+
+        categoryRepository.delete(category);
+    }
 }

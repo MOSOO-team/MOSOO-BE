@@ -35,4 +35,11 @@ public class CategoryController {
         categoryService.updateCategory(id, request);
         return ResponseEntity.ok("카테고리 수정 성공");
     }
+    
+    // 카테고리 삭제
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteCategory(@PathVariable Long id){
+        categoryService.deleteCategory(id);
+        return ResponseEntity.ok("카테고리 삭제 성공");
+    }
 }
