@@ -1,10 +1,13 @@
 package com.team2.mosoo_backend.category.controller;
 
 import com.team2.mosoo_backend.category.dto.CategoryRequestDto;
+import com.team2.mosoo_backend.category.dto.CategoryResponseDto;
 import com.team2.mosoo_backend.category.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/category")
@@ -19,5 +22,10 @@ public class CategoryController {
         return ResponseEntity.ok("카테고리 생성 성공");
     }
 
-
+    // 카테고리 전체 조회
+    @GetMapping
+    public ResponseEntity<List<CategoryResponseDto>> readAllCategories(){
+        List<CategoryResponseDto> categories = categoryService.readAllCategories();
+        return ResponseEntity.ok(categories);
+    }
 }

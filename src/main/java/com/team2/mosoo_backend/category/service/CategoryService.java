@@ -1,11 +1,17 @@
 package com.team2.mosoo_backend.category.service;
 
 import com.team2.mosoo_backend.category.dto.CategoryRequestDto;
+import com.team2.mosoo_backend.category.dto.CategoryResponseDto;
 import com.team2.mosoo_backend.category.entity.Category;
 import com.team2.mosoo_backend.category.mapper.CategoryMapper;
 import com.team2.mosoo_backend.category.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,5 +34,31 @@ public class CategoryService {
         }
 
         categoryRepository.save(category);
+    }
+
+    // 카테고리 전체 조회
+    public List<CategoryResponseDto> readAllCategories() {
+        List<Category> categories = categoryRepository.findAll();
+        return buildCategoryHierarchy(categories);
+    }
+
+    // 카테고리 분류
+    private List<CategoryResponseDto> buildCategoryHierarchy(List<Category> categories) {
+        Map<Long, CategoryResponseDto> categoryMap = categories.stream()
+                .map(CategoryMapper.INSTANCE::toDto)
+                .collect(Collectors.toMap(CategoryResponseDto::getId, category -> category));
+
+        List<CategoryResponseDto> roots = new ArrayList<>();
+        for (CategoryResponseDto category : categoryMap.values()) {
+            if (category.getParent_id() == null) {
+                roots.add(category); // 부모가 없는 대분류
+            } else {
+                CategoryResponseDto parent = categoryMap.get(category.getParent_id());
+                if (parent != null) {
+                    parent.getChildren().add(category);
+                }
+            }
+        }
+        return roots;
     }
 }
