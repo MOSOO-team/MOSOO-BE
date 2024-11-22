@@ -61,4 +61,14 @@ public class CategoryService {
         }
         return roots;
     }
+
+    // 카테고리 수정
+    public void updateCategory(Long id, CategoryRequestDto request) {
+        Category category = categoryRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+
+        category.setName(request.getName());
+        category.setDescription(request.getDescription());
+
+        categoryRepository.save(category);
+    }
 }

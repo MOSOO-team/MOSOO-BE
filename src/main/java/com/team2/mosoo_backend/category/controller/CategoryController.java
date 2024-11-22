@@ -28,4 +28,11 @@ public class CategoryController {
         List<CategoryResponseDto> categories = categoryService.readAllCategories();
         return ResponseEntity.ok(categories);
     }
+
+    // 카테고리 수정
+    @PutMapping("/{id}")
+    public ResponseEntity<String> updateCategory(@PathVariable Long id, @RequestBody CategoryRequestDto request){
+        categoryService.updateCategory(id, request);
+        return ResponseEntity.ok("카테고리 수정 성공");
+    }
 }
