@@ -58,6 +58,11 @@ public class Post {
     private LocalDateTime updatedAt;
 
 
+    public void setIsOffer(boolean isOffer) {
+        this.isOffer = isOffer;
+    }
+
+
     @Builder
     public Post(Long id, String title, String description, int price, String duration, boolean isOffer, boolean isSelected, boolean isExpired) {
         this.id = id;
