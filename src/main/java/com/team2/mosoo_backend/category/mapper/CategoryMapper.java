@@ -1,6 +1,7 @@
 package com.team2.mosoo_backend.category.mapper;
 
 import com.team2.mosoo_backend.category.dto.CategoryRequestDto;
+import com.team2.mosoo_backend.category.dto.CategoryResponseDto;
 import com.team2.mosoo_backend.category.entity.Category;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -13,4 +14,7 @@ public interface CategoryMapper {
     @Mapping(source = "parent_id", target = "parent.id")
     @Mapping(target = "level", ignore = true) // level 매핑 제외
     Category toEntity(CategoryRequestDto request);
+
+    @Mapping(source = "parent.id", target = "parent_id")
+    CategoryResponseDto toDto(Category category);
 }
