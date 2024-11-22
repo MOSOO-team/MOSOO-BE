@@ -47,11 +47,14 @@ public enum ErrorCode {
     CART_EMPTY(HttpStatus.NOT_FOUND, "장바구니가 비어있습니다."),
     ORDER_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상품에 대한 주문을 찾을 수 없습니다."),
     ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 배송지를 찾을 수 없습니다."),
-
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
+    BID_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 입찰을 찾을 수 없습니다."),
+    CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅방을 찾을 수 없습니다."),
 
     /* 409 : CONFLICT : Resource의 현재 상태와 충돌. 보통 중복된 데이터 존재, 조건을 만족하지 못함 */
     DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "데이터가 이미 존재합니다."),
     DUPLICATE_COUPON(HttpStatus.CONFLICT, "쿠폰 등록 이력이 존재합니다."),
+    DUPLICATE_CHAT_ROOM(HttpStatus.CONFLICT, "채팅방이 이미 존재합니다."),
     EXCEEDED_MAX_ADDRESS_LIMIT(HttpStatus.CONFLICT, "배송지 최대 저장 개수를 초과했습니다."),
     DUPLICATE_ADDRESS(HttpStatus.CONFLICT, "배송지가 이미 존재합니다."),
 
