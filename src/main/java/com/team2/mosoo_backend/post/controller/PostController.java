@@ -34,4 +34,18 @@ public class PostController {
 
         return ResponseEntity.status(201).body(createPost);
     }
+
+    @GetMapping("/offerPosts")
+    public ResponseEntity<PostListResponseDto> getOfferPosts() {
+        PostListResponseDto postList = postService.getPostsByIsOffer(true);
+
+        return ResponseEntity.status(200).body(postList);
+    }
+
+    @GetMapping("/requestPosts")
+    public ResponseEntity<PostListResponseDto> getRequestPosts() {
+        PostListResponseDto postList = postService.getPostsByIsOffer(false);
+
+        return ResponseEntity.status(200).body(postList);
+    }
 }
