@@ -28,9 +28,20 @@ public class PostController {
         return ResponseEntity.status(200).body(postList);
     }
 
-    @PostMapping("/createPost")
-    public ResponseEntity<CreatePostResponseDto> createPost(@RequestBody CreatePostRequestDto createPostRequestDto) {
-        CreatePostResponseDto createPost = postService.createPost(createPostRequestDto);
+    @PostMapping("/createOfferPost")
+    public ResponseEntity<CreatePostResponseDto> createOfferPost(@RequestBody CreatePostRequestDto createPostRequestDto) {
+
+        boolean isOffer = true;
+        CreatePostResponseDto createPost = postService.createPost(createPostRequestDto, isOffer);
+
+        return ResponseEntity.status(201).body(createPost);
+    }
+
+    @PostMapping("/createRequestPost")
+    public ResponseEntity<CreatePostResponseDto> createRequestPost(@RequestBody CreatePostRequestDto createPostRequestDto) {
+
+        boolean isOffer = false;
+        CreatePostResponseDto createPost = postService.createPost(createPostRequestDto, isOffer);
 
         return ResponseEntity.status(201).body(createPost);
     }
