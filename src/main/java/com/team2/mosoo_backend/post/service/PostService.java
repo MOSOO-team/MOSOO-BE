@@ -44,4 +44,17 @@ public class PostService {
 
         return createPostResponseDto;
     }
+
+    public PostListResponseDto getPostsByIsOffer(boolean isOffer) {
+
+        List<Post> posts = postRepository.findAllByIsOffer(isOffer);
+
+        List<PostResponseDto> postResponseDtoList = new ArrayList<>();
+
+        for (Post post : posts) {
+            postResponseDtoList.add(postMapper.postToPostResponseDto(post));
+        }
+
+        return new PostListResponseDto(postResponseDtoList);
+    }
 }
