@@ -3,6 +3,7 @@ package com.team2.mosoo_backend.post.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "post")
@@ -21,6 +23,7 @@ public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "post_id", unique = true, nullable = false)
     private Long id;
 
     @Column(name = "title", nullable = false)
@@ -47,12 +50,29 @@ public class Post {
 //    todo: 연관 관계 추가 (카테고리 + 작성자)
 
     @CreatedDate
-    @Column(name = "created_at", nullable = false, updatable = false)
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
 
     @LastModifiedDate
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+
+    public void setIsOffer(boolean isOffer) {
+        this.isOffer = isOffer;
+    }
+
+
+    @Builder
+    public Post(Long id, String title, String description, int price, String duration, boolean isOffer, boolean isSelected, boolean isExpired) {
+        this.id = id;
+        this.title = title;
+        this.description = description;
+        this.price = price;
+        this.duration = duration;
+        this.isOffer = isOffer;
+        this.isSelected = isSelected;
+        this.isExpired = isExpired;
+    }
 
 }
