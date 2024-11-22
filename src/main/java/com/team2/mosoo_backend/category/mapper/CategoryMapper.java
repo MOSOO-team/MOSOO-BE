@@ -10,7 +10,7 @@ import org.mapstruct.factory.Mappers;
 public interface CategoryMapper {
     CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
 
-    @Mapping(source = "parentId", target = "parent.id")
+    @Mapping(source = "parent_id", target = "parent.id")
     @Mapping(target = "level", ignore = true) // level 매핑 제외
     Category toEntity(CategoryRequestDto request);
 }
