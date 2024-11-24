@@ -9,8 +9,8 @@ import com.team2.mosoo_backend.chatting.repository.ChatMessageRepository;
 import com.team2.mosoo_backend.chatting.repository.ChatRoomRepository;
 import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
-import com.team2.mosoo_backend.user.entity.User;
-import com.team2.mosoo_backend.user.repository.UserRepository;
+//import com.team2.mosoo_backend.user.entity.User;
+//import com.team2.mosoo_backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +24,7 @@ public class ChatMessageService {
 
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
-    private final UserRepository userRepository;
+//    private final UserRepository userRepository;
 
     // 채팅 저장 메서드
     @Transactional
@@ -48,8 +48,9 @@ public class ChatMessageService {
         for (ChatMessage chatMessage : chatmessageList) {
 
             ChatMessageResponseDto dto = ChatMessageMapper.INSTANCE.toChatMessageResponseDto(chatMessage);
-            User foundUser = userRepository.findById(chatMessage.getSourceUserId()).orElse(null);
-            dto.setUserFullName( (foundUser != null) ? foundUser.getFullname() : "찾을 수 없는 회원");
+//            User foundUser = userRepository.findById(chatMessage.getSourceUserId()).orElse(null);
+//            dto.setUserFullName( (foundUser != null) ? foundUser.getFullname() : "찾을 수 없는 회원");
+            dto.setUserFullName("유저이름");
 
             result.add(dto);
         }
