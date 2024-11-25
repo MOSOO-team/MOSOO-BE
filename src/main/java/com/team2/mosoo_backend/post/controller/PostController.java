@@ -1,9 +1,7 @@
 package com.team2.mosoo_backend.post.controller;
 
 
-import com.team2.mosoo_backend.post.dto.CreatePostRequestDto;
-import com.team2.mosoo_backend.post.dto.CreatePostResponseDto;
-import com.team2.mosoo_backend.post.dto.PostListResponseDto;
+import com.team2.mosoo_backend.post.dto.*;
 import com.team2.mosoo_backend.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -38,6 +36,19 @@ public class PostController {
         PostListResponseDto postList = postService.getPostsByIsOffer(isOffer);
 
         return ResponseEntity.status(200).body(postList);
+    }
+
+    @PutMapping("/")
+    public ResponseEntity<PostResponseDto> updatePost(@RequestBody PostUpdateRequestDto postUpdateRequestDto) {
+        PostResponseDto postResponseDto = postService.updatePost(postUpdateRequestDto);
+
+        return ResponseEntity.status(201).body(postResponseDto);
+    }
+
+    @DeleteMapping("/")
+    public ResponseEntity<String> deletePost(@RequestParam(value = "id") Long id) {
+        postService.deletePost(id);
+        return ResponseEntity.status(204).build();
     }
 
 
