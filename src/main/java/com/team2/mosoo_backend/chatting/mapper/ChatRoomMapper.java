@@ -7,12 +7,9 @@ import com.team2.mosoo_backend.chatting.entity.ChatRoom;
 import com.team2.mosoo_backend.post.entity.Post;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 @Mapper(componentModel = "spring")
 public interface ChatRoomMapper {
-
-    ChatRoomMapper INSTANCE = Mappers.getMapper(ChatRoomMapper.class);
 
     @Mapping(source="post", target = "postId")
 //    @Mapping(source="bid", target = "bidId")
