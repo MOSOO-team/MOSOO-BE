@@ -3,6 +3,7 @@ package com.team2.mosoo_backend.post.controller;
 
 import com.team2.mosoo_backend.post.dto.*;
 import com.team2.mosoo_backend.post.service.PostService;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -16,9 +17,10 @@ public class PostController {
 
 
     @GetMapping("/posts")
-    public ResponseEntity<PostListResponseDto> getAllPosts() {
+    public ResponseEntity<PostListResponseDto> getAllPosts(
+            @RequestParam(required = false, value = "page", defaultValue = "1") @Positive int page) {
 
-        PostListResponseDto postList = postService.getAllPosts();
+        PostListResponseDto postList = postService.getAllPosts(page);
 
         return ResponseEntity.status(200).body(postList);
     }
@@ -32,8 +34,11 @@ public class PostController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<PostListResponseDto> getOfferPosts(@RequestParam(value = "isOffer") boolean isOffer) {
-        PostListResponseDto postList = postService.getPostsByIsOffer(isOffer);
+    public ResponseEntity<PostListResponseDto> getOfferPosts(
+            @RequestParam(required = false, value = "page", defaultValue = "1") @Positive int page,
+            @RequestParam(value = "isOffer") boolean isOffer) {
+
+        PostListResponseDto postList = postService.getPostsByIsOffer(page, isOffer);
 
         return ResponseEntity.status(200).body(postList);
     }
