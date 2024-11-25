@@ -6,7 +6,9 @@ import com.team2.mosoo_backend.category.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -17,8 +19,9 @@ public class CategoryController {
 
     // 카테고리 생성
     @PostMapping
-    public ResponseEntity<String> createCategory(@RequestBody CategoryRequestDto categoryRequestDto){
-        categoryService.createCategory(categoryRequestDto);
+    public ResponseEntity<String> createCategory(@RequestPart(value = "category") CategoryRequestDto categoryRequestDto,
+                                                 @RequestPart(value = "icon") MultipartFile file) throws IOException {
+        categoryService.createCategory(categoryRequestDto, file);
         return ResponseEntity.ok("카테고리 생성 성공");
     }
 
