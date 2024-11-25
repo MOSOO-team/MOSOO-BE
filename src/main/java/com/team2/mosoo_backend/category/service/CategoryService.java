@@ -32,6 +32,7 @@ public class CategoryService {
            category.setLevel(parent.getLevel() + 1);
         }
         else {
+            category.setParent(null);
             category.setLevel(1); // 대분류
         }
 
@@ -68,8 +69,8 @@ public class CategoryService {
 
     // 카테고리 수정
     @Transactional
-    public void updateCategory(Long id, CategoryRequestDto request) {
-        Category category = categoryRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+    public void updateCategory(Long category_id, CategoryRequestDto request) {
+        Category category = categoryRepository.findById(category_id).orElseThrow(IllegalArgumentException::new);
 
         category.setName(request.getName());
         category.setDescription(request.getDescription());
@@ -79,8 +80,8 @@ public class CategoryService {
     
     // 카테고리 삭제
     @Transactional
-    public void deleteCategory(Long id) {
-        Category category = categoryRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+    public void deleteCategory(Long category_id) {
+        Category category = categoryRepository.findById(category_id).orElseThrow(IllegalArgumentException::new);
 
         categoryRepository.delete(category);
     }

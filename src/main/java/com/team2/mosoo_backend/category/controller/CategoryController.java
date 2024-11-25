@@ -30,16 +30,16 @@ public class CategoryController {
     }
 
     // 카테고리 수정
-    @PutMapping("/{id}")
-    public ResponseEntity<String> updateCategory(@PathVariable Long id, @RequestBody CategoryRequestDto request){
-        categoryService.updateCategory(id, request);
+    @PutMapping("/{category_id}")
+    public ResponseEntity<String> updateCategory(@PathVariable Long category_id, @RequestBody CategoryRequestDto request){
+        categoryService.updateCategory(category_id, request);
         return ResponseEntity.ok("카테고리 수정 성공");
     }
     
     // 카테고리 삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCategory(@PathVariable Long id){
-        categoryService.deleteCategory(id);
+    @DeleteMapping("/{category_id}")
+    public ResponseEntity<String> deleteCategory(@PathVariable Long category_id){
+        categoryService.deleteCategory(category_id);
         return ResponseEntity.ok("카테고리 삭제 성공");
     }
 }
