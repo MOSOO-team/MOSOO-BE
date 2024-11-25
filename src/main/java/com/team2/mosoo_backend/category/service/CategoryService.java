@@ -5,10 +5,13 @@ import com.team2.mosoo_backend.category.dto.CategoryResponseDto;
 import com.team2.mosoo_backend.category.entity.Category;
 import com.team2.mosoo_backend.category.mapper.CategoryMapper;
 import com.team2.mosoo_backend.category.repository.CategoryRepository;
+import com.team2.mosoo_backend.utils.s3bucket.service.S3BucketService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,15 +22,20 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class CategoryService {
     private final CategoryRepository categoryRepository;
+
+    private final S3BucketService s3BucketService;
     
     // 카테고리 생성
     @Transactional
-    public void createCategory(CategoryRequestDto categoryRequestDto) {
+    public void createCategory(CategoryRequestDto categoryRequestDto, MultipartFile file) throws IOException {
         Category category = CategoryMapper.INSTANCE.toEntity(categoryRequestDto);
 
         LocalDateTime currentTime = LocalDateTime.now();
         category.setCreatedAt(currentTime);
         category.setUpdatedAt(currentTime);
+
+        String fileUrl = s3BucketService.uploadFile(file);
+        category.setIcon(fileUrl);
 
         if (categoryRequestDto.getParent_id() != null){
            Category parent = categoryRepository.findById(categoryRequestDto.getParent_id())
