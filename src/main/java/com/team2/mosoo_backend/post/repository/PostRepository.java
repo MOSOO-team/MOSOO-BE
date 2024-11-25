@@ -15,5 +15,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findByIsOffer(Pageable pageable, boolean isOffer);
 
-    Page<Post> findById(Pageable pageable, long id);
+    Page<Post> findAll(Pageable pageable);
 }
