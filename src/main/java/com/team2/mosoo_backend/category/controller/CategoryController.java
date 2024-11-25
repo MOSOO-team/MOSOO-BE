@@ -17,8 +17,8 @@ public class CategoryController {
 
     // 카테고리 생성
     @PostMapping
-    public ResponseEntity<String> createCategory(@RequestBody CategoryRequestDto request){
-        categoryService.createCategory(request);
+    public ResponseEntity<String> createCategory(@RequestBody CategoryRequestDto categoryRequestDto){
+        categoryService.createCategory(categoryRequestDto);
         return ResponseEntity.ok("카테고리 생성 성공");
     }
 
@@ -31,8 +31,8 @@ public class CategoryController {
 
     // 카테고리 수정
     @PutMapping("/{category_id}")
-    public ResponseEntity<String> updateCategory(@PathVariable Long category_id, @RequestBody CategoryRequestDto request){
-        categoryService.updateCategory(category_id, request);
+    public ResponseEntity<String> updateCategory(@PathVariable Long category_id, @RequestBody CategoryRequestDto categoryRequestDto){
+        categoryService.updateCategory(category_id, categoryRequestDto);
         return ResponseEntity.ok("카테고리 수정 성공");
     }
     

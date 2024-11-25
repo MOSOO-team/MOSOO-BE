@@ -21,11 +21,11 @@ public class CategoryService {
     
     // 카테고리 생성
     @Transactional
-    public void createCategory(CategoryRequestDto request) {
-        Category category = CategoryMapper.INSTANCE.toEntity(request);
+    public void createCategory(CategoryRequestDto categoryRequestDto) {
+        Category category = CategoryMapper.INSTANCE.toEntity(categoryRequestDto);
 
-        if (request.getParent_id() != null){
-           Category parent = categoryRepository.findById(request.getParent_id())
+        if (categoryRequestDto.getParent_id() != null){
+           Category parent = categoryRepository.findById(categoryRequestDto.getParent_id())
                    .orElseThrow(IllegalArgumentException::new);
 
            category.setParent(parent);
@@ -69,11 +69,11 @@ public class CategoryService {
 
     // 카테고리 수정
     @Transactional
-    public void updateCategory(Long category_id, CategoryRequestDto request) {
+    public void updateCategory(Long category_id, CategoryRequestDto categoryRequestDto) {
         Category category = categoryRepository.findById(category_id).orElseThrow(IllegalArgumentException::new);
 
-        category.setName(request.getName());
-        category.setDescription(request.getDescription());
+        category.setName(categoryRequestDto.getName());
+        category.setDescription(categoryRequestDto.getDescription());
 
         categoryRepository.save(category);
     }
