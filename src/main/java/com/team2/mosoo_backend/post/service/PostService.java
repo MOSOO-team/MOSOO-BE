@@ -10,6 +10,7 @@ import com.team2.mosoo_backend.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,9 +28,9 @@ public class PostService {
 
     public PostListResponseDto getAllPosts(int page) {
 
-        PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("id").descending());
 
-        Page<Post> posts = postRepository.findAll(pageRequest);
+        Page<Post> posts = postRepository.findById(pageable, 1L);
 
         List<PostResponseDto> postResponseDtoList = new ArrayList<>();
 
@@ -54,9 +55,9 @@ public class PostService {
 
     public PostListResponseDto getPostsByIsOffer(int page, boolean isOffer) {
 
-        PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("id").descending());
 
-        Page<Post> posts = postRepository.findAllByIsOffer(pageRequest, isOffer);
+        Page<Post> posts = postRepository.findByIsOffer(pageable, isOffer);
 
         List<PostResponseDto> postResponseDtoList = new ArrayList<>();
 
