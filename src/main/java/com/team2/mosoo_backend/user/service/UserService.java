@@ -1,6 +1,9 @@
 package com.team2.mosoo_backend.user.service;
 
+import com.team2.mosoo_backend.user.domain.Provider;
+import com.team2.mosoo_backend.user.domain.UserRole;
 import com.team2.mosoo_backend.user.domain.Users;
+import com.team2.mosoo_backend.user.dto.request.JwtTokenLoginRequest;
 import com.team2.mosoo_backend.user.dto.request.UserSignupRequestDto;
 import com.team2.mosoo_backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -8,8 +11,6 @@ import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.security.Provider;
 
 @Service
 @RequiredArgsConstructor
@@ -82,6 +83,12 @@ public class UserService {
         // 아이디 값이 반값이면 false
         String username = request.getUsername();
         if (username.isEmpty()) {
+            return false;
+        }
+
+        // 패스워드 값이 빈값이면 false
+        String password = request.getPassword();
+        if (password.isEmpty()) {
             return false;
         }
     }

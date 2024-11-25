@@ -9,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,7 +24,7 @@ public class UserApiController {
     public ResponseEntity<UserSignupResponseDto> signup(@RequestBody UserSignupRequestDto userSignupRequestDto) {
 
         // 요청 데이터가 유효한지 검사
-        if(!userService.valdateSignup(userSignupRequestDto)) {
+        if(!userService.validateSignup(userSignupRequestDto)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(UserSignupResponseDto.builder().message("유효성 검사 실패").build());
         }
@@ -36,4 +33,6 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(UserSignupResponseDto.builder().message("성공적으로 회원가입하셨습니다.").build());
     }
+
+    
 }
