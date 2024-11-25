@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,17 +22,22 @@ public class CategoryService {
     
     // 카테고리 생성
     @Transactional
-    public void createCategory(CategoryRequestDto request) {
-        Category category = CategoryMapper.INSTANCE.toEntity(request);
+    public void createCategory(CategoryRequestDto categoryRequestDto) {
+        Category category = CategoryMapper.INSTANCE.toEntity(categoryRequestDto);
 
-        if (request.getParent_id() != null){
-           Category parent = categoryRepository.findById(request.getParent_id())
+        LocalDateTime currentTime = LocalDateTime.now();
+        category.setCreatedAt(currentTime);
+        category.setUpdatedAt(currentTime);
+
+        if (categoryRequestDto.getParent_id() != null){
+           Category parent = categoryRepository.findById(categoryRequestDto.getParent_id())
                    .orElseThrow(IllegalArgumentException::new);
 
            category.setParent(parent);
            category.setLevel(parent.getLevel() + 1);
         }
         else {
+            category.setParent(null);
             category.setLevel(1); // 대분류
         }
 
@@ -68,19 +74,22 @@ public class CategoryService {
 
     // 카테고리 수정
     @Transactional
-    public void updateCategory(Long id, CategoryRequestDto request) {
-        Category category = categoryRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+    public void updateCategory(Long category_id, CategoryRequestDto categoryRequestDto) {
+        Category category = categoryRepository.findById(category_id).orElseThrow(IllegalArgumentException::new);
 
-        category.setName(request.getName());
-        category.setDescription(request.getDescription());
+        category.setName(categoryRequestDto.getName());
+        category.setDescription(categoryRequestDto.getDescription());
+
+        LocalDateTime currentTime = LocalDateTime.now();
+        category.setUpdatedAt(currentTime);
 
         categoryRepository.save(category);
     }
     
     // 카테고리 삭제
     @Transactional
-    public void deleteCategory(Long id) {
-        Category category = categoryRepository.findById(id).orElseThrow(IllegalArgumentException::new);
+    public void deleteCategory(Long category_id) {
+        Category category = categoryRepository.findById(category_id).orElseThrow(IllegalArgumentException::new);
 
         categoryRepository.delete(category);
     }
