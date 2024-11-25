@@ -57,6 +57,21 @@ public class Post {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
 
     public void setIsOffer(boolean isOffer) {
         this.isOffer = isOffer;
