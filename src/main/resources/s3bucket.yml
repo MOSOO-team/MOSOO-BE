@@ -4,5 +4,5 @@ aws:
     stack.auto: false
     region: ap-northeast-2
     credentials:
-      access-Key: AKIA2UC3FSB2P523HI4L
-      secret-Key: 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
+      access-Key: ${AWS_S3_AK}
+      secret-Key: ${AWS_S3_SK}

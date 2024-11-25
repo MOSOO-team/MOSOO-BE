@@ -75,6 +75,14 @@ public class UserService {
         }
 
         return true;
-        
+
+    }
+
+    public boolean validatedLogin (JwtTokenLoginRequest request) {
+        // 아이디 값이 반값이면 false
+        String username = request.getUsername();
+        if (username.isEmpty()) {
+            return false;
+        }
     }
 }
