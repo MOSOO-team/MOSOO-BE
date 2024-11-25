@@ -30,7 +30,7 @@ public class PostService {
 
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("id").descending());
 
-        Page<Post> posts = postRepository.findById(pageable, 1L);
+        Page<Post> posts = postRepository.findAll(pageable);
 
         List<PostResponseDto> postResponseDtoList = new ArrayList<>();
 
