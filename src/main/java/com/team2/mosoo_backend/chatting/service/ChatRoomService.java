@@ -32,6 +32,7 @@ public class ChatRoomService {
 //    private final UserRepository userRepository;
     private final PostRepository postRepository;
 //    private final BidRepository bidRepository;
+    private final ChatRoomMapper chatRoomMapper;
 
     // 채팅방 조회 메서드
     public ChatRoomResponseWrapperDto findAllChatRooms(int page) {
@@ -55,7 +56,7 @@ public class ChatRoomService {
         List<ChatRoomResponseDto> dtos = new ArrayList<>();
         
         for (ChatRoom chatRoom : chatRooms) {
-            ChatRoomResponseDto dto = ChatRoomMapper.INSTANCE.toChatRoomResponseDto(chatRoom);
+            ChatRoomResponseDto dto = chatRoomMapper.toChatRoomResponseDto(chatRoom);
             dtos.add(dto);
         }
 
@@ -87,8 +88,8 @@ public class ChatRoomService {
 //        Bid bid = bidRepository.findById(chatRoomRequestDto.getBidId())
 //                .orElseThrow(() -> new CustomException(ErrorCode.BID_NOT_FOUND));
 
-//        ChatRoom chatRoom = ChatRoomMapper.INSTANCE.toEntity(chatRoomRequestDto, getLoginUser().getId());
-        ChatRoom chatRoom = ChatRoomMapper.INSTANCE.toEntity(chatRoomRequestDto, 1L);
+//        ChatRoom chatRoom = chatRoomMapper.toEntity(chatRoomRequestDto, getLoginUser().getId());
+        ChatRoom chatRoom = chatRoomMapper.toEntity(chatRoomRequestDto, 1L);
 //        chatRoom.setMappings(post, bid);
         chatRoom.setMappings(post);
 
