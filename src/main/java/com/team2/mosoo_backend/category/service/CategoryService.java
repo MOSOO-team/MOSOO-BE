@@ -9,6 +9,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +24,10 @@ public class CategoryService {
     @Transactional
     public void createCategory(CategoryRequestDto categoryRequestDto) {
         Category category = CategoryMapper.INSTANCE.toEntity(categoryRequestDto);
+
+        LocalDateTime currentTime = LocalDateTime.now();
+        category.setCreatedAt(currentTime);
+        category.setUpdatedAt(currentTime);
 
         if (categoryRequestDto.getParent_id() != null){
            Category parent = categoryRepository.findById(categoryRequestDto.getParent_id())
@@ -74,6 +79,9 @@ public class CategoryService {
 
         category.setName(categoryRequestDto.getName());
         category.setDescription(categoryRequestDto.getDescription());
+
+        LocalDateTime currentTime = LocalDateTime.now();
+        category.setUpdatedAt(currentTime);
 
         categoryRepository.save(category);
     }
