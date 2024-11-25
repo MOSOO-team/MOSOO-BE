@@ -13,4 +13,6 @@ public class CreatePostRequestDto {
     private String description;
     private int price;
     private String duration;
+
+    private boolean isOffer;
 }

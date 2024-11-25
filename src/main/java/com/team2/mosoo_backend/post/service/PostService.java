@@ -36,10 +36,10 @@ public class PostService {
 
     }
 
-    public CreatePostResponseDto createPost(CreatePostRequestDto createPostRequestDto, boolean isOffer) {
+    public CreatePostResponseDto createPost(CreatePostRequestDto createPostRequestDto) {
 
         Post post = postMapper.createPostRequestDtoToPost(createPostRequestDto);
-        post.setIsOffer(isOffer);
+        post.setIsOffer(createPostRequestDto.isOffer());
 
         CreatePostResponseDto createPostResponseDto = postMapper.postToCreatePostResponseDto(postRepository.save(post));
 
