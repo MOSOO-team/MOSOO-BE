@@ -77,6 +77,7 @@ public enum ErrorCode {
 
     /* 400 BAD_REQUEST : 잘못된 요청 */
     INVALID_CATEGORY_DATA(HttpStatus.BAD_REQUEST, "카테고리 정보가 유효하지 않습니다."),
+    INVALID_FILE_DATA(HttpStatus.BAD_REQUEST, "파일 정보가 유효하지 않습니다."),
     /* 410 GONE : 리소스가 삭제된 상태 */
     CATEGORY_ALREADY_DELETED(HttpStatus.GONE, "이미 삭제된 카테고리입니다.")
     ;
