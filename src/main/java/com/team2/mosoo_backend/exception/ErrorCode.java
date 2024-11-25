@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
     /* 400 BAD_REQUEST : 잘못된 요청 */
+    METHOD_ARGUMENT_NOT_VALID(HttpStatus.BAD_REQUEST, "유효하지 않은 메서드 인자값입니다."),
+    PAGE_NOT_VALID(HttpStatus.BAD_REQUEST, "페이지는 1 이상이여야 합니다."),
     POST_DELETED(HttpStatus.BAD_REQUEST, "삭제된 게시글입니다."),
     REVIEW_DELETED(HttpStatus.BAD_REQUEST, "삭제된 리뷰입니다."),
     COMMENT_DELETED(HttpStatus.BAD_REQUEST, "삭제된 댓글입니다."),
@@ -47,11 +49,14 @@ public enum ErrorCode {
     CART_EMPTY(HttpStatus.NOT_FOUND, "장바구니가 비어있습니다."),
     ORDER_PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상품에 대한 주문을 찾을 수 없습니다."),
     ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 배송지를 찾을 수 없습니다."),
-
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
+    BID_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 입찰을 찾을 수 없습니다."),
+    CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅방을 찾을 수 없습니다."),
 
     /* 409 : CONFLICT : Resource의 현재 상태와 충돌. 보통 중복된 데이터 존재, 조건을 만족하지 못함 */
     DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "데이터가 이미 존재합니다."),
     DUPLICATE_COUPON(HttpStatus.CONFLICT, "쿠폰 등록 이력이 존재합니다."),
+    DUPLICATE_CHAT_ROOM(HttpStatus.CONFLICT, "채팅방이 이미 존재합니다."),
     EXCEEDED_MAX_ADDRESS_LIMIT(HttpStatus.CONFLICT, "배송지 최대 저장 개수를 초과했습니다."),
     DUPLICATE_ADDRESS(HttpStatus.CONFLICT, "배송지가 이미 존재합니다."),
 
