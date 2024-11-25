@@ -1,0 +1,8 @@
+aws:
+  s3:
+    bucket: mosoobucket
+    stack.auto: false
+    region: ap-northeast-2
+    credentials:
+      access-Key: AKIA2UC3FSB2P523HI4L
+      secret-Key: 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
