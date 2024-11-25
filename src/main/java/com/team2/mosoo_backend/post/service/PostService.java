@@ -8,7 +8,11 @@ import com.team2.mosoo_backend.post.entity.Post;
 import com.team2.mosoo_backend.post.mapper.PostMapper;
 import com.team2.mosoo_backend.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +25,11 @@ public class PostService {
     private final PostMapper postMapper;
 
 
-    public PostListResponseDto getAllPosts() {
+    public PostListResponseDto getAllPosts(int page) {
 
-        List<Post> posts = postRepository.findAll();
+        PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by("id").descending());
+
+        Page<Post> posts = postRepository.findAll(pageRequest);
 
         List<PostResponseDto> postResponseDtoList = new ArrayList<>();
 
@@ -31,23 +37,26 @@ public class PostService {
             postResponseDtoList.add(postMapper.postToPostResponseDto(post));
         }
 
-        return new PostListResponseDto(postResponseDtoList);
+        int totalPages = (posts.getTotalPages() == 0 ? 1 : posts.getTotalPages());
+
+        return new PostListResponseDto(postResponseDtoList, totalPages);
 
     }
 
+    @Transactional
     public CreatePostResponseDto createPost(CreatePostRequestDto createPostRequestDto) {
 
         Post post = postMapper.createPostRequestDtoToPost(createPostRequestDto);
         post.setIsOffer(createPostRequestDto.isOffer());
 
-        CreatePostResponseDto createPostResponseDto = postMapper.postToCreatePostResponseDto(postRepository.save(post));
-
-        return createPostResponseDto;
+        return postMapper.postToCreatePostResponseDto(postRepository.save(post));
     }
 
-    public PostListResponseDto getPostsByIsOffer(boolean isOffer) {
+    public PostListResponseDto getPostsByIsOffer(int page, boolean isOffer) {
 
-        List<Post> posts = postRepository.findAllByIsOffer(isOffer);
+        PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by("id").descending());
+
+        Page<Post> posts = postRepository.findAllByIsOffer(pageRequest, isOffer);
 
         List<PostResponseDto> postResponseDtoList = new ArrayList<>();
 
@@ -55,9 +64,12 @@ public class PostService {
             postResponseDtoList.add(postMapper.postToPostResponseDto(post));
         }
 
-        return new PostListResponseDto(postResponseDtoList);
+        int totalPages = (posts.getTotalPages() == 0 ? 1 : posts.getTotalPages());
+
+        return new PostListResponseDto(postResponseDtoList, totalPages);
     }
 
+    @Transactional
     public PostResponseDto updatePost(PostUpdateRequestDto postUpdateRequestDto) {
         Post post = postRepository.findById(postUpdateRequestDto.getId()).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
         Post savedPost = update(post, postUpdateRequestDto);
@@ -73,6 +85,7 @@ public class PostService {
         return postRepository.save(existPost);
     }
 
+    @Transactional
     public void deletePost(Long id) {
         postRepository.deleteById(id);
     }
