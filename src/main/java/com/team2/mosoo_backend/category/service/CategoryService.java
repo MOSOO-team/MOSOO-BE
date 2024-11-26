@@ -2,6 +2,7 @@ package com.team2.mosoo_backend.category.service;
 
 import com.team2.mosoo_backend.category.dto.CategoryRequestDto;
 import com.team2.mosoo_backend.category.dto.CategoryResponseDto;
+import com.team2.mosoo_backend.category.dto.FirstCategoryResponseDto;
 import com.team2.mosoo_backend.category.entity.Category;
 import com.team2.mosoo_backend.category.mapper.CategoryMapper;
 import com.team2.mosoo_backend.category.repository.CategoryRepository;
@@ -92,6 +93,14 @@ public class CategoryService {
             }
         }
         return roots;
+    }
+
+    // 카테고리 대분류 조회
+    @Transactional
+    public List<FirstCategoryResponseDto> readFirstCategories() {
+        List<Category> categories = categoryRepository.findByParentIsNull();
+        List<FirstCategoryResponseDto> readFirstCategories = CategoryMapper.INSTANCE.firstCategoryToDtoList(categories);
+        return readFirstCategories;
     }
 
     // 카테고리 수정
