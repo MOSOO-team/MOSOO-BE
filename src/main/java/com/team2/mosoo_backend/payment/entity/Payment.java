@@ -1,5 +1,6 @@
 package com.team2.mosoo_backend.payment.entity;
 
+import com.team2.mosoo_backend.common.entity.BaseEntity;
 import com.team2.mosoo_backend.post.entity.Post;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,10 +20,11 @@ import org.joda.time.DateTime;
 
 @Entity
 @Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Payment {
+public class Payment extends BaseEntity {
+
+    public static final String ENTITY_PREFIX = "payment";
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
