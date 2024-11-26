@@ -9,8 +9,10 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreateBidRequestDto {
+public class UpdateBidRequestDto {
 
+    private long id;
     private int price;
     private LocalDateTime date;
+
 }
