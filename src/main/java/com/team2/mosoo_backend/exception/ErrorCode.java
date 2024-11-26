@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
     /* 400 BAD_REQUEST : 잘못된 요청 */
+    METHOD_ARGUMENT_NOT_VALID(HttpStatus.BAD_REQUEST, "유효하지 않은 메서드 인자값입니다."),
+    PAGE_NOT_VALID(HttpStatus.BAD_REQUEST, "페이지는 1 이상이여야 합니다."),
     POST_DELETED(HttpStatus.BAD_REQUEST, "삭제된 게시글입니다."),
     REVIEW_DELETED(HttpStatus.BAD_REQUEST, "삭제된 리뷰입니다."),
     COMMENT_DELETED(HttpStatus.BAD_REQUEST, "삭제된 댓글입니다."),
@@ -75,6 +77,7 @@ public enum ErrorCode {
 
     /* 400 BAD_REQUEST : 잘못된 요청 */
     INVALID_CATEGORY_DATA(HttpStatus.BAD_REQUEST, "카테고리 정보가 유효하지 않습니다."),
+    INVALID_FILE_DATA(HttpStatus.BAD_REQUEST, "파일 정보가 유효하지 않습니다."),
     /* 410 GONE : 리소스가 삭제된 상태 */
     CATEGORY_ALREADY_DELETED(HttpStatus.GONE, "이미 삭제된 카테고리입니다.")
     ;

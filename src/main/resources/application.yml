@@ -1,4 +1,11 @@
 spring:
+  # 업로드 파일 용령 설정
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 128MB
+      max-request-size: 128MB
+
   # H2 Database 설정
   datasource:
     driver-class-name: org.h2.Driver

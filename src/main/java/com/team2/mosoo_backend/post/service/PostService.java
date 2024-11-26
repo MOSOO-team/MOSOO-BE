@@ -1,15 +1,19 @@
 package com.team2.mosoo_backend.post.service;
 
 
-import com.team2.mosoo_backend.post.dto.CreatePostRequestDto;
-import com.team2.mosoo_backend.post.dto.CreatePostResponseDto;
-import com.team2.mosoo_backend.post.dto.PostListResponseDto;
-import com.team2.mosoo_backend.post.dto.PostResponseDto;
+import com.team2.mosoo_backend.exception.CustomException;
+import com.team2.mosoo_backend.exception.ErrorCode;
+import com.team2.mosoo_backend.post.dto.*;
 import com.team2.mosoo_backend.post.entity.Post;
 import com.team2.mosoo_backend.post.mapper.PostMapper;
 import com.team2.mosoo_backend.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,9 +26,11 @@ public class PostService {
     private final PostMapper postMapper;
 
 
-    public PostListResponseDto getAllPosts() {
+    public PostListResponseDto getAllPosts(int page) {
 
-        List<Post> posts = postRepository.findAll();
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("id").descending());
+
+        Page<Post> posts = postRepository.findAll(pageable);
 
         List<PostResponseDto> postResponseDtoList = new ArrayList<>();
 
@@ -32,23 +38,26 @@ public class PostService {
             postResponseDtoList.add(postMapper.postToPostResponseDto(post));
         }
 
-        return new PostListResponseDto(postResponseDtoList);
+        int totalPages = (posts.getTotalPages() == 0 ? 1 : posts.getTotalPages());
+
+        return new PostListResponseDto(postResponseDtoList, totalPages);
 
     }
 
+    @Transactional
     public CreatePostResponseDto createPost(CreatePostRequestDto createPostRequestDto, boolean isOffer) {
 
         Post post = postMapper.createPostRequestDtoToPost(createPostRequestDto);
         post.setIsOffer(isOffer);
 
-        CreatePostResponseDto createPostResponseDto = postMapper.postToCreatePostResponseDto(postRepository.save(post));
-
-        return createPostResponseDto;
+        return postMapper.postToCreatePostResponseDto(postRepository.save(post));
     }
 
-    public PostListResponseDto getPostsByIsOffer(boolean isOffer) {
+    public PostListResponseDto getPostsByIsOffer(int page, boolean isOffer) {
 
-        List<Post> posts = postRepository.findAllByIsOffer(isOffer);
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("id").descending());
+
+        Page<Post> posts = postRepository.findByIsOffer(pageable, isOffer);
 
         List<PostResponseDto> postResponseDtoList = new ArrayList<>();
 
@@ -56,6 +65,29 @@ public class PostService {
             postResponseDtoList.add(postMapper.postToPostResponseDto(post));
         }
 
-        return new PostListResponseDto(postResponseDtoList);
+        int totalPages = (posts.getTotalPages() == 0 ? 1 : posts.getTotalPages());
+
+        return new PostListResponseDto(postResponseDtoList, totalPages);
+    }
+
+    @Transactional
+    public PostResponseDto updatePost(PostUpdateRequestDto postUpdateRequestDto) {
+        Post post = postRepository.findById(postUpdateRequestDto.getId()).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        Post savedPost = update(post, postUpdateRequestDto);
+
+        return postMapper.postToPostResponseDto(savedPost);
+    }
+
+    private Post update(Post existPost, PostUpdateRequestDto postUpdateRequestDto) {
+        existPost.setTitle(postUpdateRequestDto.getTitle());
+        existPost.setDescription(postUpdateRequestDto.getDescription());
+        existPost.setPrice(postUpdateRequestDto.getPrice());
+        existPost.setDuration(postUpdateRequestDto.getDuration());
+        return postRepository.save(existPost);
+    }
+
+    @Transactional
+    public void deletePost(Long id) {
+        postRepository.deleteById(id);
     }
 }
