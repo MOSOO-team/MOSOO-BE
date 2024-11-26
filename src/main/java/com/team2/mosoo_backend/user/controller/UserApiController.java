@@ -2,8 +2,12 @@ package com.team2.mosoo_backend.user.controller;
 
 
 import com.team2.mosoo_backend.user.domain.Users;
+import com.team2.mosoo_backend.user.dto.UserDto;
 import com.team2.mosoo_backend.user.dto.request.UserSignupRequestDto;
+import com.team2.mosoo_backend.user.dto.request.UserUpdateRequestDto;
+import com.team2.mosoo_backend.user.dto.response.UserResponseDto;
 import com.team2.mosoo_backend.user.dto.response.UserSignupResponseDto;
+import com.team2.mosoo_backend.user.dto.response.UserUpdateResponseDto;
 import com.team2.mosoo_backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,5 +38,35 @@ public class UserApiController {
                 .body(UserSignupResponseDto.builder().message("성공적으로 회원가입하셨습니다.").build());
     }
 
-    
+    // 개인 정보 조회
+    @GetMapping("/users-info")
+    public ResponseEntity<UserResponseDto> getUser(UserDto user) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.OK).body(UserResponseDto.builder()
+                    .message("사용자 정보 없음").build());
+        }
+        try {
+            Users authUser = userService.findById(user.getUserId());
+
+            if (authUser != null) {
+                UserResponseDto responseDto = authUser.toResponseDto();
+                return ResponseEntity.status(HttpStatus.OK).body(responseDto);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+    }
+
+    // 회원 정보 수정(이름, 아이디는 변경 불가능)
+    @PatchMapping("/users/{userInfoId}")
+    public ResponseEntity<UserUpdateResponseDto> updateUser(UserDto userDto,
+                                                            @PathVariable("userInfoId") Long userInfoId,
+                                                            @RequestBody UserUpdateRequestDto request) {
+        if (!userService.validateUpdateUser(request)) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(UserUpdateResponseDto.builder().message("유효성 검사실패").build());
+        }
+    }
+
 }

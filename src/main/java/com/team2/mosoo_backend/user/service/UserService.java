@@ -91,5 +91,7 @@ public class UserService {
         if (password.isEmpty()) {
             return false;
         }
+
+        return true;
     }
 }
