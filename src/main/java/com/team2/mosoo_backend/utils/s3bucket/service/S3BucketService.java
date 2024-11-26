@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -31,5 +33,16 @@ public class S3BucketService {
         amazonS3Client.putObject(bucket, fileName, file.getInputStream(), metadata);
 
         return amazonS3Client.getUrl(bucket, fileName).toString();
+    }
+
+    // 여러개의 파일 업로드
+    public List<String> uploadFileList(List<MultipartFile> multipartFile) throws IOException {
+        List<String> fileNameList = new ArrayList<>();
+
+        for(MultipartFile file : multipartFile) {
+            fileNameList.add(uploadFile(file));
+        }
+
+        return fileNameList;
     }
 }
