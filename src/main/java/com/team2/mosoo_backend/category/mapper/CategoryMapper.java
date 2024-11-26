@@ -3,6 +3,7 @@ package com.team2.mosoo_backend.category.mapper;
 import com.team2.mosoo_backend.category.dto.CategoryRequestDto;
 import com.team2.mosoo_backend.category.dto.CategoryResponseDto;
 import com.team2.mosoo_backend.category.dto.FirstCategoryResponseDto;
+import com.team2.mosoo_backend.category.dto.SubCategoryResponseDto;
 import com.team2.mosoo_backend.category.entity.Category;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
@@ -27,4 +28,9 @@ public interface CategoryMapper {
     // 리스트 변환
     @IterableMapping(elementTargetType = FirstCategoryResponseDto.class)
     List<FirstCategoryResponseDto> firstCategoryToDtoList(List<Category> categories);
+
+    SubCategoryResponseDto subCategoryToDto(Category category);
+
+    @IterableMapping(elementTargetType = SubCategoryResponseDto.class)
+    List<SubCategoryResponseDto> subCategoryToDtoList(List<Category> categories);
 }

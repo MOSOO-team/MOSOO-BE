@@ -3,6 +3,7 @@ package com.team2.mosoo_backend.category.controller;
 import com.team2.mosoo_backend.category.dto.CategoryRequestDto;
 import com.team2.mosoo_backend.category.dto.CategoryResponseDto;
 import com.team2.mosoo_backend.category.dto.FirstCategoryResponseDto;
+import com.team2.mosoo_backend.category.dto.SubCategoryResponseDto;
 import com.team2.mosoo_backend.category.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,13 @@ public class CategoryController {
     @GetMapping("/first_category")
     public ResponseEntity<List<FirstCategoryResponseDto>> readFirstCategories() {
         List<FirstCategoryResponseDto> categories = categoryService.readFirstCategories();
+        return ResponseEntity.status(HttpStatus.OK).body(categories);
+    }
+
+    // 하위 카테고리 조회
+    @GetMapping("{parent_id}")
+    public ResponseEntity<List<SubCategoryResponseDto>> readSubCategories(@PathVariable Long parent_id) {
+        List<SubCategoryResponseDto> categories = categoryService.readSubCategories(parent_id);
         return ResponseEntity.status(HttpStatus.OK).body(categories);
     }
 
