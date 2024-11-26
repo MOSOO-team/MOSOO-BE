@@ -7,6 +7,7 @@ import com.team2.mosoo_backend.post.dto.*;
 import com.team2.mosoo_backend.post.entity.Post;
 import com.team2.mosoo_backend.post.mapper.PostMapper;
 import com.team2.mosoo_backend.post.repository.PostRepository;
+import com.team2.mosoo_backend.utils.s3bucket.service.S3BucketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -14,7 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +25,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PostService {
 
+    private final S3BucketService s3BucketService;
     private final PostRepository postRepository;
     private final PostMapper postMapper;
 
@@ -45,10 +49,16 @@ public class PostService {
     }
 
     @Transactional
-    public CreatePostResponseDto createPost(CreatePostRequestDto createPostRequestDto, boolean isOffer) {
+    public CreatePostResponseDto createPost(CreatePostRequestDto createPostRequestDto, boolean isOffer) throws IOException {
 
         Post post = postMapper.createPostRequestDtoToPost(createPostRequestDto);
         post.setIsOffer(isOffer);
+
+        List<MultipartFile> imageList = createPostRequestDto.getImageUrls();
+
+        List<String> postImageUrls = s3BucketService.uploadFileList(imageList);
+
+        post.setImgUrls(postImageUrls);
 
         return postMapper.postToCreatePostResponseDto(postRepository.save(post));
     }
