@@ -1,7 +1,7 @@
 package com.team2.mosoo_backend.chatting.service;
 
-//import com.team2.mosoo_backend.bid.entity.Bid;
-//import com.team2.mosoo_backend.bid.repository.BidRepository;
+import com.team2.mosoo_backend.bid.entity.Bid;
+import com.team2.mosoo_backend.bid.repository.BidRepository;
 import com.team2.mosoo_backend.chatting.dto.ChatRoomRequestDto;
 import com.team2.mosoo_backend.chatting.dto.ChatRoomResponseDto;
 import com.team2.mosoo_backend.chatting.dto.ChatRoomResponseWrapperDto;
@@ -33,7 +33,7 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
 //    private final UserRepository userRepository;
     private final PostRepository postRepository;
-//    private final BidRepository bidRepository;
+    private final BidRepository bidRepository;
     private final ChatRoomMapper chatRoomMapper;
 
     // 채팅방 조회 메서드
@@ -82,23 +82,22 @@ public class ChatRoomService {
         Post post = postRepository.findById(chatRoomRequestDto.getPostId())
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
-        // TODO: 해당 입찰에 대한 채팅방이 이미 존재하는 경우
-//        if(chatRoomRepository.existsByBid_Id(chatRoomRequestDto.getBidId())) {
-//            // TODO: 존재하는 채팅방으로 들어가야 함
-//            throw new CustomException(ErrorCode.DUPLICATE_CHAT_ROOM);
-//        }
+        // 해당 입찰에 대한 채팅방이 이미 존재하는 경우
+        if(chatRoomRepository.existsByBidId(chatRoomRequestDto.getBidId())) {
+            // TODO: 존재하는 채팅방으로 들어가야 함
+            throw new CustomException(ErrorCode.DUPLICATE_CHAT_ROOM);
+        }
 
-        // TODO: 입찰 정보 가져옴
-//        Bid bid = bidRepository.findById(chatRoomRequestDto.getBidId())
-//                .orElseThrow(() -> new CustomException(ErrorCode.BID_NOT_FOUND));
+        // 입찰 정보 가져옴
+        Bid bid = bidRepository.findById(chatRoomRequestDto.getBidId())
+                .orElseThrow(() -> new CustomException(ErrorCode.BID_NOT_FOUND));
 
         // TODO: 유저정보를 포함한 채팅방 생성
 //        ChatRoom chatRoom = chatRoomMapper.toEntity(chatRoomRequestDto, getLoginUser().getId());
         ChatRoom chatRoom = chatRoomMapper.toEntity(chatRoomRequestDto, 1L);
 
-        // TODO: 채팅방 <-> 게시글, 입찰 연관관계 설정
-//        chatRoom.setMappings(post, bid);
-        chatRoom.setMappings(post);
+        // 채팅방 <-> 게시글 + 입찰 연관관계 설정
+        chatRoom.setMappings(post, bid);
 
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
 
