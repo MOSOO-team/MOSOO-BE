@@ -118,9 +118,26 @@ public class CategoryService {
         Category category = categoryRepository.findById(category_id)
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
+        deleteSubCategories(category);
+
         CategoryResponseDto categoryResponseDto = CategoryMapper.INSTANCE.toDto(category);
         categoryRepository.delete(category);
         categoryResponseDto.setMessage("카테고리 삭제 성공");
         return categoryResponseDto;
+    }
+    
+    // 하위 카테고리 삭제
+    @Transactional
+    private void deleteSubCategories(Category parentCategory) {
+        List<Category> subCategories = categoryRepository.findByParentId(parentCategory.getCategory_id());
+
+        for (Category subCategory : subCategories) {
+            deleteSubCategories(subCategory);
+        }
+
+        if (!subCategories.isEmpty()) {
+            categoryRepository.deleteAll(subCategories);
+        }
+        
     }
 }
