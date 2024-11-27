@@ -123,6 +123,8 @@ public class UserService {
         return false; // 비밀번호가 맞지 않으면 false
     }
 
+    public boolean isDuplicateUsername(String username) { return userRepository.existsByUsername(username); }
+
     public boolean validateSignup(UserSignupRequestDto userSignupRequestDto) {
         // fullname 유효성 검증: 2 ~ 20 글자, 숫자 포함 불가
         String fullname = userSignupRequestDto.getFullname();

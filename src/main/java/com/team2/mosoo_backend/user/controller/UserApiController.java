@@ -143,6 +143,31 @@ public class UserApiController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
+    //아이디 중복 확인
+    @GetMapping("/signup/check-username")
+    public ResponseEntity<UserCheckUsernameResponseDto> checkUsername(@RequestParam("username") String username) {
+        boolean isUsernameTaken = userService.isDuplicateUsername(username);
+
+        if (isUsernameTaken) {
+            // 아이디가 이미 존재하는 경우
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(UserCheckUsernameResponseDto.builder()
+                            .isAvailable(false).message("이미 사용중인 아이디입니다.").build());
+        }
+
+        // 아이디 사용 가능
+        return ResponseEntity.ok()
+                .body(UserCheckUsernameResponseDto.builder()
+                        .isAvailable(true).message("사용할 수 있는 아이디입니다.").build());
+    }
+
+    // 해당 유저가 구글인지 일반인지 확인
+    @GetMapping("/provider")
+    public ResponseEntity<UserProviderResponseDto> checkProvider(UserDto userDto) {
+        return ResponseEntity.status(HttpStatus.OK).body(UserProviderResponseDto.builder()
+                .provider(userDto.getProvider()).build());
+    }
+
     // 쿠키 삭제 로직
     private void deleteCookie(String token, HttpServletResponse response) {
         Cookie cookie = new Cookie(token, null);

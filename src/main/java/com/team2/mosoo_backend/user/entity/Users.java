@@ -7,6 +7,7 @@ import com.team2.mosoo_backend.user.dto.response.UserResponseDto;
 import com.team2.mosoo_backend.user.dto.response.UsersInfoResponseDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -42,6 +43,7 @@ public class Users extends BaseEntity implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Builder.Default
     @Column(name = "is_deleted")
     private boolean isDeleted = false;
 
@@ -56,6 +58,7 @@ public class Users extends BaseEntity implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Provider provider;
 
+    @Builder.Default
     @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UsersInfo> usersInfoList = new ArrayList<>();
 
