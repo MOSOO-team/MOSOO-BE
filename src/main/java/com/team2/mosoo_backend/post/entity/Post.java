@@ -1,6 +1,7 @@
 package com.team2.mosoo_backend.post.entity;
 
 
+import com.team2.mosoo_backend.category.entity.Category;
 import com.team2.mosoo_backend.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -57,7 +58,11 @@ public class Post extends BaseEntity {
     @Column(name = "post_img_url")
     private List<String> ImgUrls = new ArrayList<>();
 
-//    todo: 연관 관계 추가 (카테고리 + 작성자)
+//    todo: 연관 관계 추가 (작성자)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
 
     public void setTitle(String title) {
