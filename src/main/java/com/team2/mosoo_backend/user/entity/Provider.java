@@ -1,4 +1,4 @@
-package com.team2.mosoo_backend.user.domain;
+package com.team2.mosoo_backend.user.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,6 +7,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Provider {
     NONE("NONE");
-    GOOGLE("GOOGLE");
+//    GOOGLE("GOOGLE");
     private final String provider;
 }

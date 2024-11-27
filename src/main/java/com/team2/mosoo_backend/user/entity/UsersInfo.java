@@ -1,18 +1,18 @@
-package com.team2.mosoo_backend.user.domain;
+package com.team2.mosoo_backend.user.entity;
 
 import com.team2.mosoo_backend.common.entity.BaseEntity;
 import com.team2.mosoo_backend.user.dto.request.UserUpdateRequestDto;
 import com.team2.mosoo_backend.user.dto.response.UsersInfoResponseDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 @Getter
 public class UsersInfo extends BaseEntity {
     @Id

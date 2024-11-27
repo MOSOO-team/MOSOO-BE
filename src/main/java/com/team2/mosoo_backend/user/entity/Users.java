@@ -1,16 +1,17 @@
-package com.team2.mosoo_backend.user.domain;
+package com.team2.mosoo_backend.user.entity;
 
 
+import com.team2.mosoo_backend.common.entity.BaseEntity;
 import com.team2.mosoo_backend.user.dto.response.UserResponseDto;
 import com.team2.mosoo_backend.user.dto.response.UsersInfoResponseDto;
 import jakarta.persistence.*;
-import jakarta.websocket.OnError;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,8 +21,8 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Users {
+@SuperBuilder
+public class Users extends BaseEntity implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -69,7 +70,7 @@ public class Users {
     public String getPassword() { return password; }
 
     @Override // 계정 만료 여부
-    public boolean isAccountNonExpried() {return true; }
+    public boolean isAccountNonExpired() {return true; }
 
     @Override // 계정 잠금 여부 반환
     public boolean isAccountNonLocked() { return true; }
@@ -88,7 +89,7 @@ public class Users {
                 .provider(provider)
                 .role(role)
                 .isDeleted(isDeleted)
-                .createdAt(getCreatedAt())
+//                .createdAt(getCreatedDate())
                 .userInfoList(usersInfoDtos)
                 .message("사용자 있음")
                 .build();

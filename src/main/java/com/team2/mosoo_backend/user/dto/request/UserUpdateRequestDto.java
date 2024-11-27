@@ -1,7 +1,7 @@
 package com.team2.mosoo_backend.user.dto.request;
 
-import com.team2.mosoo_backend.user.domain.Users;
-import com.team2.mosoo_backend.user.domain.UsersInfo;
+import com.team2.mosoo_backend.user.entity.Users;
+import com.team2.mosoo_backend.user.entity.UsersInfo;
 import com.team2.mosoo_backend.user.dto.response.UsersInfoResponseDto;
 import lombok.Getter;
 

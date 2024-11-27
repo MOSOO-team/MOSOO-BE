@@ -1,8 +1,8 @@
 package com.team2.mosoo_backend.user.dto.response;
 
 
-import com.team2.mosoo_backend.user.domain.Provider;
-import com.team2.mosoo_backend.user.domain.UserRole;
+import com.team2.mosoo_backend.user.entity.Provider;
+import com.team2.mosoo_backend.user.entity.UserRole;
 import lombok.Builder;
 import lombok.Getter;
 

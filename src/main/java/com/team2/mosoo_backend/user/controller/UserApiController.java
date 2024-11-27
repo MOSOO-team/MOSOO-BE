@@ -1,13 +1,15 @@
 package com.team2.mosoo_backend.user.controller;
 
 
-import com.team2.mosoo_backend.user.domain.Users;
+import com.team2.mosoo_backend.user.entity.Provider;
+import com.team2.mosoo_backend.user.entity.Users;
 import com.team2.mosoo_backend.user.dto.UserDto;
 import com.team2.mosoo_backend.user.dto.request.UserSignupRequestDto;
 import com.team2.mosoo_backend.user.dto.request.UserUpdateRequestDto;
 import com.team2.mosoo_backend.user.dto.response.UserResponseDto;
 import com.team2.mosoo_backend.user.dto.response.UserSignupResponseDto;
 import com.team2.mosoo_backend.user.dto.response.UserUpdateResponseDto;
+import com.team2.mosoo_backend.user.exception.PasswordNotMatchException;
 import com.team2.mosoo_backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +68,18 @@ public class UserApiController {
                                                             @RequestBody UserUpdateRequestDto request) {
         if (!userService.validateUpdateUser(request)) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(UserUpdateResponseDto.builder().message("유효성 검사실패").build());
+        }
+
+        try {
+            if (userDto.getProvider().equals(Provider.NONE)) {
+                userService.updateNoneUser(userDto, request, userInfoId);
+            } else {
+                userService.updateGoogleUser(userDto, request, userInfoId);
+            }
+
+            return ResponseEntity.status(HttpStatus.OK).body(UserUpdateResponseDto.builder().message("정상적으로 수정되었습니다.").build());
+        } catch (PasswordNotMatchException e) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(UserUpdateResponseDto.builder().message("잘못된 데이터 요청입니다.").build());
         }
     }
 
