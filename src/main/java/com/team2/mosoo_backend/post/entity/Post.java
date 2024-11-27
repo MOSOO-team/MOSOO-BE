@@ -93,5 +93,7 @@ public class Post extends BaseEntity {
         this.ImgUrls = ImgUrls;
     }
 
-
+    public void setStatus(String status) {
+        this.status = Status.valueOf(status);
+    }
 }
