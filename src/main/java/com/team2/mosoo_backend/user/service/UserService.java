@@ -1,5 +1,7 @@
 package com.team2.mosoo_backend.user.service;
 
+import com.team2.mosoo_backend.user.dto.request.UserPasswordRequestDto;
+import com.team2.mosoo_backend.user.dto.response.UserDeleteResponseDto;
 import com.team2.mosoo_backend.user.entity.Provider;
 import com.team2.mosoo_backend.user.entity.UserRole;
 import com.team2.mosoo_backend.user.entity.Users;
@@ -105,6 +107,20 @@ public class UserService {
             UsersInfo newUsersInfo = userUpdateRequestDto.toUsersInfo(user);
             userInfoRepository.save(newUsersInfo);
         }
+    }
+
+    @Transactional
+    public UserDeleteResponseDto softDeleteUser(UserDto userDto) {
+        Users user = findById(userDto.getUserId());
+        return user.deleteUser();
+    }
+
+    public boolean checkPassword(UserDto authUser, UserPasswordRequestDto request) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if (encoder.matches(request.getPassword(), authUser.getPassword())) {
+            return true; // 비밀번호가 일치하면 true
+        }
+        return false; // 비밀번호가 맞지 않으면 false
     }
 
     public boolean validateSignup(UserSignupRequestDto userSignupRequestDto) {

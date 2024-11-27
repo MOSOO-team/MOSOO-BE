@@ -2,6 +2,7 @@ package com.team2.mosoo_backend.user.entity;
 
 
 import com.team2.mosoo_backend.common.entity.BaseEntity;
+import com.team2.mosoo_backend.user.dto.response.UserDeleteResponseDto;
 import com.team2.mosoo_backend.user.dto.response.UserResponseDto;
 import com.team2.mosoo_backend.user.dto.response.UsersInfoResponseDto;
 import jakarta.persistence.*;
@@ -93,5 +94,10 @@ public class Users extends BaseEntity implements UserDetails {
                 .userInfoList(usersInfoDtos)
                 .message("사용자 있음")
                 .build();
+    }
+
+    public UserDeleteResponseDto deleteUser() {
+        this.isDeleted = true;
+        return UserDeleteResponseDto.builder().isDeleted(this.isDeleted).build();
     }
 }
