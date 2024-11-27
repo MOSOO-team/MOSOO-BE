@@ -43,10 +43,11 @@ public class ChatRoomController {
     // 채팅방 단건 조회 (포함된 채팅 메세지 조회)
     @GetMapping("/chatroom/{chatRoomId}")
     @Operation(summary = "채팅방 단건 조회", description = "특정 채팅방 조회 (채팅 내역 조회)")
-    @ApiExceptionResponseExamples({USER_NOT_AUTHORIZED, CHAT_ROOM_NOT_FOUND})
+    @ApiExceptionResponseExamples({USER_NOT_AUTHORIZED, CHAT_ROOM_NOT_FOUND, BID_NOT_FOUND})
     /*
         403 에러 : 유저 정보가 일치하지 않는 경우
         404 에러 : 채팅방을 찾을 수 없는 경우
+        404 에러 : 입찰을 찾을 수 없는 경우
     */
     @ApiResponse(responseCode = "200", description = "채팅 내역 조회 성공",
             content = @Content(mediaType = "application/json",
