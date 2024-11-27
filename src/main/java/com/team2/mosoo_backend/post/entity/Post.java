@@ -50,8 +50,8 @@ public class Post extends BaseEntity {
     @Column(name = "is_selected", nullable = false)
     private boolean isSelected;
 
-    @Column(name = "is_expired", nullable = false)
-    private boolean isExpired;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @ElementCollection
     @CollectionTable(name = "post_img_urls", joinColumns = @JoinColumn(name = "post_id"))
@@ -87,10 +87,6 @@ public class Post extends BaseEntity {
 
     public void setIsSelected(boolean isSelected) {
         this.isSelected = isSelected;
-    }
-
-    public void setIsExpired(boolean isExpired) {
-        this.isExpired = isExpired;
     }
 
     public void setImgUrls(List<String> ImgUrls) {
