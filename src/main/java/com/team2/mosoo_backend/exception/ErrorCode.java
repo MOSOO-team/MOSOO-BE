@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
     /* 400 BAD_REQUEST : 잘못된 요청 */
+    METHOD_ARGUMENT_NOT_VALID(HttpStatus.BAD_REQUEST, "유효하지 않은 메서드 인자값입니다."),
+    PAGE_NOT_VALID(HttpStatus.BAD_REQUEST, "페이지는 1 이상이여야 합니다."),
     POST_DELETED(HttpStatus.BAD_REQUEST, "삭제된 게시글입니다."),
     REVIEW_DELETED(HttpStatus.BAD_REQUEST, "삭제된 리뷰입니다."),
     COMMENT_DELETED(HttpStatus.BAD_REQUEST, "삭제된 댓글입니다."),
@@ -49,7 +51,7 @@ public enum ErrorCode {
     ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 배송지를 찾을 수 없습니다."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
     BID_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 입찰을 찾을 수 없습니다."),
-    CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅방을 찾을 수 없습니다."),
+    CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅방을 찾을 수 없습니다."),
 
     /* 409 : CONFLICT : Resource의 현재 상태와 충돌. 보통 중복된 데이터 존재, 조건을 만족하지 못함 */
     DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "데이터가 이미 존재합니다."),
@@ -62,6 +64,7 @@ public enum ErrorCode {
     /* 410 : GONE : 리소스가 더 이상 유효하지 않음 */
     USER_ALREADY_DELETED(HttpStatus.GONE, "탈퇴된 사용자입니다."),
     PLACE_DELETED(HttpStatus.GONE, "삭제된 장소입니다"),
+    CHAT_ROOM_DELETED(HttpStatus.GONE, "이미 나간 채팅방입니다."),
 
     /* 500 INTERNAL_SERVER_ERROR : 서버 내부 에러 */
     IO_EXCEPTION_ON_IMAGE_UPLOAD(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드 중 입출력 오류가 발생했습니다."),
@@ -75,6 +78,7 @@ public enum ErrorCode {
 
     /* 400 BAD_REQUEST : 잘못된 요청 */
     INVALID_CATEGORY_DATA(HttpStatus.BAD_REQUEST, "카테고리 정보가 유효하지 않습니다."),
+    INVALID_FILE_DATA(HttpStatus.BAD_REQUEST, "파일 정보가 유효하지 않습니다."),
     /* 410 GONE : 리소스가 삭제된 상태 */
     CATEGORY_ALREADY_DELETED(HttpStatus.GONE, "이미 삭제된 카테고리입니다.")
     ;

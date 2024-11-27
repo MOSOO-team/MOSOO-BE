@@ -9,7 +9,6 @@ import java.util.List;
 @AllArgsConstructor
 public class ChatRoomResponseWrapperDto {
 
-    private String responseMessage;
     private List<ChatRoomResponseDto> chatRoomResponseDtoList;
 
     private int totalPages;
