@@ -9,6 +9,7 @@ import com.team2.mosoo_backend.post.mapper.PostMapper;
 import com.team2.mosoo_backend.post.repository.PostRepository;
 import com.team2.mosoo_backend.utils.s3bucket.service.S3BucketService;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.sql.Update;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -30,6 +31,7 @@ public class PostService {
     private final PostMapper postMapper;
 
 
+    // 게시글 전체 조회
     public PostListResponseDto getAllPosts(int page) {
 
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("id").descending());
@@ -48,6 +50,7 @@ public class PostService {
 
     }
 
+    // 게시글 생성
     @Transactional
     public CreatePostResponseDto createPost(CreatePostRequestDto createPostRequestDto, boolean isOffer) throws IOException {
 
@@ -63,6 +66,7 @@ public class PostService {
         return postMapper.postToCreatePostResponseDto(postRepository.save(post));
     }
 
+    // 고수 / 일반 게시글 조회
     public PostListResponseDto getPostsByIsOffer(int page, boolean isOffer) {
 
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("id").descending());
@@ -80,6 +84,7 @@ public class PostService {
         return new PostListResponseDto(postResponseDtoList, totalPages);
     }
 
+    // 게시글 수정
     @Transactional
     public PostResponseDto updatePost(PostUpdateRequestDto postUpdateRequestDto) {
         Post post = postRepository.findById(postUpdateRequestDto.getId()).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
@@ -88,6 +93,7 @@ public class PostService {
         return postMapper.postToPostResponseDto(savedPost);
     }
 
+    // 게시글 수정 로직
     private Post update(Post existPost, PostUpdateRequestDto postUpdateRequestDto) {
         existPost.setTitle(postUpdateRequestDto.getTitle());
         existPost.setDescription(postUpdateRequestDto.getDescription());
@@ -96,8 +102,26 @@ public class PostService {
         return postRepository.save(existPost);
     }
 
+    // 게시글 삭제
     @Transactional
-    public void deletePost(Long id) {
-        postRepository.deleteById(id);
+    public PostResponseDto deletePost(Long id) {
+        Post post = postRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+
+        PostResponseDto postResponseDto = postMapper.postToPostResponseDto(post);
+
+        postRepository.delete(post);
+
+        return postResponseDto;
+    }
+
+    // 게시글 상태 수정
+    @Transactional
+    public PostResponseDto updatePostStatus(UpdatePostStatusRequestDto updatePostStatusRequestDto){
+
+        Post post = postRepository.findById(updatePostStatusRequestDto.getId()).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+
+        post.setStatus(updatePostStatusRequestDto.getStatus());
+
+        return postMapper.postToPostResponseDto(postRepository.save(post));
     }
 }
