@@ -1,25 +1,30 @@
 package com.team2.mosoo_backend.post.entity;
 
 
+import com.team2.mosoo_backend.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
-@Builder
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "post")
 @EntityListeners(AuditingEntityListener.class)
-public class Post {
+public class Post extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,15 +52,13 @@ public class Post {
     @Column(name = "is_expired", nullable = false)
     private boolean isExpired;
 
+    @ElementCollection
+    @CollectionTable(name = "post_img_urls", joinColumns = @JoinColumn(name = "post_id"))
+    @Column(name = "post_img_url")
+    private List<String> ImgUrls = new ArrayList<>();
+
 //    todo: 연관 관계 추가 (카테고리 + 작성자)
 
-    @CreatedDate
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     public void setTitle(String title) {
         this.title = title;
@@ -77,17 +80,17 @@ public class Post {
         this.isOffer = isOffer;
     }
 
-
-    @Builder
-    public Post(Long id, String title, String description, int price, String duration, boolean isOffer, boolean isSelected, boolean isExpired) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.price = price;
-        this.duration = duration;
-        this.isOffer = isOffer;
+    public void setIsSelected(boolean isSelected) {
         this.isSelected = isSelected;
+    }
+
+    public void setIsExpired(boolean isExpired) {
         this.isExpired = isExpired;
     }
+
+    public void setImgUrls(List<String> ImgUrls) {
+        this.ImgUrls = ImgUrls;
+    }
+
 
 }

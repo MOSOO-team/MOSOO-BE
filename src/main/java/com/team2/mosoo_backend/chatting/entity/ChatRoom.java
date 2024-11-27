@@ -1,10 +1,11 @@
 package com.team2.mosoo_backend.chatting.entity;
 
-//import com.team2.mosoo_backend.bid.entity.Bid;
+import com.team2.mosoo_backend.bid.entity.Bid;
+import com.team2.mosoo_backend.common.entity.BaseEntity;
 import com.team2.mosoo_backend.post.entity.Post;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.LastModifiedDate;
+import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -12,19 +13,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter @Builder
+@Getter @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class ChatRoom {
+public class ChatRoom extends BaseEntity {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chat_room_id")
     private Long id;
-
-    @Column(nullable = false)
-    @LastModifiedDate
-    private LocalDateTime updatedAt;
 
     private LocalDateTime userDeletedAt;
 
@@ -40,21 +37,17 @@ public class ChatRoom {
     private Post post;
 
     // 단방향 1:1 연관관계
-//    @OneToOne
-//    @JoinColumn(name = "bid_id")
-//    private Bid bid;
+    @OneToOne
+    @JoinColumn(name = "bid_id")
+    private Bid bid;
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<ChatMessage> chatMessageList = new ArrayList<>();
 
-//    public void setMappings(Post post, Bid bid) {
-//        this.post = post;
-//        this.bid = bid;
-//    }
-
-    public void setMappings(Post post) {
+    public void setMappings(Post post, Bid bid) {
         this.post = post;
+        this.bid = bid;
     }
 
     // 채팅방 나가기 메서드
