@@ -85,7 +85,7 @@ public class UserService {
         Users user = findById(userDto.getUserId());
 
         //Users 엔티티에 있는 userId 값을 찾아서 반환
-        UsersInfo usersInfo = userInfoRepository.findByUsers_UserId(userInfoId).orElse(null);
+        UsersInfo usersInfo = userInfoRepository.findByUsersId(userInfoId).orElse(null);
         // 회원정보가 이미 있다면 업데이트, 그렇지 않다면 생성
         if (usersInfo != null) {
             usersInfo.updateUserInfo(userUpdateRequestDto);
@@ -97,7 +97,7 @@ public class UserService {
 
     @Transactional
     public void updateGoogleUser(UserDto userDto, UserUpdateRequestDto userUpdateRequestDto, Long userInfoId) {
-        UsersInfo usersInfo = userInfoRepository.findByUsers_UserId(userInfoId).orElse(null);
+        UsersInfo usersInfo = userInfoRepository.findByUsersId(userInfoId).orElse(null);
         Users user = findById(userDto.getUserId());
 
         // 회원정보가 이미 있다면 업데이트 그렇지않다면 생성
