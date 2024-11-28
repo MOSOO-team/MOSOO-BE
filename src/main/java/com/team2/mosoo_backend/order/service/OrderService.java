@@ -6,6 +6,7 @@ import com.team2.mosoo_backend.exception.ErrorCode;
 import com.team2.mosoo_backend.order.dto.CreateOrderRequestDto;
 import com.team2.mosoo_backend.order.dto.OrderListResponseDto;
 import com.team2.mosoo_backend.order.dto.OrderResponseDto;
+import com.team2.mosoo_backend.order.dto.UpdateOrderRequestDto;
 import com.team2.mosoo_backend.order.entity.Order;
 import com.team2.mosoo_backend.order.mapper.OrderMapper;
 import com.team2.mosoo_backend.order.repository.OrderRepository;
@@ -45,6 +46,29 @@ public class OrderService {
         Order order = orderMapper.createOrderRequestDtoToOrder(createOrderRequestDto);
 
         return orderMapper.orderToOrderResponseDto(orderRepository.save(order));
+    }
+
+
+    public OrderResponseDto updateOrder(Long orderId, UpdateOrderRequestDto updateOrderRequestDto) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+
+        if(updateOrderRequestDto.getPrice() != 0){
+            order.setPrice(updateOrderRequestDto.getPrice());
+        }
+        if(updateOrderRequestDto.getStatus() != null){
+            order.setStatus(updateOrderRequestDto.getStatus());
+        }
+
+        Order updatedOrder = orderRepository.save(order);
+        return orderMapper.orderToOrderResponseDto(updatedOrder);
+    }
+
+    public void deleteOrder(Long orderId) {
+        if (!orderRepository.existsById(orderId)) {
+            throw new CustomException(ErrorCode.ORDER_NOT_FOUND);
+        }
+        orderRepository.deleteById(orderId);
     }
 
 
