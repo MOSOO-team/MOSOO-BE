@@ -1,6 +1,7 @@
 package com.team2.mosoo_backend.order.controller;
 
 import com.team2.mosoo_backend.order.dto.CreateOrderRequestDto;
+import com.team2.mosoo_backend.order.dto.OrderListResponseDto;
 import com.team2.mosoo_backend.order.dto.OrderResponseDto;
 import com.team2.mosoo_backend.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +14,14 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
 
     private final OrderService orderService;
+
+
+    @GetMapping
+    public ResponseEntity<OrderListResponseDto> getALlOrders() {
+        OrderListResponseDto responseDto = orderService.getAllOrders();
+
+        return ResponseEntity.status(200).body(responseDto);
+    }
 
     @GetMapping("/{ordersId}")
     public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable("ordersId") Long orderId) {
