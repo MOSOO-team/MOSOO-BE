@@ -3,6 +3,7 @@ package com.team2.mosoo_backend.order.controller;
 import com.team2.mosoo_backend.order.dto.CreateOrderRequestDto;
 import com.team2.mosoo_backend.order.dto.OrderListResponseDto;
 import com.team2.mosoo_backend.order.dto.OrderResponseDto;
+import com.team2.mosoo_backend.order.dto.UpdateOrderRequestDto;
 import com.team2.mosoo_backend.order.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,21 @@ public class OrderController {
         OrderResponseDto orderResponseDto = orderService.createOrder(createOrderRequestDto);
 
         return ResponseEntity.status(201).body(orderResponseDto);
+    }
+
+    @PutMapping("/{orderId}")
+    public ResponseEntity<OrderResponseDto> updateOrder(
+            @PathVariable("orderId") Long orderId,
+            @RequestBody UpdateOrderRequestDto updateOrderRequestDto
+    ) {
+        OrderResponseDto updatedOrderResponse = orderService.updateOrder(orderId, updateOrderRequestDto);
+        return ResponseEntity.status(201).body(updatedOrderResponse);
+    }
+
+    @DeleteMapping("/{orderId}")
+    public ResponseEntity<Void> deleteOrder(@PathVariable("orderId") Long orderId) {
+        orderService.deleteOrder(orderId);
+        return ResponseEntity.status(204).build();
     }
 
 
