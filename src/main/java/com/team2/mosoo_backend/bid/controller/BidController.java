@@ -26,9 +26,10 @@ public class BidController {
     @PostMapping("/{postId}")
     public ResponseEntity<BidResponseDto> createBid(
             @PathVariable("postId") Long postId,
-            @RequestBody CreateBidRequestDto createBidRequestDto) {
+            @RequestBody CreateBidRequestDto createBidRequestDto,
+            @RequestParam(value = "userId") Long userId) {
 
-        BidResponseDto bidResponseDto = bidService.createBidByPost(postId, createBidRequestDto);
+        BidResponseDto bidResponseDto = bidService.createBidByPost(userId, postId, createBidRequestDto);
 
         return ResponseEntity.status(201).body(bidResponseDto);
     }

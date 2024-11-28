@@ -18,7 +18,7 @@ public class OrderController {
 
 
     @GetMapping
-    public ResponseEntity<OrderListResponseDto> getALlOrders() {
+    public ResponseEntity<OrderListResponseDto> getAllOrders() {
         OrderListResponseDto responseDto = orderService.getAllOrders();
 
         return ResponseEntity.status(200).body(responseDto);
@@ -32,8 +32,10 @@ public class OrderController {
     }
 
     @PostMapping
-    public ResponseEntity<OrderResponseDto> createOrder(@RequestBody CreateOrderRequestDto createOrderRequestDto) {
-        OrderResponseDto orderResponseDto = orderService.createOrder(createOrderRequestDto);
+    public ResponseEntity<OrderResponseDto> createOrder(
+            @RequestParam(value = "chatroomId") Long chatroomId,
+            @RequestBody CreateOrderRequestDto createOrderRequestDto) {
+        OrderResponseDto orderResponseDto = orderService.createOrder(chatroomId, createOrderRequestDto);
 
         return ResponseEntity.status(201).body(orderResponseDto);
     }
