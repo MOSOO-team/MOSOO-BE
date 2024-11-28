@@ -28,6 +28,7 @@ public class ChatMessage {
     private String content;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private ChatMessageType type;
 
     @Column(nullable = false)
