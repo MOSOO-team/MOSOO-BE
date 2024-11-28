@@ -48,19 +48,16 @@ public class ChatRoomService {
         Users loginUser = getLoginUser();
 
         Page<ChatRoom> chatRooms;
-        // 로그인한 유저가 고수인 경우 (상대방이 일반 유저인 경우)
-        if(loginUser.getRole() == UserRole.USER) {
-            chatRooms = chatRoomRepository.findChatRoomsByUserIdAndUserDeletedAt(pageRequest, loginUser.getId(), null);
-        } else {// 로그인한 유저가 일반 유저인 경우 (상대방이 고수인 경우)
-            chatRooms = chatRoomRepository.findChatRoomsByGosuIdAndGosuDeletedAt(pageRequest, loginUser.getId(), null);
-        }
+
+        // 로그인 한 유저의 id가 채팅방의 고수 id 이거나 일반유저 id 인 채팅방 (즉, 참여하는 채팅방) 조회
+        chatRooms = chatRoomRepository.findActiveChatRoomsByUserId(pageRequest, loginUser.getId());
 
         List<ChatRoomResponseDto> result = new ArrayList<>();
         for (ChatRoom chatRoom : chatRooms) {
             ChatRoomResponseDto dto = chatRoomMapper.toChatRoomResponseDto(chatRoom);
 
             // 로그인한 유저가 고수인 경우 (상대방이 일반 유저인 경우)
-            if(loginUser.getRole() == UserRole.GOSU) {
+            if(loginUser.getId().equals(chatRoom.getGosuId())) {
                 Users user = userRepository.findById(chatRoom.getUserId()).orElse(null);
                 dto.setOpponentFullName( (user != null) ? user.getFullname() : "찾을 수 없는 유저");
             } else {    // 로그인한 유저가 일반 유저인 경우 (상대방이 고수인 경우)
@@ -202,6 +199,6 @@ public class ChatRoomService {
     // 로그인 유저의 id를 가져오는 임시 메서드
     // TODO: USER 정보 가져오기 확인 + 권한 확인
     public Users getLoginUser() {
-        return userRepository.findById(2L).orElse(null);
+        return userRepository.findById(4L).orElse(null);
     }
 }

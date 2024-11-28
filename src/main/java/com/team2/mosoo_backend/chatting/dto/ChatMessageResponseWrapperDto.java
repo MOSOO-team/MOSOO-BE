@@ -17,6 +17,8 @@ public class ChatMessageResponseWrapperDto {
 
     private PostResponseDto postResponseDto; // 파생된 게시글 정보
 
+    private boolean isGosu;    // 고수id (가격 수정은 고수만 가능)
+
     // 위의 dto에는 게시글의 가격이 포함되므로 채팅방의 가격 필드 따로 생성
     private int price;
 
