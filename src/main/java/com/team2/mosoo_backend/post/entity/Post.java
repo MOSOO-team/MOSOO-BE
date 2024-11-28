@@ -3,6 +3,7 @@ package com.team2.mosoo_backend.post.entity;
 
 import com.team2.mosoo_backend.category.entity.Category;
 import com.team2.mosoo_backend.common.entity.BaseEntity;
+import com.team2.mosoo_backend.user.entity.Users;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -58,7 +59,9 @@ public class Post extends BaseEntity {
     @Column(name = "post_img_url")
     private List<String> ImgUrls = new ArrayList<>();
 
-//    todo: 연관 관계 추가 (작성자)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private Users user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id", nullable = false)
@@ -95,5 +98,10 @@ public class Post extends BaseEntity {
 
     public void setStatus(String status) {
         this.status = Status.valueOf(status);
+    }
+
+    public void setMapping(Users user, Category category) {
+        this.user = user;
+        this.category = category;
     }
 }
