@@ -45,7 +45,7 @@ public class ChatMessageService {
 
         if(chatMessageRequestDto.getBase64File() != null) {
             try {
-                MultipartFile multipartFile = convertToMultipartFile(chatMessageRequestDto.getBase64File(), "chattingUploadFile");
+                MultipartFile multipartFile = convertToMultipartFile(chatMessageRequestDto.getBase64File(), chatMessageRequestDto.getFileName());
 
                 String uploadFileUrl = s3BucketService.uploadFile(multipartFile);
                 chatMessageRequestDto.setContent(uploadFileUrl);
@@ -106,6 +106,12 @@ public class ChatMessageService {
         for (ChatMessage chatMessage : chatmessageList) {
 
             ChatMessageResponseDto dto = chatMessageMapper.toChatMessageResponseDto(chatMessage);
+
+            // 파일인 경우에만 fileName 필드 set
+            if(chatMessage.getType() == ChatMessageType.FILE) {
+                String[] split = chatMessage.getContent().split("-");
+                dto.setFileName(split[split.length-1]);     // s3 업로드 url 형태 : "url-파일이름"
+            }
             result.add(dto);
         }
 
