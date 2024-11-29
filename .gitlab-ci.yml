@@ -1,0 +1,63 @@
+stages:
+  - build
+  - test
+  - deploy
+
+# Build Stage: Spring Boot 애플리케이션 빌드
+build:
+  stage: build
+  image: gradle:7.5.1-jdk17
+  script:
+    - gradle clean build -x test
+  artifacts:
+    paths:
+      - build/libs/*.jar
+  only:
+    - review
+  tags:
+    - docker
+
+# Test Stage: 테스트 실행
+test:
+  stage: test
+  image: gradle:7.5.1-jdk17
+  script:
+    - gradle test
+  only:
+    - review
+  tags:
+    - docker
+
+# Deploy Stage: Docker로 애플리케이션 배포
+deploy:
+  stage: deploy
+  image: docker:latest
+  services:
+    - name: docker:dind
+      alias: docker
+      command: [ "--tls=false" ]
+  variables:
+    DOCKER_HOST: "tcp://docker:2375"
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ""
+  before_script:
+    # SSH 키 Setup
+    - mkdir -p ~/.ssh
+    - echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-keyscan -H $GCP_VM_IP >> ~/.ssh/known_hosts
+  script:
+    - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USER" --password-stdin
+    - docker build -t $DOCKER_USER/mosoo_spring:latest .
+    - docker push $DOCKER_USER/mosoo_spring:latest
+    # .env 파일 생성
+    - echo "AWS_S3_AK=$AWS_S3_AK" > .env
+    - echo "AWS_S3_SK=$AWS_S3_SK" >> .env
+    # GCP VM에 전송 및 SSH 접속 후 Docker-compose
+    - scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa .env $GCP_USER@$GCP_VM_IP:/path/to/your/project/
+    - scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml $GCP_USER@$GCP_VM_IP:/path/to/your/project/
+    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $GCP_USER@$GCP_VM_IP "cd /path/to/your/project && docker-compose up -d"
+  only:
+    - review
+  tags:
+    - docker
