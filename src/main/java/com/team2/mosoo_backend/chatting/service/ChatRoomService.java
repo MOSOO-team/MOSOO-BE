@@ -1,6 +1,8 @@
 package com.team2.mosoo_backend.chatting.service;
 
+import com.team2.mosoo_backend.bid.dto.BidResponseDto;
 import com.team2.mosoo_backend.bid.entity.Bid;
+import com.team2.mosoo_backend.bid.mapper.BidMapper;
 import com.team2.mosoo_backend.bid.repository.BidRepository;
 import com.team2.mosoo_backend.chatting.dto.*;
 import com.team2.mosoo_backend.chatting.entity.ChatMessage;
@@ -11,7 +13,9 @@ import com.team2.mosoo_backend.chatting.repository.ChatMessageRepository;
 import com.team2.mosoo_backend.chatting.repository.ChatRoomRepository;
 import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
+import com.team2.mosoo_backend.post.dto.PostResponseDto;
 import com.team2.mosoo_backend.post.entity.Post;
+import com.team2.mosoo_backend.post.mapper.PostMapper;
 import com.team2.mosoo_backend.post.repository.PostRepository;
 import com.team2.mosoo_backend.user.entity.UserRole;
 import com.team2.mosoo_backend.user.entity.Users;
@@ -36,8 +40,11 @@ public class ChatRoomService {
     private final PostRepository postRepository;
     private final BidRepository bidRepository;
     private final ChatRoomMapper chatRoomMapper;
+    private final PostMapper postMapper;
+    private final BidMapper bidMapper;
+    private final ChatRoomUtils chatRoomUtils;
 
-    // 채팅방 조회 메서드
+    // 채팅방 목록 조회 메서드
     public ChatRoomResponseWrapperDto findAllChatRooms(int page) {
 
         // 페이지 당 채팅 10개, 최근 수정시간 기준 내림차순 정렬
@@ -94,6 +101,46 @@ public class ChatRoomService {
         return new ChatRoomResponseWrapperDto(result, totalPages);
     }
 
+    // 특정 채팅방 관련 세부 정보 조회 메서드
+    public ChatRoomInfoResponseDto findChatRoomInfo(Long chatRoomId) {
+
+        // 로그인 유저 정보 가져옴
+        Users loginUser = getLoginUser();
+
+        // 채팅방 접근 권한 검증 후 찾은 채팅방 받아옴
+        ChatRoom foundChatRoom = chatRoomUtils.validateChatRoomOwnership(chatRoomId, loginUser);
+
+        // 고수 여부 저장
+        boolean isGosu = (loginUser.getId().equals(foundChatRoom.getGosuId()));
+
+        // 게시글 정보
+        PostResponseDto postResponseDto = postMapper.postToPostResponseDto(foundChatRoom.getPost());
+
+        // 입찰 정보가 있다면 입찰 정보
+        BidResponseDto bidResponseDto = null;
+        if(foundChatRoom.getBid() != null) {
+            bidResponseDto = bidMapper.bidToBidResponseDto(foundChatRoom.getBid());
+        }
+
+        return new ChatRoomInfoResponseDto(postResponseDto, bidResponseDto,
+                isGosu, foundChatRoom.getPrice());
+    }
+
+    // 특정 채팅방 관련 상대 정보 조회 메서드
+    public ChatRoomOpponentInfoResponseDto findChatRoomOpponentInfo(Long chatRoomId) {
+
+        // 로그인 유저 정보 가져옴
+        Users loginUser = getLoginUser();
+
+        // 채팅방 접근 권한 검증 후 찾은 채팅방 받아옴
+        ChatRoom foundChatRoom = chatRoomUtils.validateChatRoomOwnership(chatRoomId, loginUser);
+
+        // 채팅 상대 이름 저장
+        String opponentFullName = chatRoomUtils.getOpponentFullName(foundChatRoom, loginUser);
+
+        return new ChatRoomOpponentInfoResponseDto(opponentFullName);
+    }
+
     // 채팅방 생성 메서드
     @Transactional
     public ChatRoomCreateResponseDto createChatRoom(ChatRoomRequestDto chatRoomRequestDto) {
@@ -124,6 +171,7 @@ public class ChatRoomService {
                 throw new CustomException(ErrorCode.DUPLICATE_CHAT_ROOM);
             }
         }
+
         // 유저정보를 포함한 채팅방 생성
         ChatRoom chatRoom = chatRoomMapper.toEntity(chatRoomRequestDto, getLoginUser().getId());
 
