@@ -1,9 +1,5 @@
 package com.team2.mosoo_backend.chatting.service;
 
-import com.team2.mosoo_backend.bid.dto.BidResponseDto;
-import com.team2.mosoo_backend.bid.entity.Bid;
-import com.team2.mosoo_backend.bid.mapper.BidMapper;
-import com.team2.mosoo_backend.bid.repository.BidRepository;
 import com.team2.mosoo_backend.chatting.dto.ByteArrayMultipartFile;
 import com.team2.mosoo_backend.chatting.dto.ChatMessageRequestDto;
 import com.team2.mosoo_backend.chatting.dto.ChatMessageResponseDto;
@@ -16,6 +12,8 @@ import com.team2.mosoo_backend.chatting.repository.ChatMessageRepository;
 import com.team2.mosoo_backend.chatting.repository.ChatRoomRepository;
 import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
+import com.team2.mosoo_backend.post.dto.PostResponseDto;
+import com.team2.mosoo_backend.post.mapper.PostMapper;
 import com.team2.mosoo_backend.user.entity.UserRole;
 import com.team2.mosoo_backend.user.entity.Users;
 import com.team2.mosoo_backend.user.repository.UserRepository;
@@ -39,8 +37,7 @@ public class ChatMessageService {
     private final ChatMessageMapper chatMessageMapper;
     private final UserRepository userRepository;
     private final S3BucketService s3BucketService;
-    private final BidRepository bidRepository;
-    private final BidMapper bidMapper;
+    private final PostMapper postMapper;
 
     // 채팅 저장 메서드
     @Transactional
@@ -48,7 +45,7 @@ public class ChatMessageService {
 
         if(chatMessageRequestDto.getBase64File() != null) {
             try {
-                MultipartFile multipartFile = convertToMultipartFile(chatMessageRequestDto.getBase64File(), "chattingUploadFile");
+                MultipartFile multipartFile = convertToMultipartFile(chatMessageRequestDto.getBase64File(), chatMessageRequestDto.getFileName());
 
                 String uploadFileUrl = s3BucketService.uploadFile(multipartFile);
                 chatMessageRequestDto.setContent(uploadFileUrl);
@@ -84,10 +81,6 @@ public class ChatMessageService {
         ChatRoom foundChatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
-        // 입찰이 존재하지 않으면 404 에러 반환
-        Bid foundBid = bidRepository.findById(foundChatRoom.getBid().getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.BID_NOT_FOUND));
-
         // 로그인 유저 정보 가져옴
         Users loginUser = getLoginUser();
 
@@ -113,11 +106,19 @@ public class ChatMessageService {
         for (ChatMessage chatMessage : chatmessageList) {
 
             ChatMessageResponseDto dto = chatMessageMapper.toChatMessageResponseDto(chatMessage);
+
+            // 파일인 경우에만 fileName 필드 set
+            if(chatMessage.getType() == ChatMessageType.FILE) {
+                String[] split = chatMessage.getContent().split("-");
+                dto.setFileName(split[split.length-1]);     // s3 업로드 url 형태 : "url-파일이름"
+            }
             result.add(dto);
         }
 
-        BidResponseDto bidResponseDto = bidMapper.bidToBidResponseDto(foundBid);
-        return new ChatMessageResponseWrapperDto(opponentFullName, bidResponseDto, result, result.size());
+        boolean isGosu = (loginUser.getId().equals(foundChatRoom.getGosuId()));
+
+        PostResponseDto postResponseDto = postMapper.postToPostResponseDto(foundChatRoom.getPost());
+        return new ChatMessageResponseWrapperDto(opponentFullName, postResponseDto, isGosu, foundChatRoom.getPrice(), result, result.size());
     }
 
     // base64 파일 -> MultipartFile 로 변환하는 메서드
@@ -134,6 +135,6 @@ public class ChatMessageService {
 
     // TODO: USER 정보 가져오기 확인 + 권한 확인
     public Users getLoginUser() {
-        return userRepository.findById(2L).orElse(null);
+        return userRepository.findById(4L).orElse(null);
     }
 }
