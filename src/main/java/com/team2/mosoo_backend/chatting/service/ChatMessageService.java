@@ -13,6 +13,9 @@ import com.team2.mosoo_backend.user.entity.Users;
 import com.team2.mosoo_backend.user.repository.UserRepository;
 import com.team2.mosoo_backend.utils.s3bucket.service.S3BucketService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -69,7 +72,7 @@ public class ChatMessageService {
     }
 
     // 채팅 내역 조회 메서드
-    public ChatMessageResponseWrapperDto findChatMessages(Long chatRoomId) {
+    public ChatMessageResponseWrapperDto findChatMessages(Long chatRoomId, int offset) {
 
         // 로그인 유저 정보 가져옴
         Users loginUser = getLoginUser();
@@ -80,12 +83,17 @@ public class ChatMessageService {
         // 채팅 상대 이름 저장
         String opponentFullName = chatRoomUtils.getOpponentFullName(foundChatRoom, loginUser);
 
+        // 한 페이지에 (offset 부터) 20개, 생성일 기준 내림차순
+        int limit = 20;
+        PageRequest pageRequest = PageRequest.of(offset/limit, limit,
+                Sort.by("createdAt").descending());
+
         // 채팅 메시지를 생성시간 기준 오름차순으로 조회
-        List<ChatMessage> chatmessageList = chatMessageRepository.findChatMessagesByChatRoomIdOrderByCreatedAtAsc(chatRoomId);
+        Page<ChatMessage> chatMessageList = chatMessageRepository.findChatMessagesByChatRoomId(pageRequest, chatRoomId);
 
         // 조회한 채팅 메시지를 dto로 변환
         List<ChatMessageResponseDto> result = new ArrayList<>();
-        for (ChatMessage chatMessage : chatmessageList) {
+        for (ChatMessage chatMessage : chatMessageList) {
 
             ChatMessageResponseDto dto = chatMessageMapper.toChatMessageResponseDto(chatMessage);
 
