@@ -162,23 +162,4 @@ public class ChatMessageService {
     public Users getLoginUser() {
         return userRepository.findById(4L).orElse(null);
     }
-
-    public void saveChatMessageTest() {
-
-        ChatRoom chatRoom = chatRoomRepository.findById(1L).orElse(null);
-
-        List<ChatMessage> messages = new ArrayList<>();
-        for (int i = 1000000; i <= 1000000; i++) {
-            ChatMessage chatMessage = ChatMessage.builder()
-                    .content(String.valueOf(i))
-                    .type(ChatMessageType.MESSAGE)
-                    .sourceUserId(4L).build();
-
-            chatMessage.setChatRoom(chatRoom);
-
-            messages.add(chatMessage);
-        }
-
-        chatMessageQueryRepository.bulkInsertChatMessages(messages);
-    }
 }
