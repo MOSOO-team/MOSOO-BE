@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,7 +41,26 @@ public class ChatMessageController {
         return ResponseEntity.status(HttpStatus.OK).body(chatMessageRequestDto);
     }
 
-    // 채팅 메시지 조회
+    // 기존 채팅 메시지 조회
+//    @GetMapping("/api/chatroom/{chatRoomId}")
+//    @Operation(summary = "채팅 메시지 목록 조회", description = "채팅 메시지 목록 조회")
+//    @ApiExceptionResponseExamples({USER_NOT_AUTHORIZED, CHAT_ROOM_NOT_FOUND})
+//    /*
+//        403 에러 : 유저 정보가 일치하지 않는 경우
+//        404 에러 : 채팅방을 찾을 수 없는 경우
+//    */
+//    @ApiResponse(responseCode = "200", description = "채팅 내역 조회 성공",
+//            content = @Content(mediaType = "application/json",
+//                    schema = @Schema(implementation = ChatMessageResponseWrapperDto.class)))
+//    public ResponseEntity<ChatMessageResponseWrapperDto> findChatRoom(@PathVariable("chatRoomId") Long chatRoomId,
+//                                                                      @RequestParam(required = false, value = "offset", defaultValue = "0")
+//                                                                      @PositiveOrZero int offset) {
+//
+//        ChatMessageResponseWrapperDto chatMessageResponseWrapperDto = chatMessageService.findChatMessages(chatRoomId, offset);
+//        return ResponseEntity.status(HttpStatus.OK).body(chatMessageResponseWrapperDto);
+//    }
+
+    // 성능 개선한 채팅 메시지 조회
     @GetMapping("/api/chatroom/{chatRoomId}")
     @Operation(summary = "채팅 메시지 목록 조회", description = "채팅 메시지 목록 조회")
     @ApiExceptionResponseExamples({USER_NOT_AUTHORIZED, CHAT_ROOM_NOT_FOUND})
@@ -53,11 +71,11 @@ public class ChatMessageController {
     @ApiResponse(responseCode = "200", description = "채팅 내역 조회 성공",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ChatMessageResponseWrapperDto.class)))
-    public ResponseEntity<ChatMessageResponseWrapperDto> findChatRoom(@PathVariable("chatRoomId") Long chatRoomId,
-                                                                      @RequestParam(required = false, value = "offset", defaultValue = "0")
-                                                                      @PositiveOrZero int offset) {
+    public ResponseEntity<ChatMessageResponseWrapperDto> findChatRoom(
+            @PathVariable("chatRoomId") Long chatRoomId,
+            @RequestParam(value = "index", required = false) Long index) {
 
-        ChatMessageResponseWrapperDto chatMessageResponseWrapperDto = chatMessageService.findChatMessages(chatRoomId, offset);
+        ChatMessageResponseWrapperDto chatMessageResponseWrapperDto = chatMessageService.findChatMessages(chatRoomId, index);
         return ResponseEntity.status(HttpStatus.OK).body(chatMessageResponseWrapperDto);
     }
 }
