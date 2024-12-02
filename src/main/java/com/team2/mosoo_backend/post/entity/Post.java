@@ -1,6 +1,7 @@
 package com.team2.mosoo_backend.post.entity;
 
 
+import com.team2.mosoo_backend.category.entity.Category;
 import com.team2.mosoo_backend.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -49,15 +50,19 @@ public class Post extends BaseEntity {
     @Column(name = "is_selected", nullable = false)
     private boolean isSelected;
 
-    @Column(name = "is_expired", nullable = false)
-    private boolean isExpired;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @ElementCollection
     @CollectionTable(name = "post_img_urls", joinColumns = @JoinColumn(name = "post_id"))
     @Column(name = "post_img_url")
     private List<String> ImgUrls = new ArrayList<>();
 
-//    todo: 연관 관계 추가 (카테고리 + 작성자)
+//    todo: 연관 관계 추가 (작성자)
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
 
 
     public void setTitle(String title) {
@@ -84,13 +89,11 @@ public class Post extends BaseEntity {
         this.isSelected = isSelected;
     }
 
-    public void setIsExpired(boolean isExpired) {
-        this.isExpired = isExpired;
-    }
-
     public void setImgUrls(List<String> ImgUrls) {
         this.ImgUrls = ImgUrls;
     }
 
-
+    public void setStatus(String status) {
+        this.status = Status.valueOf(status);
+    }
 }
