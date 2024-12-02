@@ -14,3 +14,9 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       DEPLOY_FRONT_URL: ${DEPLOY_FRONT_URL}
+    networks:
+      - shared-network
+
+networks:
+  shared-network:
+    external: true
