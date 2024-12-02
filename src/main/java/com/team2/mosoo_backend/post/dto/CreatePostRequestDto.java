@@ -1,5 +1,6 @@
 package com.team2.mosoo_backend.post.dto;
 
+import com.team2.mosoo_backend.post.entity.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,5 +17,6 @@ public class CreatePostRequestDto {
     private String description;
     private int price;
     private String duration;
+    private String status = Status.OPEN.toString();
     private List<MultipartFile> imageUrls;
 }
