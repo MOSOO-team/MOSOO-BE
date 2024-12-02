@@ -2,9 +2,7 @@ package com.team2.mosoo_backend.chatting.service;
 
 import com.team2.mosoo_backend.bid.entity.Bid;
 import com.team2.mosoo_backend.bid.repository.BidRepository;
-import com.team2.mosoo_backend.chatting.dto.ChatRoomRequestDto;
-import com.team2.mosoo_backend.chatting.dto.ChatRoomResponseDto;
-import com.team2.mosoo_backend.chatting.dto.ChatRoomResponseWrapperDto;
+import com.team2.mosoo_backend.chatting.dto.*;
 import com.team2.mosoo_backend.chatting.entity.ChatRoom;
 import com.team2.mosoo_backend.chatting.mapper.ChatRoomMapper;
 import com.team2.mosoo_backend.chatting.repository.ChatRoomRepository;
@@ -22,9 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -72,7 +68,7 @@ public class ChatRoomService {
 
     // 채팅방 생성 메서드
     @Transactional
-    public Map<String, Long> createChatRoom(ChatRoomRequestDto chatRoomRequestDto) {
+    public ChatRoomCreateResponseDto createChatRoom(ChatRoomRequestDto chatRoomRequestDto) {
 
         // TODO: 고수 정보 검증
 //        userRepository.findById(chatRoomRequestDto.getGosuId())
@@ -82,15 +78,15 @@ public class ChatRoomService {
         Post post = postRepository.findById(chatRoomRequestDto.getPostId())
                 .orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
-        // 해당 입찰에 대한 채팅방이 이미 존재하는 경우
-        if(chatRoomRepository.existsByBidId(chatRoomRequestDto.getBidId())) {
-            // TODO: 존재하는 채팅방으로 들어가야 함
-            throw new CustomException(ErrorCode.DUPLICATE_CHAT_ROOM);
-        }
-
         // 입찰 정보 가져옴
         Bid bid = bidRepository.findById(chatRoomRequestDto.getBidId())
                 .orElseThrow(() -> new CustomException(ErrorCode.BID_NOT_FOUND));
+
+        // 해당 입찰에 대한 채팅방이 이미 존재하는 경우
+        if(chatRoomRepository.existsByBidId(bid.getId())) {
+            // TODO: 존재하는 채팅방으로 들어가야 함
+            throw new CustomException(ErrorCode.DUPLICATE_CHAT_ROOM);
+        }
 
         // TODO: 유저정보를 포함한 채팅방 생성
 //        ChatRoom chatRoom = chatRoomMapper.toEntity(chatRoomRequestDto, getLoginUser().getId());
@@ -101,42 +97,36 @@ public class ChatRoomService {
 
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
 
-        // Map 형식으로 리턴
-        return createResponseMap("chatRoomId", savedChatRoom.getId());
+        return new ChatRoomCreateResponseDto(savedChatRoom.getId());
     }
 
     // 채팅방 나가기 메서드 - 일반유저, 고수유저 공통
     @Transactional
-    public Map<String, Long> quitChatRoom(Long chatRoomId) {
+    public ChatRoomDeleteResponseDto quitChatRoom(Long chatRoomId) {
 
         // TODO: 유저 정보 가져옴
-//        User user = userRepository.findById(getLoginUser().getId())
-//                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+//        User loginUser = getLoginUser();
 
         // 채팅방 정보 가져옴
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
-                .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
         // TODO: 가져온 USER 정보 토대로 채팅 참여 여부 검증
 //        if(chatRoom.getUserId() != user.getId() && chatRoom.getGosuId() != user.getId()) {
 //            throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
 //        }
 
+        // TODO: 이미 채팅방을 나간 이력이 있는 경우 410 에러 반환
+//        if( (user.getUserRole().equals("gosu") && chatRoom.getGosuDeletedAt() != null) ||
+//                (user.getUserRole().equals("user") && chatRoom.getUserDeletedAt() != null) ) {
+//            throw new CustomException(ErrorCode.CHAT_ROOM_DELETED);
+//        }
+
         // TODO: USER의 고수 여부 포함하여 채팅방 나가기
 //        chatRoom.quitChatRoom((user.getUserRole().equals("gosu")));
         chatRoom.quitChatRoom(false);
 
-        // Map 형식으로 리턴
-        return createResponseMap("chatRoomId", chatRoomId);
-    }
-
-    static Map<String, Long> createResponseMap(String key, Long chatRoomId) {
-
-        // 프론트와 JSON으로 통신하기 위해 Map 으로 리턴
-        Map<String, Long> result = new HashMap<>();
-        result.put(key, chatRoomId);
-
-        return result;
+        return new ChatRoomDeleteResponseDto(chatRoomId);
     }
 
     // 로그인 유저의 id를 가져오는 임시 메서드
