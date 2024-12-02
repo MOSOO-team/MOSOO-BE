@@ -41,14 +41,16 @@ public class ChatMessageService {
         chatMessageRepository.save(createdChatMessage);
     }
 
-    public List<ChatMessageResponseDto> findChatMessages(Long id) {
+    // 채팅 내역 조회 메서드
+    public List<ChatMessageResponseDto> findChatMessages(Long chatRoomId) {
 
-        List<ChatMessage> chatmessageList = chatMessageRepository.findChatMessagesByChatRoom_IdOrderByCreatedAtAsc(id);
+        List<ChatMessage> chatmessageList = chatMessageRepository.findChatMessagesByChatRoomIdOrderByCreatedAtAsc(chatRoomId);
 
         List<ChatMessageResponseDto> result = new ArrayList<>();
         for (ChatMessage chatMessage : chatmessageList) {
 
             ChatMessageResponseDto dto = chatMessageMapper.toChatMessageResponseDto(chatMessage);
+            // TODO: User 정보를 가져와서 이름 포함
 //            User foundUser = userRepository.findById(chatMessage.getSourceUserId()).orElse(null);
 //            dto.setUserFullName( (foundUser != null) ? foundUser.getFullname() : "찾을 수 없는 회원");
             dto.setUserFullName("유저이름");
