@@ -11,5 +11,6 @@ public class ChatMessageRequestDto {
     private Long sourceUserId;
     private ChatMessageType type;
     private String base64File;
+    private String fileName;
     private String content;
 }
