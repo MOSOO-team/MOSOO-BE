@@ -1,5 +1,7 @@
 package com.team2.mosoo_backend.user.service;
 
+import com.team2.mosoo_backend.user.dto.request.UserPasswordRequestDto;
+import com.team2.mosoo_backend.user.dto.response.UserDeleteResponseDto;
 import com.team2.mosoo_backend.user.entity.Provider;
 import com.team2.mosoo_backend.user.entity.UserRole;
 import com.team2.mosoo_backend.user.entity.Users;
@@ -83,7 +85,7 @@ public class UserService {
         Users user = findById(userDto.getUserId());
 
         //Users 엔티티에 있는 userId 값을 찾아서 반환
-        UsersInfo usersInfo = userInfoRepository.findByUsers_UserId(userInfoId).orElse(null);
+        UsersInfo usersInfo = userInfoRepository.findByUsersId(userInfoId).orElse(null);
         // 회원정보가 이미 있다면 업데이트, 그렇지 않다면 생성
         if (usersInfo != null) {
             usersInfo.updateUserInfo(userUpdateRequestDto);
@@ -95,7 +97,7 @@ public class UserService {
 
     @Transactional
     public void updateGoogleUser(UserDto userDto, UserUpdateRequestDto userUpdateRequestDto, Long userInfoId) {
-        UsersInfo usersInfo = userInfoRepository.findByUsers_UserId(userInfoId).orElse(null);
+        UsersInfo usersInfo = userInfoRepository.findByUsersId(userInfoId).orElse(null);
         Users user = findById(userDto.getUserId());
 
         // 회원정보가 이미 있다면 업데이트 그렇지않다면 생성
@@ -106,6 +108,22 @@ public class UserService {
             userInfoRepository.save(newUsersInfo);
         }
     }
+
+    @Transactional
+    public UserDeleteResponseDto softDeleteUser(UserDto userDto) {
+        Users user = findById(userDto.getUserId());
+        return user.deleteUser();
+    }
+
+    public boolean checkPassword(UserDto authUser, UserPasswordRequestDto request) {
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        if (encoder.matches(request.getPassword(), authUser.getPassword())) {
+            return true; // 비밀번호가 일치하면 true
+        }
+        return false; // 비밀번호가 맞지 않으면 false
+    }
+
+    public boolean isDuplicateUsername(String username) { return userRepository.existsByUsername(username); }
 
     public boolean validateSignup(UserSignupRequestDto userSignupRequestDto) {
         // fullname 유효성 검증: 2 ~ 20 글자, 숫자 포함 불가
