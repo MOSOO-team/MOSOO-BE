@@ -3,6 +3,7 @@ package com.team2.mosoo_backend.bid.entity;
 import com.team2.mosoo_backend.bid.dto.UpdateBidRequestDto;
 import com.team2.mosoo_backend.common.entity.BaseEntity;
 import com.team2.mosoo_backend.post.entity.Post;
+import com.team2.mosoo_backend.user.entity.Users;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -34,10 +35,12 @@ public class Bid extends BaseEntity {
     private boolean isSelected;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private Users user;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id")
     private Post post;
-
-    // todo : 유저 연관관계 추가
 
     public void setSelected(boolean selected) {
         isSelected = selected;
@@ -45,6 +48,10 @@ public class Bid extends BaseEntity {
 
     public void setPost(Post post) {
         this.post = post;
+    }
+
+    public void serUser(Users user) {
+        this.user = user;
     }
 
     public void updateBid(UpdateBidRequestDto updateBidRequestDto) {

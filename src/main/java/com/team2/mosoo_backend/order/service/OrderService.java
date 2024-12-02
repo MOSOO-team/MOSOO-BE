@@ -1,6 +1,8 @@
 package com.team2.mosoo_backend.order.service;
 
 
+import com.team2.mosoo_backend.chatting.entity.ChatRoom;
+import com.team2.mosoo_backend.chatting.repository.ChatRoomRepository;
 import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
 import com.team2.mosoo_backend.order.dto.CreateOrderRequestDto;
@@ -21,6 +23,7 @@ import java.util.List;
 public class OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
+    private final ChatRoomRepository chatRoomRepository;
 
 
     public OrderListResponseDto getAllOrders() {
@@ -42,8 +45,12 @@ public class OrderService {
     }
 
 
-    public OrderResponseDto createOrder(CreateOrderRequestDto createOrderRequestDto) {
+    public OrderResponseDto createOrder(Long chatroomId, CreateOrderRequestDto createOrderRequestDto) {
         Order order = orderMapper.createOrderRequestDtoToOrder(createOrderRequestDto);
+        ChatRoom chatRoom = chatRoomRepository.findById(chatroomId).orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+
+        // 연관 매핑
+        order.setMapping(chatRoom);
 
         return orderMapper.orderToOrderResponseDto(orderRepository.save(order));
     }
