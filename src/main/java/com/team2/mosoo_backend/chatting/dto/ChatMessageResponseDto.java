@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ChatMessageResponseDto {
 
+    private Long chatMessageId; // 조회한 가장 마지막 채팅 메시지 id
     private Long sourceUserId;
     private String content;
     private String fileName;
