@@ -11,8 +11,9 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface ChatRoomMapper {
 
-    @Mapping(source="post", target = "postId")
-    @Mapping(source="bid", target = "bidId")
+//    @Mapping(source="post", target = "postId")
+//    @Mapping(source="bid", target = "bidId")
+    @Mapping(source = "id", target = "chatRoomId")
     ChatRoomResponseDto toChatRoomResponseDto(ChatRoom chatRoom);
 
     default Long mapPostToLong(Post post) { return post != null ? post.getId() : null; }

@@ -1,5 +1,9 @@
 package com.team2.mosoo_backend.chatting.service;
 
+import com.team2.mosoo_backend.bid.dto.BidResponseDto;
+import com.team2.mosoo_backend.bid.entity.Bid;
+import com.team2.mosoo_backend.bid.mapper.BidMapper;
+import com.team2.mosoo_backend.bid.repository.BidRepository;
 import com.team2.mosoo_backend.chatting.dto.ByteArrayMultipartFile;
 import com.team2.mosoo_backend.chatting.dto.ChatMessageRequestDto;
 import com.team2.mosoo_backend.chatting.dto.ChatMessageResponseDto;
@@ -12,9 +16,9 @@ import com.team2.mosoo_backend.chatting.repository.ChatMessageRepository;
 import com.team2.mosoo_backend.chatting.repository.ChatRoomRepository;
 import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
-//import com.team2.mosoo_backend.user.entity.User;
-//import com.team2.mosoo_backend.user.repository.UserRepository;
-//import com.team2.mosoo_backend.user.entity.User;
+import com.team2.mosoo_backend.user.entity.UserRole;
+import com.team2.mosoo_backend.user.entity.Users;
+import com.team2.mosoo_backend.user.repository.UserRepository;
 import com.team2.mosoo_backend.utils.s3bucket.service.S3BucketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,8 +37,10 @@ public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageMapper chatMessageMapper;
-//    private final UserRepository userRepository;
+    private final UserRepository userRepository;
     private final S3BucketService s3BucketService;
+    private final BidRepository bidRepository;
+    private final BidMapper bidMapper;
 
     // 채팅 저장 메서드
     @Transactional
@@ -75,15 +81,31 @@ public class ChatMessageService {
     public ChatMessageResponseWrapperDto findChatMessages(Long chatRoomId) {
 
         // 채팅방이 존재하지 않으면 404 에러 반환
-        ChatRoom foundChatRoom = chatRoomRepository.findById(chatRoomId).orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+        ChatRoom foundChatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
-        // TODO: 유저 정보 가져옴
-//        User loginUser = getLoginUser();
+        // 입찰이 존재하지 않으면 404 에러 반환
+        Bid foundBid = bidRepository.findById(foundChatRoom.getBid().getId())
+                .orElseThrow(() -> new CustomException(ErrorCode.BID_NOT_FOUND));
 
-        // TODO: 유저 정보가 일치하지 않으면 403 에러 반환
-//        if(chatRoom.getUserId() != loginUser.getId() && chatRoom.getGosuId() != loginUser.getId()) {
-//            throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
-//        }
+        // 로그인 유저 정보 가져옴
+        Users loginUser = getLoginUser();
+
+        // 유저 정보가 일치하지 않으면 403 에러 반환
+        if(!foundChatRoom.getUserId().equals(loginUser.getId())
+                && !foundChatRoom.getGosuId().equals(loginUser.getId())) {
+            throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
+        }
+
+        String opponentFullName;
+        // 로그인한 유저가 고수인 경우 (상대방이 일반 유저인 경우)
+        if(loginUser.getRole() == UserRole.GOSU) {
+            Users user = userRepository.findById(foundChatRoom.getUserId()).orElse(null);
+            opponentFullName = ( (user != null) ? user.getFullname() : "찾을 수 없는 유저");
+        } else {    // 로그인한 유저가 일반 유저인 경우 (상대방이 고수인 경우)
+            Users gosu = userRepository.findById(foundChatRoom.getGosuId()).orElse(null);
+            opponentFullName = ( (gosu != null) ? gosu.getFullname() : "찾을 수 없는 고수");
+        }
 
         List<ChatMessage> chatmessageList = chatMessageRepository.findChatMessagesByChatRoomIdOrderByCreatedAtAsc(chatRoomId);
 
@@ -91,15 +113,11 @@ public class ChatMessageService {
         for (ChatMessage chatMessage : chatmessageList) {
 
             ChatMessageResponseDto dto = chatMessageMapper.toChatMessageResponseDto(chatMessage);
-            // TODO: User 정보를 가져와서 이름 포함
-//            User foundUser = userRepository.findById(chatMessage.getSourceUserId()).orElse(null);
-//            dto.setUserFullName( (foundUser != null) ? foundUser.getFullname() : "찾을 수 없는 회원");
-            dto.setUserFullName("유저이름");
-
             result.add(dto);
         }
 
-        return new ChatMessageResponseWrapperDto(result, result.size());
+        BidResponseDto bidResponseDto = bidMapper.bidToBidResponseDto(foundBid);
+        return new ChatMessageResponseWrapperDto(opponentFullName, bidResponseDto, result, result.size());
     }
 
     // base64 파일 -> MultipartFile 로 변환하는 메서드
@@ -112,5 +130,10 @@ public class ChatMessageService {
 
         // 변환된 바이트 배열, 파일 이름으로 ByteArrayMultipartFile 생성함
         return new ByteArrayMultipartFile(fileName, fileData, mimeType);
+    }
+
+    // TODO: USER 정보 가져오기 확인 + 권한 확인
+    public Users getLoginUser() {
+        return userRepository.findById(2L).orElse(null);
     }
 }
