@@ -10,6 +10,9 @@ services:
     environment:
       AWS_S3_AK: ${AWS_S3_AK}
       AWS_S3_SK: ${AWS_S3_SK}
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
   frontend:
     build: .
     image:  mosoo_react

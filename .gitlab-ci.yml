@@ -49,6 +49,9 @@ deploy:
     # .env 파일 생성
     - echo "AWS_S3_AK=$AWS_S3_AK" > .env
     - echo "AWS_S3_SK=$AWS_S3_SK" >> .env
+    - echo "DB_URL=$DB_URL" >> .env
+    - echo "DB_USERNAME=$DB_USERNAME" >> .env
+    - echo "DB_PASSWORD=$DB_PASSWORD" >> .env
     # GCP VM에 전송 및 SSH 접속 후 Docker-compose
     - scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa .env $GCP_USER@$GCP_VM_IP:/path/to/your/project/
     - scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml $GCP_USER@$GCP_VM_IP:/path/to/your/project/
