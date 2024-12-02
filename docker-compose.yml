@@ -13,9 +13,3 @@ services:
       DB_URL: ${DB_URL}
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
-  frontend:
-    build: .
-    image:  mosoo_react
-    container_name: mosoo_react
-    ports:
-      - 80:80 
