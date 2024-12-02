@@ -2,6 +2,8 @@ package com.team2.mosoo_backend.category.service;
 
 import com.team2.mosoo_backend.category.dto.CategoryRequestDto;
 import com.team2.mosoo_backend.category.dto.CategoryResponseDto;
+import com.team2.mosoo_backend.category.dto.FirstCategoryResponseDto;
+import com.team2.mosoo_backend.category.dto.SubCategoryResponseDto;
 import com.team2.mosoo_backend.category.entity.Category;
 import com.team2.mosoo_backend.category.mapper.CategoryMapper;
 import com.team2.mosoo_backend.category.repository.CategoryRepository;
@@ -94,6 +96,22 @@ public class CategoryService {
         return roots;
     }
 
+    // 카테고리 대분류 조회
+    @Transactional
+    public List<FirstCategoryResponseDto> readFirstCategories() {
+        List<Category> categories = categoryRepository.findByParentIsNull();
+
+        return CategoryMapper.INSTANCE.firstCategoryToDtoList(categories);
+    }
+
+    // 하위 카테고리 조회
+    @Transactional
+    public List<SubCategoryResponseDto> readSubCategories(Long parent_id) {
+       List<Category> categories = categoryRepository.findByParentId(parent_id);
+
+       return CategoryMapper.INSTANCE.subCategoryToDtoList(categories);
+    }
+
     // 카테고리 수정
     @Transactional
     public CategoryResponseDto updateCategory(Long category_id, CategoryRequestDto categoryRequestDto) {
@@ -118,9 +136,26 @@ public class CategoryService {
         Category category = categoryRepository.findById(category_id)
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
+        deleteSubCategories(category);
+
         CategoryResponseDto categoryResponseDto = CategoryMapper.INSTANCE.toDto(category);
         categoryRepository.delete(category);
         categoryResponseDto.setMessage("카테고리 삭제 성공");
         return categoryResponseDto;
+    }
+    
+    // 하위 카테고리 삭제
+    @Transactional
+    private void deleteSubCategories(Category parentCategory) {
+        List<Category> subCategories = categoryRepository.findByParentId(parentCategory.getCategory_id());
+
+        for (Category subCategory : subCategories) {
+            deleteSubCategories(subCategory);
+        }
+
+        if (!subCategories.isEmpty()) {
+            categoryRepository.deleteAll(subCategories);
+        }
+        
     }
 }
