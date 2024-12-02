@@ -4,6 +4,7 @@ package com.team2.mosoo_backend.review.entity;
 import com.team2.mosoo_backend.common.entity.BaseEntity;
 import com.team2.mosoo_backend.post.entity.Post;
 import com.team2.mosoo_backend.review.dto.UpdateReviewRequestDto;
+import com.team2.mosoo_backend.user.entity.Users;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,6 +32,11 @@ public class Review extends BaseEntity {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private Users user;
+
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "post_id", nullable = false)
     private Post post;
 
@@ -39,7 +45,11 @@ public class Review extends BaseEntity {
         this.rating = updateReviewRequestDto.getRating();
     }
 
-    // todo: 유저 연관 매핑
+    public void setMapping(Users user, Post post) {
+        this.user = user;
+        this.post = post;
+    }
+
 
 
 }

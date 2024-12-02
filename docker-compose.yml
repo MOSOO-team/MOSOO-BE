@@ -1,0 +1,21 @@
+# ./docker-compose.yml
+version: "3"
+services:
+  backend:
+    build: . # 루트 디렉토리의 Dockerfile 을 실행
+    image: mosoo_spring # 이미지 이름을 지정
+    container_name: mosoo_spring  # 컨테이너 이름 지정
+    ports:
+      - 8080:8080
+    environment:
+      AWS_S3_AK: ${AWS_S3_AK}
+      AWS_S3_SK: ${AWS_S3_SK}
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+  frontend:
+    build: .
+    image:  mosoo_react
+    container_name: mosoo_react
+    ports:
+      - 80:80 
