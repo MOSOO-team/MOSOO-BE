@@ -1,9 +1,5 @@
 package com.team2.mosoo_backend.chatting.service;
 
-import com.team2.mosoo_backend.bid.dto.BidResponseDto;
-import com.team2.mosoo_backend.bid.entity.Bid;
-import com.team2.mosoo_backend.bid.mapper.BidMapper;
-import com.team2.mosoo_backend.bid.repository.BidRepository;
 import com.team2.mosoo_backend.chatting.dto.ByteArrayMultipartFile;
 import com.team2.mosoo_backend.chatting.dto.ChatMessageRequestDto;
 import com.team2.mosoo_backend.chatting.dto.ChatMessageResponseDto;
@@ -39,8 +35,6 @@ public class ChatMessageService {
     private final ChatMessageMapper chatMessageMapper;
     private final UserRepository userRepository;
     private final S3BucketService s3BucketService;
-    private final BidRepository bidRepository;
-    private final BidMapper bidMapper;
 
     // 채팅 저장 메서드
     @Transactional
@@ -84,10 +78,6 @@ public class ChatMessageService {
         ChatRoom foundChatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
-        // 입찰이 존재하지 않으면 404 에러 반환
-        Bid foundBid = bidRepository.findById(foundChatRoom.getBid().getId())
-                .orElseThrow(() -> new CustomException(ErrorCode.BID_NOT_FOUND));
-
         // 로그인 유저 정보 가져옴
         Users loginUser = getLoginUser();
 
@@ -116,8 +106,8 @@ public class ChatMessageService {
             result.add(dto);
         }
 
-        BidResponseDto bidResponseDto = bidMapper.bidToBidResponseDto(foundBid);
-        return new ChatMessageResponseWrapperDto(opponentFullName, bidResponseDto, result, result.size());
+        return new ChatMessageResponseWrapperDto(opponentFullName, foundChatRoom.getPost().getId(), foundChatRoom.getPost().getTitle(),
+                foundChatRoom.getPrice(), result, result.size());
     }
 
     // base64 파일 -> MultipartFile 로 변환하는 메서드

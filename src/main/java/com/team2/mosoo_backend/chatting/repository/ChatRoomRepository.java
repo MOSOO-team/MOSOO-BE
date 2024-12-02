@@ -13,4 +13,5 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     Page<ChatRoom> findChatRoomsByGosuIdAndGosuDeletedAt(Pageable pageable, Long gosuId, LocalDateTime gosuDeletedAt);
 
     boolean existsByBidId(Long bidId);
+    boolean existsByPostId(Long postId);
 }

@@ -12,9 +12,12 @@ import java.util.List;
 @NoArgsConstructor
 public class ChatMessageResponseWrapperDto {
 
-    private String opponentFullName;
+    private String opponentFullName;    // 채팅 참여하는 상대방 이름
 
-    private BidResponseDto bidResponseDto;  // 입찰 정보 포함
+    private Long postId;        // 파생된 게시글 id
+    private String postTitle;   // 파생된 게시글 제목
+
+    private int price;
 
     private List<ChatMessageResponseDto> chatMessageResponseDtoList;
 
