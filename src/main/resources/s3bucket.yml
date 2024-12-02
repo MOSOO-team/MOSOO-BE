@@ -1,0 +1,8 @@
+aws:
+  s3:
+    bucket: mosoobucket
+    stack.auto: false
+    region: ap-northeast-2
+    credentials:
+      access-Key: ${AWS_S3_AK}
+      secret-Key: ${AWS_S3_SK}
