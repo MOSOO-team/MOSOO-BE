@@ -24,13 +24,14 @@ public class ChatMessageService {
 
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final ChatMessageMapper chatMessageMapper;
 //    private final UserRepository userRepository;
 
     // 채팅 저장 메서드
     @Transactional
     public void saveChatMessage(Long chatRoomId, ChatMessageRequestDto chatMessageRequestDto) {
 
-        ChatMessage createdChatMessage = ChatMessageMapper.INSTANCE.toEntity(chatMessageRequestDto);
+        ChatMessage createdChatMessage = chatMessageMapper.toEntity(chatMessageRequestDto);
 
         ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CHATROOM_NOT_FOUND));
@@ -47,7 +48,7 @@ public class ChatMessageService {
         List<ChatMessageResponseDto> result = new ArrayList<>();
         for (ChatMessage chatMessage : chatmessageList) {
 
-            ChatMessageResponseDto dto = ChatMessageMapper.INSTANCE.toChatMessageResponseDto(chatMessage);
+            ChatMessageResponseDto dto = chatMessageMapper.toChatMessageResponseDto(chatMessage);
 //            User foundUser = userRepository.findById(chatMessage.getSourceUserId()).orElse(null);
 //            dto.setUserFullName( (foundUser != null) ? foundUser.getFullname() : "찾을 수 없는 회원");
             dto.setUserFullName("유저이름");
