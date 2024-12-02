@@ -109,8 +109,10 @@ public class ChatMessageService {
             result.add(dto);
         }
 
+        boolean isGosu = (loginUser.getId().equals(foundChatRoom.getGosuId()));
+
         PostResponseDto postResponseDto = postMapper.postToPostResponseDto(foundChatRoom.getPost());
-        return new ChatMessageResponseWrapperDto(opponentFullName, postResponseDto, foundChatRoom.getPrice(), result, result.size());
+        return new ChatMessageResponseWrapperDto(opponentFullName, postResponseDto, isGosu, foundChatRoom.getPrice(), result, result.size());
     }
 
     // base64 파일 -> MultipartFile 로 변환하는 메서드
