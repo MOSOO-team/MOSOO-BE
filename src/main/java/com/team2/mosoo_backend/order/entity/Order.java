@@ -1,5 +1,6 @@
 package com.team2.mosoo_backend.order.entity;
 
+import com.team2.mosoo_backend.chatting.entity.ChatRoom;
 import com.team2.mosoo_backend.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -29,6 +30,10 @@ public class Order extends BaseEntity {
 
     private String method;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chat_romm_id", nullable = false)
+    private ChatRoom chatRoom;
+
     public void setPrice(int price) {
         this.price = price;
     }
@@ -37,4 +42,7 @@ public class Order extends BaseEntity {
         this.status = Status.valueOf(status);
     }
 
+    public void setMapping(ChatRoom chatRoom) {
+        this.chatRoom = chatRoom;
+    }
 }
