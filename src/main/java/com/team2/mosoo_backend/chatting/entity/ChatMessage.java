@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
+// 채팅 수정 기능이 없으므로 BaseEntity 상속 x
+// 기능고도화로 채팅 수정 기능을 넣는다면 상속으로 변경할 예정
 public class ChatMessage {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,8 +27,8 @@ public class ChatMessage {
     @Column(nullable = false)
     private String content;
 
-//    @Column(nullable = false)
-//    private ChatMessageType type;
+    @Column(nullable = false)
+    private ChatMessageType type;
 
     @Column(nullable = false)
     @CreatedDate
