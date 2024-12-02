@@ -25,8 +25,8 @@ public class ChatMessage {
     @Column(nullable = false)
     private String content;
 
-//    @Column(nullable = false)
-//    private ChatMessageType type;
+    @Column(nullable = false)
+    private ChatMessageType type;
 
     @Column(nullable = false)
     @CreatedDate
