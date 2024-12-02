@@ -12,6 +12,8 @@ import com.team2.mosoo_backend.chatting.repository.ChatMessageRepository;
 import com.team2.mosoo_backend.chatting.repository.ChatRoomRepository;
 import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
+import com.team2.mosoo_backend.post.dto.PostResponseDto;
+import com.team2.mosoo_backend.post.mapper.PostMapper;
 import com.team2.mosoo_backend.user.entity.UserRole;
 import com.team2.mosoo_backend.user.entity.Users;
 import com.team2.mosoo_backend.user.repository.UserRepository;
@@ -35,6 +37,7 @@ public class ChatMessageService {
     private final ChatMessageMapper chatMessageMapper;
     private final UserRepository userRepository;
     private final S3BucketService s3BucketService;
+    private final PostMapper postMapper;
 
     // 채팅 저장 메서드
     @Transactional
@@ -106,8 +109,8 @@ public class ChatMessageService {
             result.add(dto);
         }
 
-        return new ChatMessageResponseWrapperDto(opponentFullName, foundChatRoom.getPost().getId(), foundChatRoom.getPost().getTitle(),
-                foundChatRoom.getPrice(), result, result.size());
+        PostResponseDto postResponseDto = postMapper.postToPostResponseDto(foundChatRoom.getPost());
+        return new ChatMessageResponseWrapperDto(opponentFullName, postResponseDto, foundChatRoom.getPrice(), result, result.size());
     }
 
     // base64 파일 -> MultipartFile 로 변환하는 메서드
@@ -124,6 +127,6 @@ public class ChatMessageService {
 
     // TODO: USER 정보 가져오기 확인 + 권한 확인
     public Users getLoginUser() {
-        return userRepository.findById(2L).orElse(null);
+        return userRepository.findById(4L).orElse(null);
     }
 }
