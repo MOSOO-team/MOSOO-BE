@@ -14,6 +14,7 @@ public class ChatMessageResponseDto {
 
     private Long sourceUserId;
     private String content;
+    private String fileName;
     private LocalDateTime createdAt;
     private ChatMessageType type;
 }
