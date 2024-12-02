@@ -2,7 +2,7 @@
 version: "3"
 services:
   backend:
-    build: . # 루트 디렉토리의 Dockerfile 을 실행
+    build: ./spring # 루트 디렉토리의 Dockerfile 을 실행
     image: mosoo_spring # 이미지 이름을 지정
     container_name: mosoo_spring  # 컨테이너 이름 지정
     ports:
@@ -14,9 +14,11 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       DEPLOY_FRONT_URL: ${DEPLOY_FRONT_URL}
-    networks:
-      - shared-network
-
-networks:
-  shared-network:
-    external: true
+  frontend:
+    build: ./react
+    image: mosoo_react
+    container_name: mosoo_react
+    ports:
+      - "80:80"
+    environment:
+      - REACT_APP_API_BASE_URL=${REACT_APP_API_BASE_URL}
