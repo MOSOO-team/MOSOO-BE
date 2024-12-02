@@ -5,6 +5,8 @@ import com.team2.mosoo_backend.category.dto.CategoryResponseDto;
 import com.team2.mosoo_backend.category.entity.Category;
 import com.team2.mosoo_backend.category.mapper.CategoryMapper;
 import com.team2.mosoo_backend.category.repository.CategoryRepository;
+import com.team2.mosoo_backend.exception.CustomException;
+import com.team2.mosoo_backend.exception.ErrorCode;
 import com.team2.mosoo_backend.utils.s3bucket.service.S3BucketService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -27,19 +29,16 @@ public class CategoryService {
     
     // 카테고리 생성
     @Transactional
-    public void createCategory(CategoryRequestDto categoryRequestDto, MultipartFile file) throws IOException {
+    public CategoryResponseDto createCategory(CategoryRequestDto categoryRequestDto, MultipartFile file) throws IOException {
         Category category = CategoryMapper.INSTANCE.toEntity(categoryRequestDto);
 
         LocalDateTime currentTime = LocalDateTime.now();
         category.setCreatedAt(currentTime);
         category.setUpdatedAt(currentTime);
 
-        String fileUrl = s3BucketService.uploadFile(file);
-        category.setIcon(fileUrl);
-
         if (categoryRequestDto.getParent_id() != null){
-           Category parent = categoryRepository.findById(categoryRequestDto.getParent_id())
-                   .orElseThrow(IllegalArgumentException::new);
+            Category parent = categoryRepository.findById(categoryRequestDto.getParent_id())
+                    .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
            category.setParent(parent);
            category.setLevel(parent.getLevel() + 1);
@@ -47,16 +46,31 @@ public class CategoryService {
         else {
             category.setParent(null);
             category.setLevel(1); // 대분류
+            try {
+                String fileUrl = s3BucketService.uploadFile(file);
+                category.setIcon(fileUrl);
+            } catch (IOException e) {
+                throw new CustomException(ErrorCode.INVALID_FILE_DATA);
+            }
         }
 
         categoryRepository.save(category);
+        CategoryResponseDto categoryResponseDto = CategoryMapper.INSTANCE.toDto(category);
+        categoryResponseDto.setMessage("카테고리 생성 성공");
+        return categoryResponseDto;
     }
 
     // 카테고리 전체 조회
     @Transactional
     public List<CategoryResponseDto> readAllCategories() {
         List<Category> categories = categoryRepository.findAll();
-        return buildCategoryHierarchy(categories);
+        List<CategoryResponseDto> categoryResponseDtos = buildCategoryHierarchy(categories);
+
+        for (CategoryResponseDto category : categoryResponseDtos) {
+            category.setMessage("카테고리 전체 조회 성공");
+        }
+
+        return categoryResponseDtos;
     }
 
     // 카테고리 분류
@@ -82,8 +96,9 @@ public class CategoryService {
 
     // 카테고리 수정
     @Transactional
-    public void updateCategory(Long category_id, CategoryRequestDto categoryRequestDto) {
-        Category category = categoryRepository.findById(category_id).orElseThrow(IllegalArgumentException::new);
+    public CategoryResponseDto updateCategory(Long category_id, CategoryRequestDto categoryRequestDto) {
+        Category category = categoryRepository.findById(category_id)
+                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
         category.setName(categoryRequestDto.getName());
         category.setDescription(categoryRequestDto.getDescription());
@@ -92,13 +107,20 @@ public class CategoryService {
         category.setUpdatedAt(currentTime);
 
         categoryRepository.save(category);
+        CategoryResponseDto categoryResponseDto = CategoryMapper.INSTANCE.toDto(category);
+        categoryResponseDto.setMessage("카테고리 수정 성공");
+        return categoryResponseDto;
     }
     
     // 카테고리 삭제
     @Transactional
-    public void deleteCategory(Long category_id) {
-        Category category = categoryRepository.findById(category_id).orElseThrow(IllegalArgumentException::new);
+    public CategoryResponseDto deleteCategory(Long category_id) {
+        Category category = categoryRepository.findById(category_id)
+                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
+        CategoryResponseDto categoryResponseDto = CategoryMapper.INSTANCE.toDto(category);
         categoryRepository.delete(category);
+        categoryResponseDto.setMessage("카테고리 삭제 성공");
+        return categoryResponseDto;
     }
 }
