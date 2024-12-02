@@ -155,7 +155,7 @@ public class ChatRoomService {
 
         Bid bid = null;
         if(post.isOffer()) {    // 고수가 작성한 게시글인 경우 (게시글로부터 채팅방이 파생되어야 함)
-            if(chatRoomRepository.existsByPostId(post.getId())) {
+            if(chatRoomRepository.existsByPostIdAndGosuId(post.getId(), chatRoomRequestDto.getGosuId())) {
                 // TODO: 존재하는 채팅방으로 들어가야 함
                 throw new CustomException(ErrorCode.DUPLICATE_CHAT_ROOM);
             }
@@ -166,7 +166,7 @@ public class ChatRoomService {
                     .orElseThrow(() -> new CustomException(ErrorCode.BID_NOT_FOUND));
 
             // 해당 입찰에 대한 채팅방이 이미 존재하는 경우
-            if(chatRoomRepository.existsByBidId(bid.getId())) {
+            if(chatRoomRepository.existsByBidIdAndGosuId(bid.getId(), chatRoomRequestDto.getGosuId())) {
                 // TODO: 존재하는 채팅방으로 들어가야 함
                 throw new CustomException(ErrorCode.DUPLICATE_CHAT_ROOM);
             }

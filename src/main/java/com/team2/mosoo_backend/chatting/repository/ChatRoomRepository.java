@@ -11,8 +11,8 @@ import java.time.LocalDateTime;
 
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
-    boolean existsByBidId(Long bidId);
-    boolean existsByPostId(Long postId);
+    boolean existsByBidIdAndGosuId(Long bidId, Long gosuId);
+    boolean existsByPostIdAndGosuId(Long postId, Long gosuId);
 
     @Query("SELECT c FROM ChatRoom c " +
                 "WHERE (c.gosuId = :id AND c.gosuDeletedAt IS null) " +

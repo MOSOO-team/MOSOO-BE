@@ -1,7 +1,6 @@
 package com.team2.mosoo_backend.chatting.controller;
 
 import com.team2.mosoo_backend.chatting.dto.*;
-import com.team2.mosoo_backend.chatting.service.ChatMessageService;
 import com.team2.mosoo_backend.chatting.service.ChatRoomService;
 import com.team2.mosoo_backend.config.swagger.ApiExceptionResponseExamples;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +23,6 @@ import static com.team2.mosoo_backend.exception.ErrorCode.*;
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
-    private final ChatMessageService chatMessageService;
 
     // 채팅방 전체 조회 (채팅 내역 조회)
     @GetMapping("/chatrooms")
@@ -38,23 +36,6 @@ public class ChatRoomController {
 
         ChatRoomResponseWrapperDto chatRoomResponseWrapperDto = chatRoomService.findAllChatRooms(page);
         return ResponseEntity.status(HttpStatus.OK).body(chatRoomResponseWrapperDto);
-    }
-
-    // 채팅방 단건 조회 (포함된 채팅 메세지 조회)
-    @GetMapping("/chatroom/{chatRoomId}")
-    @Operation(summary = "채팅방 단건 조회", description = "특정 채팅방 조회 (채팅 내역 조회)")
-    @ApiExceptionResponseExamples({USER_NOT_AUTHORIZED, CHAT_ROOM_NOT_FOUND})
-    /*
-        403 에러 : 유저 정보가 일치하지 않는 경우
-        404 에러 : 채팅방을 찾을 수 없는 경우
-    */
-    @ApiResponse(responseCode = "200", description = "채팅 내역 조회 성공",
-            content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ChatMessageResponseWrapperDto.class)))
-    public ResponseEntity<ChatMessageResponseWrapperDto> findChatRoom(@PathVariable("chatRoomId") Long chatRoomId) {
-
-        ChatMessageResponseWrapperDto chatMessageResponseWrapperDto = chatMessageService.findChatMessages(chatRoomId);
-        return ResponseEntity.status(HttpStatus.OK).body(chatMessageResponseWrapperDto);
     }
 
     // 채팅방 세부 정보 조회 (게시글, 입찰, 가격 정보 조회)
