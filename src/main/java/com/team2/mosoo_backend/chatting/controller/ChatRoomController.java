@@ -57,6 +57,40 @@ public class ChatRoomController {
         return ResponseEntity.status(HttpStatus.OK).body(chatMessageResponseWrapperDto);
     }
 
+    // 채팅방 세부 정보 조회 (게시글, 입찰, 가격 정보 조회)
+    @GetMapping("/chatroom/{chatRoomId}/info")
+    @Operation(summary = "채팅방 관련 정보 조회", description = "채팅방 관련 게시글 정보, 입찰 정보, 가격 조회")
+    @ApiExceptionResponseExamples({USER_NOT_AUTHORIZED, CHAT_ROOM_NOT_FOUND})
+    /*
+        403 에러 : 유저 정보가 일치하지 않는 경우
+        404 에러 : 채팅방을 찾을 수 없는 경우
+    */
+    @ApiResponse(responseCode = "200", description = "채팅방 관련 세부 정보 조회 성공",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ChatRoomInfoResponseDto.class)))
+    public ResponseEntity<ChatRoomInfoResponseDto> findChatRoomInfo(@PathVariable("chatRoomId") Long chatRoomId) {
+
+        ChatRoomInfoResponseDto chatRoomInfoResponseDto = chatRoomService.findChatRoomInfo(chatRoomId);
+        return ResponseEntity.status(HttpStatus.OK).body(chatRoomInfoResponseDto);
+    }
+
+    // 채팅방 상대방 정보 조회
+    @GetMapping("/chatroom/{chatRoomId}/user-info")
+    @Operation(summary = "채팅방 관련 정보 조회", description = "채팅방 관련 상대 정보 조회")
+    @ApiExceptionResponseExamples({USER_NOT_AUTHORIZED, CHAT_ROOM_NOT_FOUND})
+    /*
+        403 에러 : 유저 정보가 일치하지 않는 경우
+        404 에러 : 채팅방을 찾을 수 없는 경우
+    */
+    @ApiResponse(responseCode = "200", description = "채팅방 관련 상대 정보 조회 성공",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ChatRoomOpponentInfoResponseDto.class)))
+    public ResponseEntity<ChatRoomOpponentInfoResponseDto> findChatRoomOpponentInfo(@PathVariable("chatRoomId") Long chatRoomId) {
+
+        ChatRoomOpponentInfoResponseDto chatRoomOpponentInfoResponseDto = chatRoomService.findChatRoomOpponentInfo(chatRoomId);
+        return ResponseEntity.status(HttpStatus.OK).body(chatRoomOpponentInfoResponseDto);
+    }
+
     @PostMapping("/chatroom")
     @Operation(summary = "채팅방 생성", description = "유저가 고수와의 채팅방 생성")
     @ApiExceptionResponseExamples({USER_NOT_FOUND, POST_NOT_FOUND, BID_NOT_FOUND, DUPLICATE_CHAT_ROOM})
