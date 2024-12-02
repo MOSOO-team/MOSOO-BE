@@ -57,17 +57,17 @@ public class PostService {
 
     // 게시글 생성
     @Transactional
-    public CreatePostResponseDto createPost(long userId, long categoryId, CreatePostRequestDto createPostRequestDto, boolean isOffer) throws IOException {
+    public CreatePostResponseDto createPost(CreatePostRequestDto createPostRequestDto) throws IOException {
 
         Post post = postMapper.createPostRequestDtoToPost(createPostRequestDto);
-        Users user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+        Users user = userRepository.findById(createPostRequestDto.getUserId()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Category category = categoryRepository.findById(createPostRequestDto.getCategoryId()).orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
         // 연관관계 매핑
         post.setMapping(user, category);
 
         // 고수/ 일반 게시글 분류
-        post.setIsOffer(isOffer);
+        post.setIsOffer(createPostRequestDto.isOffer());
 
         // 게시글 상태 초기화
         post.setStatus(createPostRequestDto.getStatus());
@@ -85,7 +85,7 @@ public class PostService {
     // 고수 / 일반 게시글 조회 + 페이지네이션
     public PostListResponseDto getPostsByIsOffer(int page, boolean isOffer) {
 
-        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(page - 1, 9, Sort.by("id").descending());
 
         Page<Post> posts = postRepository.findByIsOffer(pageable, isOffer);
 
@@ -139,5 +139,12 @@ public class PostService {
         post.setStatus(updatePostStatusRequestDto.getStatus());
 
         return postMapper.postToPostResponseDto(postRepository.save(post));
+    }
+
+    //단건 상세 조회
+    public PostResponseDto getPostById(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+
+        return postMapper.postToPostResponseDto(post);
     }
 }
