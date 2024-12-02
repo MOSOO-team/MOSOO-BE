@@ -13,6 +13,7 @@ public interface CategoryMapper {
 
     @Mapping(source = "parent_id", target = "parent.category_id")
     @Mapping(target = "level", ignore = true) // level 매핑 제외
+    @Mapping(target = "icon", ignore = true) // icon 매핑 제외
     Category toEntity(CategoryRequestDto request);
 
     @Mapping(source = "parent.category_id", target = "parent_id")

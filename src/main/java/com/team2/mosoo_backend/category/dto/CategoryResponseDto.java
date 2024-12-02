@@ -10,7 +10,7 @@ public class CategoryResponseDto {
     private Long category_id;
     private String name;
     private String description;
-    private String icon; // url을 전달할 예정
+    private String icon;
     private int level;
     private Long parent_id;
     private List<CategoryResponseDto> children = new ArrayList<>();;

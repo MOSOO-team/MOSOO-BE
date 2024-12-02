@@ -6,7 +6,6 @@ import lombok.Data;
 public class CategoryRequestDto {
     private String name;
     private String description;
-    private String icon; // MultipartFile로 받을 예정
     private Long parent_id;
     private int level;
 }
