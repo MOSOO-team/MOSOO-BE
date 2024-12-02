@@ -1,10 +1,9 @@
 package com.team2.mosoo_backend.post.service;
 
 
-import com.team2.mosoo_backend.post.dto.CreatePostRequestDto;
-import com.team2.mosoo_backend.post.dto.CreatePostResponseDto;
-import com.team2.mosoo_backend.post.dto.PostListResponseDto;
-import com.team2.mosoo_backend.post.dto.PostResponseDto;
+import com.team2.mosoo_backend.exception.CustomException;
+import com.team2.mosoo_backend.exception.ErrorCode;
+import com.team2.mosoo_backend.post.dto.*;
 import com.team2.mosoo_backend.post.entity.Post;
 import com.team2.mosoo_backend.post.mapper.PostMapper;
 import com.team2.mosoo_backend.post.repository.PostRepository;
@@ -36,10 +35,10 @@ public class PostService {
 
     }
 
-    public CreatePostResponseDto createPost(CreatePostRequestDto createPostRequestDto, boolean isOffer) {
+    public CreatePostResponseDto createPost(CreatePostRequestDto createPostRequestDto) {
 
         Post post = postMapper.createPostRequestDtoToPost(createPostRequestDto);
-        post.setIsOffer(isOffer);
+        post.setIsOffer(createPostRequestDto.isOffer());
 
         CreatePostResponseDto createPostResponseDto = postMapper.postToCreatePostResponseDto(postRepository.save(post));
 
@@ -57,5 +56,24 @@ public class PostService {
         }
 
         return new PostListResponseDto(postResponseDtoList);
+    }
+
+    public PostResponseDto updatePost(PostUpdateRequestDto postUpdateRequestDto) {
+        Post post = postRepository.findById(postUpdateRequestDto.getId()).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        Post savedPost = update(post, postUpdateRequestDto);
+
+        return postMapper.postToPostResponseDto(savedPost);
+    }
+
+    private Post update(Post existPost, PostUpdateRequestDto postUpdateRequestDto) {
+        existPost.setTitle(postUpdateRequestDto.getTitle());
+        existPost.setDescription(postUpdateRequestDto.getDescription());
+        existPost.setPrice(postUpdateRequestDto.getPrice());
+        existPost.setDuration(postUpdateRequestDto.getDuration());
+        return postRepository.save(existPost);
+    }
+
+    public void deletePost(Long id) {
+        postRepository.deleteById(id);
     }
 }

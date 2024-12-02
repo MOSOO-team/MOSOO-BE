@@ -1,20 +1,15 @@
 package com.team2.mosoo_backend.post.controller;
 
 
-import com.team2.mosoo_backend.post.dto.CreatePostRequestDto;
-import com.team2.mosoo_backend.post.dto.CreatePostResponseDto;
-import com.team2.mosoo_backend.post.dto.PostListResponseDto;
-import com.team2.mosoo_backend.post.entity.Post;
+import com.team2.mosoo_backend.post.dto.*;
 import com.team2.mosoo_backend.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api")
+@RequestMapping("/api/post")
 public class PostController {
 
     private final PostService postService;
@@ -28,35 +23,33 @@ public class PostController {
         return ResponseEntity.status(200).body(postList);
     }
 
-    @PostMapping("/createOfferPost")
-    public ResponseEntity<CreatePostResponseDto> createOfferPost(@RequestBody CreatePostRequestDto createPostRequestDto) {
-
-        boolean isOffer = true;
-        CreatePostResponseDto createPost = postService.createPost(createPostRequestDto, isOffer);
-
-        return ResponseEntity.status(201).body(createPost);
-    }
-
-    @PostMapping("/createRequestPost")
+    @PostMapping("/")
     public ResponseEntity<CreatePostResponseDto> createRequestPost(@RequestBody CreatePostRequestDto createPostRequestDto) {
 
-        boolean isOffer = false;
-        CreatePostResponseDto createPost = postService.createPost(createPostRequestDto, isOffer);
+        CreatePostResponseDto createPost = postService.createPost(createPostRequestDto);
 
         return ResponseEntity.status(201).body(createPost);
     }
 
-    @GetMapping("/offerPosts")
-    public ResponseEntity<PostListResponseDto> getOfferPosts() {
-        PostListResponseDto postList = postService.getPostsByIsOffer(true);
+    @GetMapping("/")
+    public ResponseEntity<PostListResponseDto> getOfferPosts(@RequestParam(value = "isOffer") boolean isOffer) {
+        PostListResponseDto postList = postService.getPostsByIsOffer(isOffer);
 
         return ResponseEntity.status(200).body(postList);
     }
 
-    @GetMapping("/requestPosts")
-    public ResponseEntity<PostListResponseDto> getRequestPosts() {
-        PostListResponseDto postList = postService.getPostsByIsOffer(false);
+    @PutMapping("/")
+    public ResponseEntity<PostResponseDto> updatePost(@RequestBody PostUpdateRequestDto postUpdateRequestDto) {
+        PostResponseDto postResponseDto = postService.updatePost(postUpdateRequestDto);
 
-        return ResponseEntity.status(200).body(postList);
+        return ResponseEntity.status(201).body(postResponseDto);
     }
+
+    @DeleteMapping("/")
+    public ResponseEntity<String> deletePost(@RequestParam(value = "id") Long id) {
+        postService.deletePost(id);
+        return ResponseEntity.status(204).build();
+    }
+
+
 }
