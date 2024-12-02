@@ -5,6 +5,7 @@ import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 
 @Configuration
 @EnableWebSocketMessageBroker
@@ -26,5 +27,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
         // 메시지를 발행(송신)하는 엔드포인트
         registry.setApplicationDestinationPrefixes("/pub");
+    }
+
+    @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+        registration.setMessageSizeLimit(128 * 1024 * 1024); // 메시지 크기를 128MB로 설정
     }
 }

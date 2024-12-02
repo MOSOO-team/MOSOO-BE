@@ -14,9 +14,6 @@ public interface PostMapper {
 
     PostResponseDto postToPostResponseDto(Post post);
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", ignore = true)
-    @Mapping(target = "updatedAt", ignore = true)
     Post createPostRequestDtoToPost(CreatePostRequestDto CreatePostRequestDto);
 
     CreatePostResponseDto postToCreatePostResponseDto(Post post);
