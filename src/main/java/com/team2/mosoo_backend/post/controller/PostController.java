@@ -25,15 +25,17 @@ public class PostController {
         return ResponseEntity.status(200).body(postList);
     }
 
-    @PostMapping("/")
-    public ResponseEntity<CreatePostResponseDto> createRequestPost(@RequestBody CreatePostRequestDto createPostRequestDto) {
+    @PostMapping("")
+    public ResponseEntity<CreatePostResponseDto> createRequestPost(
+            @RequestBody CreatePostRequestDto createPostRequestDto,
+            @RequestParam(value = "isOffer") boolean isOffer) {
 
-        CreatePostResponseDto createPost = postService.createPost(createPostRequestDto);
+        CreatePostResponseDto createPost = postService.createPost(createPostRequestDto, isOffer);
 
         return ResponseEntity.status(201).body(createPost);
     }
 
-    @GetMapping("/")
+    @GetMapping("")
     public ResponseEntity<PostListResponseDto> getOfferPosts(
             @RequestParam(required = false, value = "page", defaultValue = "1") @Positive int page,
             @RequestParam(value = "isOffer") boolean isOffer) {
@@ -43,7 +45,7 @@ public class PostController {
         return ResponseEntity.status(200).body(postList);
     }
 
-    @PutMapping("/")
+    @PutMapping("")
     public ResponseEntity<PostResponseDto> updatePost(@RequestBody PostUpdateRequestDto postUpdateRequestDto) {
         PostResponseDto postResponseDto = postService.updatePost(postUpdateRequestDto);
 

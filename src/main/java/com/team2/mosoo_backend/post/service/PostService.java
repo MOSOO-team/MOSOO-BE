@@ -30,7 +30,7 @@ public class PostService {
 
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("id").descending());
 
-        Page<Post> posts = postRepository.findById(pageable, 1L);
+        Page<Post> posts = postRepository.findAll(pageable);
 
         List<PostResponseDto> postResponseDtoList = new ArrayList<>();
 
@@ -45,10 +45,10 @@ public class PostService {
     }
 
     @Transactional
-    public CreatePostResponseDto createPost(CreatePostRequestDto createPostRequestDto) {
+    public CreatePostResponseDto createPost(CreatePostRequestDto createPostRequestDto, boolean isOffer) {
 
         Post post = postMapper.createPostRequestDtoToPost(createPostRequestDto);
-        post.setIsOffer(createPostRequestDto.isOffer());
+        post.setIsOffer(isOffer);
 
         return postMapper.postToCreatePostResponseDto(postRepository.save(post));
     }
