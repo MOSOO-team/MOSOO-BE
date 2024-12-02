@@ -44,21 +44,21 @@ public class CategoryController {
 
     // 하위 카테고리 조회
     @GetMapping("{parent_id}")
-    public ResponseEntity<List<SubCategoryResponseDto>> readSubCategories(@PathVariable Long parent_id) {
+    public ResponseEntity<List<SubCategoryResponseDto>> readSubCategories(@PathVariable("parent_id") Long parent_id) {
         List<SubCategoryResponseDto> categories = categoryService.readSubCategories(parent_id);
         return ResponseEntity.status(HttpStatus.OK).body(categories);
     }
 
     // 카테고리 수정
     @PutMapping("/{category_id}")
-    public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable Long category_id, @RequestBody CategoryRequestDto categoryRequestDto){
+    public ResponseEntity<CategoryResponseDto> updateCategory(@PathVariable("category_id") Long category_id, @RequestBody CategoryRequestDto categoryRequestDto){
         CategoryResponseDto categoryResponseDto = categoryService.updateCategory(category_id, categoryRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(categoryResponseDto);
     }
     
     // 카테고리 삭제
     @DeleteMapping("/{category_id}")
-    public ResponseEntity<CategoryResponseDto> deleteCategory(@PathVariable Long category_id){
+    public ResponseEntity<CategoryResponseDto> deleteCategory(@PathVariable("category_id") Long category_id){
         CategoryResponseDto categoryResponseDto = categoryService.deleteCategory(category_id);
         return ResponseEntity.status(HttpStatus.OK).body(categoryResponseDto);
     }
