@@ -10,5 +10,5 @@ import java.util.Optional;
 @Repository
 public interface UserInfoRepository extends JpaRepository<UsersInfo, Long> {
     // Users 엔티티에 있는 userId 값을 찾아서 반환
-    Optional<UsersInfo> findByUsers_UserId(Long userId);
+    Optional<UsersInfo> findByUsersId(Long userId);
 }
