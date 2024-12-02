@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/upload")
@@ -26,12 +27,13 @@ public class S3BucketController {
     @PostMapping
     public ResponseEntity<String> uploadFile(@RequestParam("file") MultipartFile file) {
         try {
-            String fileName = file.getOriginalFilename();
-            String fileUrl= "https://" + bucket + "/test" +fileName;
-            ObjectMetadata metadata= new ObjectMetadata();
+            // UUID를 활용하여 고유한 파일 이름 생성
+            String fileName = "test/" + UUID.randomUUID().toString() + "-" + file.getOriginalFilename();
+            ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentType(file.getContentType());
             metadata.setContentLength(file.getSize());
             amazonS3Client.putObject(bucket,fileName,file.getInputStream(),metadata);
+            String fileUrl = amazonS3Client.getUrl(bucket, fileName).toString();
             return ResponseEntity.ok(fileUrl);
         } catch (IOException e) {
             e.printStackTrace();
