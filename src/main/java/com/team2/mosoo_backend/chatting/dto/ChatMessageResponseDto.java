@@ -1,5 +1,6 @@
 package com.team2.mosoo_backend.chatting.dto;
 
+import com.team2.mosoo_backend.chatting.entity.ChatMessageType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,4 +15,6 @@ public class ChatMessageResponseDto {
     private String userFullName;
     private String content;
     private LocalDateTime createdAt;
+    private ChatMessageType type;
+
 }
