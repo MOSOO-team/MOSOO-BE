@@ -29,4 +29,12 @@ public class Order extends BaseEntity {
 
     private String method;
 
+    public void setPrice(int price) {
+        this.price = price;
+    }
+
+    public void setStatus(String status) {
+        this.status = Status.valueOf(status);
+    }
+
 }
