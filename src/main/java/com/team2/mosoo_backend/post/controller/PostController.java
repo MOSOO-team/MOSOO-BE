@@ -1,12 +1,16 @@
 package com.team2.mosoo_backend.post.controller;
 
 
+import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.post.dto.*;
 import com.team2.mosoo_backend.post.service.PostService;
 import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
@@ -25,10 +29,10 @@ public class PostController {
         return ResponseEntity.status(200).body(postList);
     }
 
-    @PostMapping("")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CreatePostResponseDto> createRequestPost(
-            @RequestBody CreatePostRequestDto createPostRequestDto,
-            @RequestParam(value = "isOffer") boolean isOffer) {
+            @ModelAttribute CreatePostRequestDto createPostRequestDto,
+            @RequestParam(value = "isOffer") boolean isOffer) throws IOException {
 
         CreatePostResponseDto createPost = postService.createPost(createPostRequestDto, isOffer);
 

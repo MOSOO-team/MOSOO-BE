@@ -11,6 +11,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -47,6 +49,11 @@ public class Post {
     @Column(name = "is_expired", nullable = false)
     private boolean isExpired;
 
+    @ElementCollection
+    @CollectionTable(name = "post_img_urls", joinColumns = @JoinColumn(name = "post_id"))
+    @Column(name = "post_img_url")
+    private List<String> ImgUrls = new ArrayList<>();
+
 //    todo: 연관 관계 추가 (카테고리 + 작성자)
 
     @CreatedDate
@@ -75,6 +82,18 @@ public class Post {
 
     public void setIsOffer(boolean isOffer) {
         this.isOffer = isOffer;
+    }
+
+    public void setIsSelected(boolean isSelected) {
+        this.isSelected = isSelected;
+    }
+
+    public void setIsExpired(boolean isExpired) {
+        this.isExpired = isExpired;
+    }
+
+    public void setImgUrls(List<String> ImgUrls) {
+        this.ImgUrls = ImgUrls;
     }
 
 
