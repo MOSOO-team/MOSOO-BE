@@ -5,14 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class CreatePostRequestDto {
 
     private String title;
     private String description;
     private int price;
     private String duration;
-
-    private boolean isOffer;
 }
