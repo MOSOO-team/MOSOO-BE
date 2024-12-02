@@ -14,7 +14,7 @@ import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
 //import com.team2.mosoo_backend.user.entity.User;
 //import com.team2.mosoo_backend.user.repository.UserRepository;
-import com.team2.mosoo_backend.user.entity.User;
+//import com.team2.mosoo_backend.user.entity.User;
 import com.team2.mosoo_backend.utils.s3bucket.service.S3BucketService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
