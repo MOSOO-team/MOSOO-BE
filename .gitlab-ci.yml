@@ -13,7 +13,7 @@ build:
     paths:
       - build/libs/*.jar
   only:
-    - feat/category/#26/common
+    - review
 
 # Test Stage: 테스트 실행
 test:
@@ -22,7 +22,7 @@ test:
   script:
     - gradle test
   only:
-    - feat/category/#26/common
+    - review
 
 # Deploy Stage: Docker로 애플리케이션 배포
 deploy:
@@ -57,4 +57,4 @@ deploy:
     - scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml $GCP_USER@$GCP_VM_IP:/path/to/your/project/
     - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $GCP_USER@$GCP_VM_IP "cd /path/to/your/project && docker-compose up -d"
   only:
-    - feat/category/#26/common
+    - review
