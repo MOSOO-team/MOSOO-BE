@@ -4,7 +4,6 @@ import com.team2.mosoo_backend.chatting.entity.ChatRoom;
 import com.team2.mosoo_backend.chatting.repository.ChatRoomRepository;
 import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
-import com.team2.mosoo_backend.user.entity.UserRole;
 import com.team2.mosoo_backend.user.entity.Users;
 import com.team2.mosoo_backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -37,13 +36,14 @@ public class ChatRoomUtils {
 
         // 채팅 상대 이름 저장
         String opponentFullName;
+
         // 로그인한 유저가 고수인 경우 (상대방이 일반 유저인 경우)
         if(loginUser.getId().equals(chatRoom.getGosuId())) {
             Users user = userRepository.findById(chatRoom.getUserId()).orElse(null);
-            opponentFullName = ( (user != null) ? user.getFullname() : "찾을 수 없는 유저");
+            opponentFullName = ( (user != null) ? user.getFullName() : "찾을 수 없는 유저");
         } else {    // 로그인한 유저가 일반 유저인 경우 (상대방이 고수인 경우)
             Users gosu = userRepository.findById(chatRoom.getGosuId()).orElse(null);
-            opponentFullName = ( (gosu != null) ? gosu.getFullname() : "찾을 수 없는 고수");
+            opponentFullName = ( (gosu != null) ? gosu.getFullName() : "찾을 수 없는 고수");
         }
 
         return opponentFullName;
