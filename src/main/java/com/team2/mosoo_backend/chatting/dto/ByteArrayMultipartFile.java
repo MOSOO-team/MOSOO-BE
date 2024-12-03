@@ -14,7 +14,6 @@ public class ByteArrayMultipartFile implements MultipartFile {
 
     private final String name;
     private final byte[] content;
-    private final String contentType; // 파일의 MIME 타입
 
     @Override
     public String getName() {
@@ -27,7 +26,7 @@ public class ByteArrayMultipartFile implements MultipartFile {
     }
 
     @Override
-    public String getContentType() { return contentType; }
+    public String getContentType() { return ""; }
 
     @Override
     public boolean isEmpty() {
