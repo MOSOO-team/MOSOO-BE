@@ -3,7 +3,7 @@ package com.team2.mosoo_backend.chatting.dto;
 import com.team2.mosoo_backend.chatting.entity.ChatMessageType;
 import lombok.*;
 
-@Getter @Setter
+@Data @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChatMessageRequestDto {
