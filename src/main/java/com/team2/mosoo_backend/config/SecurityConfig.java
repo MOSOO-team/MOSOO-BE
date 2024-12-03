@@ -6,18 +6,20 @@ import com.team2.mosoo_backend.oath.service.CustomOAuth2UserService;
 import com.team2.mosoo_backend.user.service.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.List;
 
@@ -42,13 +44,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/**").permitAll() // 공개 API
                         .anyRequest().authenticated() // 그 외 요청은 인증 필요
-                ).cors(cors -> cors.configurationSource(request -> {
-                    var config = new CorsConfiguration();
-                    config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH")); // 허용할 메서드
-                    config.setAllowCredentials(true); // 인증 정보 포함 여부
-                    config.setAllowedHeaders(List.of("*")); // 허용할 헤더
-                    return config;
-                }))
+                )
+                .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 설정
                 .sessionManagement(session -> // 세션 정책을 Stateless로 적용
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
@@ -75,6 +72,23 @@ public class SecurityConfig {
     }
 
 
+    @Value("${DEPLOY_FRONT_URL}")
+    private String deployFrontUrl; // 필드로 주입
+
+    // CORS 설정을 위한 Bean 정의
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:3000", deployFrontUrl)); // 허용할 출처
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH")); // 허용할 메서드
+        configuration.setAllowCredentials(true); // 인증 정보 포함 여부
+        configuration.setAllowedHeaders(List.of("*")); // 허용할 헤더
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration); // 모든 경로에 대해 CORS 설정
+        return source;
+    }
 
 
     @Bean
