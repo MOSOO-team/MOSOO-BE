@@ -38,23 +38,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth
-                                .anyRequest().permitAll());
-        return http.build();
-    }
-
-    @Bean
-    public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring()
-                .requestMatchers(toH2Console())
-                .requestMatchers("/static/")
-                .requestMatchers("/");
-    }
-
-
-    protected void configure(HttpSecurity http) throws Exception {
-        http
                 .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/**").permitAll() // 공개 API
@@ -69,7 +52,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> // 세션 정책을 Stateless로 적용
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-                 // Oauth2 로그인 설정
+                // Oauth2 로그인 설정
                 .oauth2Login(oauth2Login -> oauth2Login
                         .loginPage("/login") // 커스텀 로그인 페이지 경로 설정
                         .authorizationEndpoint(authorizationEndpoint ->
@@ -79,10 +62,19 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfoEndpoint ->
                                 userInfoEndpoint.userService(customOAuth2UserService))// 쿠키 기반 OAuth2 요청 저장소
                 )
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .build();
-
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+        return http.build();
     }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return (web) -> web.ignoring()
+                .requestMatchers(toH2Console())
+                .requestMatchers("/static/")
+                .requestMatchers("/");
+    }
+
+
 
 
     @Bean

@@ -13,5 +13,5 @@ public interface UserInfoRepository extends JpaRepository<UserInfo, Long> {
     // Users 엔티티에 있는 userId 값을 찾아서 반환
     Optional<UserInfo> findByUsersId(Long userId);
 
-    Optional<UserInfo> findByUser(Users users);
+    Optional<UserInfo> findByUsers(Users users);
 }

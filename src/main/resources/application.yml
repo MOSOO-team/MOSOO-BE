@@ -33,5 +33,16 @@ spring:
     import:
       - s3bucket.yml
 
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+
 jwt:
   secret: KC2XjwwyNLVedIxmh1ys3cOxp5vImhoEDygJdFTcWd3NE3H3pAVnEhxAyKai0oOAwgxkvnb1xnb9dicv8gisd3sAfB9aVd0

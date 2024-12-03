@@ -18,7 +18,7 @@ public class UserInfo {
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private Users users;
+    private Users users; // Users 엔티티와의 관계
 
     private String address;
     private Boolean isGosu;
