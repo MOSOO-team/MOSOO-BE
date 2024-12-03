@@ -15,7 +15,7 @@ services:
       DEPLOY_FRONT_URL: ${DEPLOY_FRONT_URL}
 
   frontend:
-    image: mosoo_react
+    image: mosoo_react:latest
     container_name: mosoo_react
     ports:
       - "80:80"
