@@ -8,6 +8,7 @@ import com.team2.mosoo_backend.chatting.mapper.ChatMessageMapper;
 import com.team2.mosoo_backend.chatting.repository.ChatMessageQueryRepository;
 import com.team2.mosoo_backend.chatting.repository.ChatMessageRepository;
 import com.team2.mosoo_backend.chatting.repository.ChatRoomRepository;
+import com.team2.mosoo_backend.config.SecurityUtil;
 import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
 import com.team2.mosoo_backend.user.entity.Users;
@@ -34,10 +35,11 @@ public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageMapper chatMessageMapper;
-    private final UserRepository userRepository;
+    private final SecurityUtil securityUtil;
     private final S3BucketService s3BucketService;
     private final ChatRoomUtils chatRoomUtils;
     private final ChatMessageQueryRepository chatMessageQueryRepository;
+    private final UserRepository userRepository;
 
     // 채팅 저장 메서드
     @Transactional
@@ -115,7 +117,8 @@ public class ChatMessageService {
     public ChatMessageResponseWrapperDto findChatMessages(Long chatRoomId, Long index) {
 
         // 로그인 유저 정보 가져옴
-        Users loginUser = getLoginUser();
+        Long loginUserId = getAuthenticatedMemberId();
+        Users loginUser = userRepository.findById(loginUserId).get();   // getAuthenticatedMemberId() 호출 시 예외 처리 완료
 
         // 채팅방 접근 권한 검증
         ChatRoom foundChatRoom = chatRoomUtils.validateChatRoomOwnership(chatRoomId, loginUser);
@@ -158,8 +161,13 @@ public class ChatMessageService {
         return new ByteArrayMultipartFile(fileName, fileData, mimeType);
     }
 
-    // TODO: USER 정보 가져오기 확인 + 권한 확인
-    public Users getLoginUser() {
-        return userRepository.findById(4L).orElse(null);
+    // 사용자의 권환 확인 + userId 가져오는 메서드
+    // 따로 분리한 이유 : RuntimeException이 아닌 커스텀 예외 처리 위해서
+    private Long getAuthenticatedMemberId() {
+        try {
+            return securityUtil.getCurrentMemberId();
+        } catch (RuntimeException e) {
+            throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
+        }
     }
 }

@@ -7,12 +7,15 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.time.LocalDateTime;
+import java.util.Optional;
 
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     boolean existsByBidIdAndGosuId(Long bidId, Long gosuId);
     boolean existsByPostIdAndGosuId(Long postId, Long gosuId);
+
+    Optional<ChatRoom> findByBidIdAndGosuId(Long bidId, Long gosuId);
+    Optional<ChatRoom> findByPostIdAndGosuId(Long postId, Long gosuId);
 
     @Query("SELECT c FROM ChatRoom c " +
                 "WHERE (c.gosuId = :id AND c.gosuDeletedAt IS null) " +

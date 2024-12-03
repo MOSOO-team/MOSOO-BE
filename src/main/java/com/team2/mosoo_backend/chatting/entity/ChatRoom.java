@@ -64,4 +64,10 @@ public class ChatRoom extends BaseEntity {
             this.userDeletedAt = LocalDateTime.now();
         }
     }
+
+    // 채팅방 재생성 (나갔지만 다시 생성하는 경우)
+    public void reCreate() {
+        this.userDeletedAt = null;
+        this.gosuDeletedAt = null;
+    }
 }
