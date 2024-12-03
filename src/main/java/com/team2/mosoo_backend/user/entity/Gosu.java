@@ -14,9 +14,6 @@ public class Gosu {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull
-    @Column(name = "technology_provider_id", nullable = false)
-    private Long technologyProviderId; // 기술 제공 ID
 
     @NotNull
     @Column(name = "user_info_id", nullable = false)
