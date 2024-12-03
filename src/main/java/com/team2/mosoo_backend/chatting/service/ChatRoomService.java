@@ -8,6 +8,7 @@ import com.team2.mosoo_backend.chatting.dto.*;
 import com.team2.mosoo_backend.chatting.entity.ChatMessage;
 import com.team2.mosoo_backend.chatting.entity.ChatMessageType;
 import com.team2.mosoo_backend.chatting.entity.ChatRoom;
+import com.team2.mosoo_backend.chatting.mapper.ChatMessageMapper;
 import com.team2.mosoo_backend.chatting.mapper.ChatRoomMapper;
 import com.team2.mosoo_backend.chatting.repository.ChatMessageRepository;
 import com.team2.mosoo_backend.chatting.repository.ChatRoomRepository;
@@ -43,6 +44,7 @@ public class ChatRoomService {
     private final PostMapper postMapper;
     private final BidMapper bidMapper;
     private final ChatRoomUtils chatRoomUtils;
+    private final ChatMessageMapper chatMessageMapper;
 
     // 채팅방 목록 조회 메서드
     public ChatRoomResponseWrapperDto findAllChatRooms(int page) {
@@ -76,14 +78,14 @@ public class ChatRoomService {
                     .orElse(null);
 
             if(chatMessage != null) {
-                if(chatMessage.getType() == ChatMessageType.MESSAGE) {      // 메시지 타입이 메시지 인 경우: 가장 최근 채팅을 메시지 내용으로 설정
-                    dto.setLastChatMessage(chatMessage.getContent());
-                } else if(chatMessage.getType() == ChatMessageType.IMAGE) { // 메시지 타입이 이미지 인 경우: 가장 최근 채팅을 "이미지"로 설정
+                if(chatMessage.getType() == ChatMessageType.IMAGE) { // 메시지 타입이 이미지 인 경우: 가장 최근 채팅을 "이미지"로 설정
                     dto.setLastChatMessage("이미지");
                 } else if(chatMessage.getType() == ChatMessageType.VIDEO) { // 메시지 타입이 동영상 인 경우: 가장 최근 채팅을 "동영상"으로 설정
                     dto.setLastChatMessage("동영상");
-                } else {                                                    // 메시지 타입이 파일 인 경우: 가장 최근 채팅을 "파일"로 설정
+                } else if(chatMessage.getType() == ChatMessageType.FILE) { // 메시지 타입이 파일 인 경우: 가장 최근 채팅을 "파일"로 설정
                     dto.setLastChatMessage("파일");
+                } else {    // 메시지 타입이 메시지 인 경우: 가장 최근 채팅을 메시지 내용으로 설정
+                    dto.setLastChatMessage(chatMessage.getContent());
                 }
 
                 // 가장 마지막 채팅 시간 설정
@@ -146,7 +148,7 @@ public class ChatRoomService {
     public ChatRoomCreateResponseDto createChatRoom(ChatRoomRequestDto chatRoomRequestDto) {
 
         // 고수 정보 검증, 고수 유저가 존재하지 않으면 404 에러 반환
-        userRepository.findById(chatRoomRequestDto.getGosuId())
+        Users gosu = userRepository.findById(chatRoomRequestDto.getGosuId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 게시글 정보 가져옴, 존재하지 않으면 404 에러 반환
@@ -155,9 +157,12 @@ public class ChatRoomService {
 
         Bid bid = null;
         if(post.isOffer()) {    // 고수가 작성한 게시글인 경우 (게시글로부터 채팅방이 파생되어야 함)
+
+            // 해당 게시글에 대한 채팅방이 이미 존재하는 경우
             if(chatRoomRepository.existsByPostIdAndGosuId(post.getId(), chatRoomRequestDto.getGosuId())) {
-                // TODO: 존재하는 채팅방으로 들어가야 함
-                throw new CustomException(ErrorCode.DUPLICATE_CHAT_ROOM);
+                ChatRoom existChatRoom = chatRoomRepository.findByPostIdAndGosuId(post.getId(), chatRoomRequestDto.getGosuId()).get();
+                existChatRoom.reCreate();
+                return new ChatRoomCreateResponseDto(existChatRoom.getId());
             }
         } else { // 유저가 작성한 게시글인 경우 (입찰로부터 채팅방이 파생되어야 함)
 
@@ -167,8 +172,9 @@ public class ChatRoomService {
 
             // 해당 입찰에 대한 채팅방이 이미 존재하는 경우
             if(chatRoomRepository.existsByBidIdAndGosuId(bid.getId(), chatRoomRequestDto.getGosuId())) {
-                // TODO: 존재하는 채팅방으로 들어가야 함
-                throw new CustomException(ErrorCode.DUPLICATE_CHAT_ROOM);
+                ChatRoom existChatRoom = chatRoomRepository.findByBidIdAndGosuId(bid.getId(), chatRoomRequestDto.getGosuId()).get();
+                existChatRoom.reCreate();
+                return new ChatRoomCreateResponseDto(existChatRoom.getId());
             }
         }
 
@@ -185,6 +191,18 @@ public class ChatRoomService {
         chatRoom.setPrice( (bid != null) ? bid.getPrice() : post.getPrice());
 
         ChatRoom savedChatRoom = chatRoomRepository.save(chatRoom);
+
+        // 채팅방 입장 메세지 생성
+        ChatMessage userEnterChatMessage = chatMessageMapper.toEntity(ChatMessageRequestDto.builder()
+                .sourceUserId(getLoginUser().getId()).type(ChatMessageType.ENTER).content(getLoginUser().getFullname() + " 님이 입장했습니다.").build());
+        ChatMessage gosuEnterChatMessage = chatMessageMapper.toEntity(ChatMessageRequestDto.builder()
+                .sourceUserId(chatRoom.getGosuId()).type(ChatMessageType.ENTER).content(gosu.getFullname() + " 님이 입장했습니다.").build());
+
+        userEnterChatMessage.setChatRoom(savedChatRoom);
+        gosuEnterChatMessage.setChatRoom(savedChatRoom);
+
+        chatMessageRepository.save(userEnterChatMessage);
+        chatMessageRepository.save(gosuEnterChatMessage);
 
         return new ChatRoomCreateResponseDto(savedChatRoom.getId());
     }
@@ -215,6 +233,15 @@ public class ChatRoomService {
         // USER의 고수 여부 포함하여 채팅방 나가기
         chatRoom.quitChatRoom((loginUser.getRole() == UserRole.GOSU));
 
+        // TODO: 바로 새로고침 되게
+        // 채팅방 퇴장 메세지 생성
+        ChatMessageRequestDto chatMessageRequestDto = ChatMessageRequestDto.builder()
+                .sourceUserId(loginUser.getId())
+                .type(ChatMessageType.QUIT)
+                .content(loginUser.getFullname() + " 님이 채팅방을 나갔습니다.").build();
+        ChatMessage quitChatMessage = chatMessageMapper.toEntity(chatMessageRequestDto);
+        quitChatMessage.setChatRoom(chatRoom);
+        chatMessageRepository.save(quitChatMessage);
         return new ChatRoomDeleteResponseDto(chatRoomId);
     }
 
