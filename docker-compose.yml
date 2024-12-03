@@ -1,10 +1,9 @@
-# ./docker-compose.yml
 version: "3"
 services:
   backend:
-    build: ./spring # 루트 디렉토리의 Dockerfile 을 실행
-    image: mosoo_spring # 이미지 이름을 지정
-    container_name: mosoo_spring  # 컨테이너 이름 지정
+    build: .
+    image: ${DOCKER_USER}/mosoo_spring
+    container_name: mosoo_spring
     ports:
       - 8080:8080
     environment:
@@ -14,9 +13,11 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       DEPLOY_FRONT_URL: ${DEPLOY_FRONT_URL}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+
   frontend:
-    build: ./react
-    image: mosoo_react
+    image: ${DOCKER_USER}/mosoo_react:latest
     container_name: mosoo_react
     ports:
       - "80:80"
