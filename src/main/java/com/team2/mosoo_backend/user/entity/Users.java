@@ -1,106 +1,72 @@
 package com.team2.mosoo_backend.user.entity;
 
-
-import com.team2.mosoo_backend.common.entity.BaseEntity;
-import com.team2.mosoo_backend.user.dto.response.UserDeleteResponseDto;
-import com.team2.mosoo_backend.user.dto.response.UserResponseDto;
-import com.team2.mosoo_backend.user.dto.response.UsersInfoResponseDto;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@SuperBuilder(toBuilder = true)
 @NoArgsConstructor
-@AllArgsConstructor
-@SuperBuilder
-public class Users extends BaseEntity implements UserDetails {
+@SQLDelete(sql = "UPDATE member SET is_deleted = true WHERE member_id = ?")
+@Where(clause = "is_deleted = false")
+@EntityListeners(AuditingEntityListener.class)
+public class Users {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "user_id")
+    @Column(name = "user_id", unique = true, nullable = false)
     private Long id;
 
-    @Column(name = "fullname", nullable = false)
-    private String fullname; // 사용자 이름
-
-    @Column(name = "username", nullable = false, unique = true)
-    private String username; // 사용자 로그인 계정
-
-    @Column(name = "email", nullable = false)
+    @Column(nullable = false)
     private String email;
 
-    @Column(name = "password", nullable = false)
     private String password;
 
-    @Builder.Default
-    @Column(name = "is_deleted")
-    private boolean isDeleted = false;
 
-    @Column(name = "delete_reason")
-    private String deletedReason;
+    @Column(nullable = false)
+    private String fullName;
 
-    @Column(name = "role")
+
     @Enumerated(EnumType.STRING)
-    private UserRole role;
+    private Authority authority;
 
-    @Column(name = "provider")
-    @Enumerated(EnumType.STRING)
-    private Provider provider;
+    private boolean isDeleted;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "users", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UsersInfo> usersInfoList = new ArrayList<>();
+    @CreatedDate
+    @Column(name = "created_at", updatable = false)
+    private LocalDateTime createdAt;
 
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() { // Spring Sercurity에서 사용자 권한을 반환
-        return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
+
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
     }
 
-    @Override // 사용자 ID 반환 (고유 값)
-    public String getUsername() { return username; }
+    public void setPassword(String password) { this.password = password; }
 
-    @Override // 사용자 비밀번호 반환
-    public String getPassword() { return password; }
 
-    @Override // 계정 만료 여부
-    public boolean isAccountNonExpired() {return true; }
+    public void setAuthority(Authority authority) { this.authority = authority; }
 
-    @Override // 계정 잠금 여부 반환
-    public boolean isAccountNonLocked() { return true; }
+    public void setIsDeleted(boolean isDeleted) { this.isDeleted = isDeleted; }
 
-    public UserResponseDto toResponseDto() {
-        // UsersInfo를 UsersInfoResponseDto로 변경
-        List<UsersInfoResponseDto> usersInfoDtos = usersInfoList.stream()
-                .map(UsersInfo::toUsersInfoResponseDto)
-                .toList();
 
-        return UserResponseDto.builder()
-                .userId(id)
-                .email(email)
-                .fullname(fullname)
-                .username(username)
-                .provider(provider)
-                .role(role)
-                .isDeleted(isDeleted)
-//                .createdAt(getCreatedDate())
-                .userInfoList(usersInfoDtos)
-                .message("사용자 있음")
-                .build();
-    }
+    @Builder
+    public Users(Long id, String email, String password, String fullName, Authority authority, boolean isDeleted, LocalDateTime createdAt) {
+        this.id = id;
+        this.email = email;
+        this.password = password;
+        this.fullName = fullName;
+        this.authority = authority;
+        this.isDeleted = isDeleted;
+        this.createdAt = createdAt;
 
-    public UserDeleteResponseDto deleteUser() {
-        this.isDeleted = true;
-        return UserDeleteResponseDto.builder().isDeleted(this.isDeleted).build();
     }
 }
