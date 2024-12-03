@@ -34,11 +34,9 @@ public class PostController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CreatePostResponseDto> createRequestPost(
             @ModelAttribute CreatePostRequestDto createPostRequestDto,
-            @RequestParam(value = "isOffer") boolean isOffer,
-            @RequestParam(value = "user_id") Long userId,
-            @RequestParam(value = "category_id") Long categoryId) throws IOException {
+            @RequestParam("isOffer") boolean isOffer) throws IOException {
 
-        CreatePostResponseDto createPost = postService.createPost(userId, categoryId, createPostRequestDto, isOffer);
+        CreatePostResponseDto createPost = postService.createPost(createPostRequestDto, isOffer);
 
         return ResponseEntity.status(201).body(createPost);
     }
@@ -52,6 +50,15 @@ public class PostController {
         PostListResponseDto postList = postService.getPostsByIsOffer(page, isOffer);
 
         return ResponseEntity.status(200).body(postList);
+    }
+
+    // 게시글 단건 조회
+    @GetMapping("/{postId}")
+    public ResponseEntity<PostResponseDto> getPostById(
+            @PathVariable("postId") Long postId){
+        PostResponseDto postResponseDto = postService.getPostById(postId);
+
+        return ResponseEntity.status(200).body(postResponseDto);
     }
 
     // 게시글 수정 요청

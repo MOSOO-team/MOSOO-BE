@@ -13,6 +13,7 @@ import com.team2.mosoo_backend.user.entity.Users;
 import com.team2.mosoo_backend.user.repository.UserRepository;
 import com.team2.mosoo_backend.utils.s3bucket.service.S3BucketService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +29,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class PostService {
+
+    @Value("${default.image.url}")
+    private String defaultImageUrl;
 
     private final S3BucketService s3BucketService;
     private final PostRepository postRepository;
@@ -57,11 +61,11 @@ public class PostService {
 
     // 게시글 생성
     @Transactional
-    public CreatePostResponseDto createPost(long userId, long categoryId, CreatePostRequestDto createPostRequestDto, boolean isOffer) throws IOException {
+    public CreatePostResponseDto createPost(CreatePostRequestDto createPostRequestDto, boolean isOffer) throws IOException {
 
         Post post = postMapper.createPostRequestDtoToPost(createPostRequestDto);
-        Users user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        Category category = categoryRepository.findById(categoryId).orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+        Users user = userRepository.findById(createPostRequestDto.getUserId()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Category category = categoryRepository.findById(createPostRequestDto.getCategoryId()).orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
         // 연관관계 매핑
         post.setMapping(user, category);
@@ -73,11 +77,21 @@ public class PostService {
         post.setStatus(createPostRequestDto.getStatus());
 
         // 이미지 저장
-        List<MultipartFile> imageList = createPostRequestDto.getImageUrls();
+        if(createPostRequestDto.getImageUrls() != null){
+            List<MultipartFile> imageList = createPostRequestDto.getImageUrls();
 
-        List<String> postImageUrls = s3BucketService.uploadFileList(imageList);
+            List<String> postImageUrls = s3BucketService.uploadFileList(imageList);
 
-        post.setImgUrls(postImageUrls);
+            post.setImgUrls(postImageUrls);
+        }
+        else{
+            List<String> postImageUrls = new ArrayList<>();
+
+            postImageUrls.add(defaultImageUrl);
+
+            post.setImgUrls(postImageUrls);
+        }
+
 
         return postMapper.postToCreatePostResponseDto(postRepository.save(post));
     }
@@ -85,7 +99,7 @@ public class PostService {
     // 고수 / 일반 게시글 조회 + 페이지네이션
     public PostListResponseDto getPostsByIsOffer(int page, boolean isOffer) {
 
-        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(page - 1, 9, Sort.by("id").descending());
 
         Page<Post> posts = postRepository.findByIsOffer(pageable, isOffer);
 
@@ -139,5 +153,12 @@ public class PostService {
         post.setStatus(updatePostStatusRequestDto.getStatus());
 
         return postMapper.postToPostResponseDto(postRepository.save(post));
+    }
+
+    //단건 상세 조회
+    public PostResponseDto getPostById(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+
+        return postMapper.postToPostResponseDto(post);
     }
 }
