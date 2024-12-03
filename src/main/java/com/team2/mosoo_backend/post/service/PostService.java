@@ -1,15 +1,18 @@
 package com.team2.mosoo_backend.post.service;
 
 
+import com.team2.mosoo_backend.category.entity.Category;
+import com.team2.mosoo_backend.category.repository.CategoryRepository;
 import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
 import com.team2.mosoo_backend.post.dto.*;
 import com.team2.mosoo_backend.post.entity.Post;
 import com.team2.mosoo_backend.post.mapper.PostMapper;
 import com.team2.mosoo_backend.post.repository.PostRepository;
+import com.team2.mosoo_backend.user.entity.Users;
+import com.team2.mosoo_backend.user.repository.UserRepository;
 import com.team2.mosoo_backend.utils.s3bucket.service.S3BucketService;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.sql.Update;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +31,8 @@ public class PostService {
 
     private final S3BucketService s3BucketService;
     private final PostRepository postRepository;
+    private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
     private final PostMapper postMapper;
 
 
@@ -52,11 +57,22 @@ public class PostService {
 
     // 게시글 생성
     @Transactional
-    public CreatePostResponseDto createPost(CreatePostRequestDto createPostRequestDto, boolean isOffer) throws IOException {
+    public CreatePostResponseDto createPost(CreatePostRequestDto createPostRequestDto) throws IOException {
 
         Post post = postMapper.createPostRequestDtoToPost(createPostRequestDto);
-        post.setIsOffer(isOffer);
+        Users user = userRepository.findById(createPostRequestDto.getUserId()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Category category = categoryRepository.findById(createPostRequestDto.getCategoryId()).orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
+        // 연관관계 매핑
+        post.setMapping(user, category);
+
+        // 고수/ 일반 게시글 분류
+        post.setIsOffer(createPostRequestDto.isOffer());
+
+        // 게시글 상태 초기화
+        post.setStatus(createPostRequestDto.getStatus());
+
+        // 이미지 저장
         List<MultipartFile> imageList = createPostRequestDto.getImageUrls();
 
         List<String> postImageUrls = s3BucketService.uploadFileList(imageList);
@@ -66,10 +82,10 @@ public class PostService {
         return postMapper.postToCreatePostResponseDto(postRepository.save(post));
     }
 
-    // 고수 / 일반 게시글 조회
+    // 고수 / 일반 게시글 조회 + 페이지네이션
     public PostListResponseDto getPostsByIsOffer(int page, boolean isOffer) {
 
-        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("id").descending());
+        Pageable pageable = PageRequest.of(page - 1, 9, Sort.by("id").descending());
 
         Page<Post> posts = postRepository.findByIsOffer(pageable, isOffer);
 
@@ -123,5 +139,12 @@ public class PostService {
         post.setStatus(updatePostStatusRequestDto.getStatus());
 
         return postMapper.postToPostResponseDto(postRepository.save(post));
+    }
+
+    //단건 상세 조회
+    public PostResponseDto getPostById(Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+
+        return postMapper.postToPostResponseDto(post);
     }
 }

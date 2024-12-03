@@ -14,5 +14,6 @@ public interface ChatMessageMapper {
     @Mapping(source = "content", target = "content")
     ChatMessage toEntity(ChatMessageRequestDto chatMessageRequestDto);
 
+    @Mapping(source = "id", target = "chatMessageId")
     ChatMessageResponseDto toChatMessageResponseDto(ChatMessage chatMessage);
 }

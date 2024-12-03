@@ -1,7 +1,6 @@
 package com.team2.mosoo_backend.chatting.controller;
 
 import com.team2.mosoo_backend.chatting.dto.*;
-import com.team2.mosoo_backend.chatting.service.ChatMessageService;
 import com.team2.mosoo_backend.chatting.service.ChatRoomService;
 import com.team2.mosoo_backend.config.swagger.ApiExceptionResponseExamples;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +23,6 @@ import static com.team2.mosoo_backend.exception.ErrorCode.*;
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
-    private final ChatMessageService chatMessageService;
 
     // 채팅방 전체 조회 (채팅 내역 조회)
     @GetMapping("/chatrooms")
@@ -40,22 +38,38 @@ public class ChatRoomController {
         return ResponseEntity.status(HttpStatus.OK).body(chatRoomResponseWrapperDto);
     }
 
-    // 채팅방 단건 조회 (포함된 채팅 메세지 조회)
-    @GetMapping("/chatroom/{chatRoomId}")
-    @Operation(summary = "채팅방 단건 조회", description = "특정 채팅방 조회 (채팅 내역 조회)")
-    @ApiExceptionResponseExamples({USER_NOT_AUTHORIZED, CHAT_ROOM_NOT_FOUND, BID_NOT_FOUND})
+    // 채팅방 세부 정보 조회 (게시글, 입찰, 가격 정보 조회)
+    @GetMapping("/chatroom/{chatRoomId}/info")
+    @Operation(summary = "채팅방 관련 정보 조회", description = "채팅방 관련 게시글 정보, 입찰 정보, 가격 조회")
+    @ApiExceptionResponseExamples({USER_NOT_AUTHORIZED, CHAT_ROOM_NOT_FOUND})
     /*
         403 에러 : 유저 정보가 일치하지 않는 경우
         404 에러 : 채팅방을 찾을 수 없는 경우
-        404 에러 : 입찰을 찾을 수 없는 경우
     */
-    @ApiResponse(responseCode = "200", description = "채팅 내역 조회 성공",
+    @ApiResponse(responseCode = "200", description = "채팅방 관련 세부 정보 조회 성공",
             content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = ChatMessageResponseWrapperDto.class)))
-    public ResponseEntity<ChatMessageResponseWrapperDto> findChatRoom(@PathVariable("chatRoomId") Long chatRoomId) {
+                    schema = @Schema(implementation = ChatRoomInfoResponseDto.class)))
+    public ResponseEntity<ChatRoomInfoResponseDto> findChatRoomInfo(@PathVariable("chatRoomId") Long chatRoomId) {
 
-        ChatMessageResponseWrapperDto chatMessageResponseWrapperDto = chatMessageService.findChatMessages(chatRoomId);
-        return ResponseEntity.status(HttpStatus.OK).body(chatMessageResponseWrapperDto);
+        ChatRoomInfoResponseDto chatRoomInfoResponseDto = chatRoomService.findChatRoomInfo(chatRoomId);
+        return ResponseEntity.status(HttpStatus.OK).body(chatRoomInfoResponseDto);
+    }
+
+    // 채팅방 상대방 정보 조회
+    @GetMapping("/chatroom/{chatRoomId}/user-info")
+    @Operation(summary = "채팅방 관련 정보 조회", description = "채팅방 관련 상대 정보 조회")
+    @ApiExceptionResponseExamples({USER_NOT_AUTHORIZED, CHAT_ROOM_NOT_FOUND})
+    /*
+        403 에러 : 유저 정보가 일치하지 않는 경우
+        404 에러 : 채팅방을 찾을 수 없는 경우
+    */
+    @ApiResponse(responseCode = "200", description = "채팅방 관련 상대 정보 조회 성공",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ChatRoomOpponentInfoResponseDto.class)))
+    public ResponseEntity<ChatRoomOpponentInfoResponseDto> findChatRoomOpponentInfo(@PathVariable("chatRoomId") Long chatRoomId) {
+
+        ChatRoomOpponentInfoResponseDto chatRoomOpponentInfoResponseDto = chatRoomService.findChatRoomOpponentInfo(chatRoomId);
+        return ResponseEntity.status(HttpStatus.OK).body(chatRoomOpponentInfoResponseDto);
     }
 
     @PostMapping("/chatroom")
@@ -90,6 +104,24 @@ public class ChatRoomController {
     public ResponseEntity<ChatRoomDeleteResponseDto> quitChatRoom(@PathVariable("chatRoomId") Long chatRoomId) {
 
         ChatRoomDeleteResponseDto result = chatRoomService.quitChatRoom(chatRoomId);
+        return ResponseEntity.status(HttpStatus.OK).body(result);
+    }
+
+    @PatchMapping("/chatroom/{chatRoomId}/price")
+    @Operation(summary = "채팅방에서 가격 변경", description = "주문서 작성을 위한 조정 가격 반영")
+    @ApiExceptionResponseExamples({INVALID_PRODUCT_PRICE, USER_NOT_AUTHORIZED, CHAT_ROOM_NOT_FOUND})
+    /*
+        400 에러 : 가격이 0원보다 적은 경우
+        403 에러 : 고수유저가 아니거나 채팅방 참여 고수가 아닌 경우
+        404 에러 : 채팅방 정보를 찾을 수 없는 경우
+     */
+    @ApiResponse(responseCode = "200", description = "가격 변경 성공",
+            content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = ChatRoomPriceResponseDto.class)))
+    public ResponseEntity<ChatRoomPriceResponseDto> updatePrice(@PathVariable("chatRoomId") Long chatRoomId,
+                                                            @RequestParam(value = "price") int price) {
+
+        ChatRoomPriceResponseDto result = chatRoomService.updatePrice(chatRoomId, price);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

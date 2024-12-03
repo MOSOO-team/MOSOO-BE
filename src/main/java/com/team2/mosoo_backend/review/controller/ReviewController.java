@@ -27,17 +27,22 @@ public class ReviewController {
 
     }
 
-    // todo: 유저 연관 매핑 후 작성
-//    @GetMapping("/my/{userId}")
-//    public ResponseEntity<ReviewListResponseDto> getReviewByUserId(@RequestParam Long userId) {
-//        
-//    }
+    @GetMapping("/my/{userId}")
+    public ResponseEntity<ReviewListResponseDto> getReviewByUserId(@RequestParam Long userId) {
+
+        ReviewListResponseDto reviewListResponseDto = reviewService.getReviewByUserId(userId);
+
+        return ResponseEntity.status(200).body(reviewListResponseDto);
+    }
 
 
-    @PostMapping
-    public ResponseEntity<ReviewResponseDto> createReview(@RequestBody CreateReviewRequestDto createReviewRequestDto) {
+    @PostMapping("/{postId}")
+    public ResponseEntity<ReviewResponseDto> createReview(
+            @PathVariable("postId") Long postId,
+            @RequestBody CreateReviewRequestDto createReviewRequestDto,
+            @RequestParam Long userId) {
 
-        ReviewResponseDto reviewResponseDto = reviewService.createReview(createReviewRequestDto);
+        ReviewResponseDto reviewResponseDto = reviewService.createReview(userId, postId, createReviewRequestDto);
 
         return ResponseEntity.status(201).body(reviewResponseDto);
 
