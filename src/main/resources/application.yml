@@ -6,27 +6,20 @@ spring:
       max-file-size: 128MB
       max-request-size: 128MB
 
-  # H2 Database 설정
+  # MySQL 설정
   datasource:
-    driver-class-name: org.h2.Driver
-    url:  'jdbc:h2:mem:test'  # H2 DB 연결 주소 (In-Memory Mode)
-    #url: 'jdbc:h2:~/test'    # H2 DB 연결 주소 (Embedded Mode)
-    username: sa        # H2 DB 접속 ID (사용자 지정)
-
-  # H2 Console 설정
-  h2:
-    console: # H2 DB를 웹에서 관리할 수 있는 기능
-      enabled: true           # H2 Console 사용 여부
-      path: /h2-console       # H2 Console 접속 주소
+    driver-class-name: com.mysql.cj.jdbc.Driver # MySQL Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME} # RDS 사용자 이름
+    password: ${DB_PASSWORD} # RDS 사용자 비밀번호
 
   # JPA 설정
   jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
+    database-platform: org.hibernate.dialect.MySQL8Dialect
     hibernate:
-      ddl-auto: create        # DB 초기화 전략 (none, create, create-drop, update, validate)
+      ddl-auto: update        # DB 초기화 전략 (none, create, create-drop, update, validate)
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
         format_sql: true      # 쿼리 로그 포맷 (정렬)
         show_sql: true        # 쿼리 로그 출력
     defer-datasource-initialization: true
@@ -43,3 +36,21 @@ spring:
   portone:
     imp_key : ${PORTONE_IMP_KEY}
     imp_secret: ${PORTONE_IMP_SECRET}
+    
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+
+jwt:
+  secret: KC2XjwwyNLVedIxmh1ys3cOxp5vImhoEDygJdFTcWd3NE3H3pAVnEhxAyKai0oOAwgxkvnb1xnb9dicv8gisd3sAfB9aVd0
+
+default:
+  image:
+    url: https://mosoobucket.s3.ap-northeast-2.amazonaws.com/test/752d474e-8c1d-45a8-bd77-b426f61e204e-d283f188e2c88f02.png
