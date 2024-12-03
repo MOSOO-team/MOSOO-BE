@@ -32,3 +32,6 @@ spring:
   config:
     import:
       - s3bucket.yml
+
+jwt:
+  secret: 6eH@9fJ$2QwZ!8eX^4gT*7rA#5pL%1bK3uY8wE%2x
