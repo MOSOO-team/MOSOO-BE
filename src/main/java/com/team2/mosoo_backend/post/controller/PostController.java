@@ -33,9 +33,10 @@ public class PostController {
     // 게시글 작성 요청
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CreatePostResponseDto> createRequestPost(
-            @ModelAttribute CreatePostRequestDto createPostRequestDto) throws IOException {
+            @ModelAttribute CreatePostRequestDto createPostRequestDto,
+            @RequestParam("isOffer") boolean isOffer) throws IOException {
 
-        CreatePostResponseDto createPost = postService.createPost(createPostRequestDto);
+        CreatePostResponseDto createPost = postService.createPost(createPostRequestDto, isOffer);
 
         return ResponseEntity.status(201).body(createPost);
     }

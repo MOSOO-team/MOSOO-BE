@@ -13,6 +13,7 @@ import com.team2.mosoo_backend.user.entity.Users;
 import com.team2.mosoo_backend.user.repository.UserRepository;
 import com.team2.mosoo_backend.utils.s3bucket.service.S3BucketService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +29,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class PostService {
+
+    @Value("${default.image.url}")
+    private String defaultImageUrl;
 
     private final S3BucketService s3BucketService;
     private final PostRepository postRepository;
@@ -57,7 +61,7 @@ public class PostService {
 
     // 게시글 생성
     @Transactional
-    public CreatePostResponseDto createPost(CreatePostRequestDto createPostRequestDto) throws IOException {
+    public CreatePostResponseDto createPost(CreatePostRequestDto createPostRequestDto, boolean isOffer) throws IOException {
 
         Post post = postMapper.createPostRequestDtoToPost(createPostRequestDto);
         Users user = userRepository.findById(createPostRequestDto.getUserId()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
@@ -67,17 +71,27 @@ public class PostService {
         post.setMapping(user, category);
 
         // 고수/ 일반 게시글 분류
-        post.setIsOffer(createPostRequestDto.isOffer());
+        post.setIsOffer(isOffer);
 
         // 게시글 상태 초기화
         post.setStatus(createPostRequestDto.getStatus());
 
         // 이미지 저장
-        List<MultipartFile> imageList = createPostRequestDto.getImageUrls();
+        if(createPostRequestDto.getImageUrls() != null){
+            List<MultipartFile> imageList = createPostRequestDto.getImageUrls();
 
-        List<String> postImageUrls = s3BucketService.uploadFileList(imageList);
+            List<String> postImageUrls = s3BucketService.uploadFileList(imageList);
 
-        post.setImgUrls(postImageUrls);
+            post.setImgUrls(postImageUrls);
+        }
+        else{
+            List<String> postImageUrls = new ArrayList<>();
+
+            postImageUrls.add(defaultImageUrl);
+
+            post.setImgUrls(postImageUrls);
+        }
+
 
         return postMapper.postToCreatePostResponseDto(postRepository.save(post));
     }
