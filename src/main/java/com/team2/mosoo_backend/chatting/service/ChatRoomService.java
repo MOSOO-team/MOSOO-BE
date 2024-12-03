@@ -47,6 +47,7 @@ public class ChatRoomService {
     private final ChatRoomUtils chatRoomUtils;
     private final ChatMessageMapper chatMessageMapper;
     private final SecurityUtil securityUtil;
+    private final ChatMessageService chatMessageService;
 
     // 채팅방 목록 조회 메서드
     public ChatRoomResponseWrapperDto findAllChatRooms(int page) {
@@ -71,8 +72,15 @@ public class ChatRoomService {
             // 로그인한 유저가 고수인 경우 (상대방이 일반 유저인 경우)
             dto.setOpponentFullName(chatRoomUtils.getOpponentFullName(chatRoom, loginUser));
 
-            ChatMessage chatMessage = chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(chatRoom.getId())
-                    .orElse(null);
+            ChatMessage chatMessage;
+
+            List<ChatMessageRequestDto> chatMessagesFromRedis = chatMessageService.findChatMessagesFromRedis(chatRoom.getId(), true);
+            if(chatMessagesFromRedis.size() > 0) {  // 최신 채팅 메세지가 레디스에 존재할 때
+                 chatMessage = chatMessageMapper.toEntity(chatMessagesFromRedis.get(0));
+            } else {                                // 최신 채팅 메세지가 db에 존재할 때
+                chatMessage = chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(chatRoom.getId())
+                        .orElse(null);
+            }
 
             if(chatMessage.getType() == ChatMessageType.IMAGE) { // 메시지 타입이 이미지 인 경우: 가장 최근 채팅을 "이미지"로 설정
                 dto.setLastChatMessage("이미지");
@@ -88,6 +96,7 @@ public class ChatRoomService {
             dto.setLastChatDate(chatMessage.getCreatedAt());
 
             result.add(dto);
+
         }
 
         // 총 페이지 수
@@ -158,7 +167,7 @@ public class ChatRoomService {
         if(post.isOffer()) {    // 고수가 작성한 게시글인 경우 (게시글로부터 채팅방이 파생되어야 함)
 
             // 해당 게시글에 대한 채팅방이 이미 존재하는 경우
-            if(chatRoomRepository.existsByPostIdAndGosuId(post.getId(), chatRoomRequestDto.getGosuId())) {
+            if(chatRoomRepository.existsByPostIdAndUserIdAndGosuId(post.getId(), loginUserId, chatRoomRequestDto.getGosuId())) {
                 ChatRoom existChatRoom = chatRoomRepository.findByPostIdAndGosuId(post.getId(), chatRoomRequestDto.getGosuId()).get();
                 existChatRoom.reCreate();
                 return new ChatRoomCreateResponseDto(existChatRoom.getId());
@@ -170,7 +179,7 @@ public class ChatRoomService {
                     .orElseThrow(() -> new CustomException(ErrorCode.BID_NOT_FOUND));
 
             // 해당 입찰에 대한 채팅방이 이미 존재하는 경우
-            if(chatRoomRepository.existsByBidIdAndGosuId(bid.getId(), chatRoomRequestDto.getGosuId())) {
+            if(chatRoomRepository.existsByBidIdAndUserIdAndGosuId(bid.getId(), loginUserId, chatRoomRequestDto.getGosuId())) {
                 ChatRoom existChatRoom = chatRoomRepository.findByBidIdAndGosuId(bid.getId(), chatRoomRequestDto.getGosuId()).get();
                 existChatRoom.reCreate();
                 return new ChatRoomCreateResponseDto(existChatRoom.getId());
