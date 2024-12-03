@@ -38,7 +38,7 @@ public class ChatRoomUtils {
         // 채팅 상대 이름 저장
         String opponentFullName;
         // 로그인한 유저가 고수인 경우 (상대방이 일반 유저인 경우)
-        if(loginUser.getRole() == UserRole.GOSU) {
+        if(loginUser.getId().equals(chatRoom.getGosuId())) {
             Users user = userRepository.findById(chatRoom.getUserId()).orElse(null);
             opponentFullName = ( (user != null) ? user.getFullname() : "찾을 수 없는 유저");
         } else {    // 로그인한 유저가 일반 유저인 경우 (상대방이 고수인 경우)
