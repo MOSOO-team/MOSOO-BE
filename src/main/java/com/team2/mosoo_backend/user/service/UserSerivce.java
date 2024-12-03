@@ -6,7 +6,7 @@ import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
 import com.team2.mosoo_backend.user.dto.UserListResponse;
 import com.team2.mosoo_backend.user.dto.UserResponseDto;
-import com.team2.mosoo_backend.user.entity.User;
+import com.team2.mosoo_backend.user.entity.Users;
 import com.team2.mosoo_backend.user.entity.UserInfo;
 import com.team2.mosoo_backend.user.mapper.UserMapper;
 import com.team2.mosoo_backend.user.repository.UserInfoRepository;
@@ -35,7 +35,7 @@ public class UserSerivce {
     // 맴버 정보 조회
     public UserResponseDto getMyInfoBySecurity() {
        // 사용자 ID를 가져와서 정보 조회하기
-        User me = userRepository.findById(securityUtil.getCurrentMemberId())
+        Users me = userRepository.findById(securityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 멤버 상세 정보 조회하기
@@ -51,27 +51,27 @@ public class UserSerivce {
 
     @Transactional
     public UserResponseDto changeMemberUserName(String fullName) {
-        User user = userRepository.findById(securityUtil.getCurrentMemberId())
+        Users users = userRepository.findById(securityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         if (userRepository.findByFullName(fullName).isPresent()) {
             throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
         }
         else {
-            user.setFullName(fullName);
+            users.setFullName(fullName);
         }
-        return userMapper.userToResponse(userRepository.save(user));
+        return userMapper.userToResponse(userRepository.save(users));
     }
 
     @Transactional
     public UserResponseDto changeMemberPassword(String exPassword, String newPassword) {
-        User user = userRepository.findById(securityUtil.getCurrentMemberId())
+        Users users = userRepository.findById(securityUtil.getCurrentMemberId())
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        if (!passwordEncoder.matches(exPassword, user.getPassword())) {
+        if (!passwordEncoder.matches(exPassword, users.getPassword())) {
             throw new CustomException(ErrorCode.AUTH_CODE_EXTENSION);
 //            throw new RuntimeException("비밀번호가 맞지 않습니다");
         }
-        user.setPassword(passwordEncoder.encode((newPassword)));
-        return userMapper.userToResponse(userRepository.save(user));
+        users.setPassword(passwordEncoder.encode((newPassword)));
+        return userMapper.userToResponse(userRepository.save(users));
     }
 
 
@@ -84,17 +84,17 @@ public class UserSerivce {
 //            orderRepository.deleteAll(orders);
 //        }
 
-        User user = userRepository.findById(memberId)
+        Users users = userRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        userRepository.delete(user);
-        return userMapper.userToResponse(user);
+        userRepository.delete(users);
+        return userMapper.userToResponse(users);
     }
 
-    public User findById(Long memberId) {
+    public Users findById(Long memberId) {
         return userRepository.findById(memberId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
-    public User findByEmail(String email) {
+    public Users findByEmail(String email) {
         return userRepository.findByEmail(email).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
     }
 
@@ -104,12 +104,12 @@ public class UserSerivce {
 
         PageRequest pageRequest = PageRequest.of(page - 1, 10, Sort.by("id").ascending());
 
-        Page<User> memberList = userRepository.findAll(pageRequest);
+        Page<Users> memberList = userRepository.findAll(pageRequest);
 
         List<UserResponseDto> members = new ArrayList<>();
 
-        for(User user : memberList) {
-            members.add(userMapper.userToResponse(user));
+        for(Users users : memberList) {
+            members.add(userMapper.userToResponse(users));
         }
         // 총 페이지 수
         int totalPages = (memberList.getTotalPages()==0 ? 1 : memberList.getTotalPages());
@@ -124,20 +124,20 @@ public class UserSerivce {
 //            orderRepository.deleteAll(orders);
 //        }
 
-        User user = userRepository.findById(memberId)
+        Users users = userRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        userRepository.delete(user);
+        userRepository.delete(users);
     }
 
     public UserListResponse getIsDeleteMembers(int page) {
         PageRequest pageRequest = PageRequest.of(page - 1, 10);
 
-        Page<User> memberList = userRepository.findAllByIsDeleteTrue(pageRequest);
+        Page<Users> memberList = userRepository.findAllByIsDeleteTrue(pageRequest);
 
         List<UserResponseDto> members = new ArrayList<>();
 
-        for(User user : memberList) {
-            members.add(userMapper.userToResponse(user));
+        for(Users users : memberList) {
+            members.add(userMapper.userToResponse(users));
         }
         // 총 페이지 수
         int totalPages = (memberList.getTotalPages()==0 ? 1 : memberList.getTotalPages());

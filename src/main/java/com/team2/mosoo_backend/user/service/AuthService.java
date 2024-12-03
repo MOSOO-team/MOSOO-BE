@@ -11,7 +11,7 @@ import com.team2.mosoo_backend.user.dto.TokenDto;
 import com.team2.mosoo_backend.user.dto.UserReqeustDto;
 import com.team2.mosoo_backend.user.dto.UserResponseDto;
 import com.team2.mosoo_backend.user.entity.Authority;
-import com.team2.mosoo_backend.user.entity.User;
+import com.team2.mosoo_backend.user.entity.Users;
 import com.team2.mosoo_backend.user.mapper.UserMapper;
 import com.team2.mosoo_backend.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,9 +44,9 @@ public class AuthService {
             throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
         }
 
-        User user = userMapper.requestToUser(requestDto);
-        user.setAuthority(Authority.ROLE_USER);
-        return userMapper.userToResponse(userRepository.save(user));
+        Users users = userMapper.requestToUser(requestDto);
+        users.setAuthority(Authority.ROLE_USER);
+        return userMapper.userToResponse(userRepository.save(users));
     }
 
     public TokenDto login(HttpServletRequest request, HttpServletResponse response, UserReqeustDto requestDto) {
@@ -62,9 +62,9 @@ public class AuthService {
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
         String refreshTokenValue = tokenProvider.generateRefreshToken(authentication);
 
-        User user = userRepository.findByEmail(requestDto.getEmail()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Users users = userRepository.findByEmail(requestDto.getEmail()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        refreshTokenCookieUtil.saveRefreshToken(user.getId(), refreshTokenValue);
+        refreshTokenCookieUtil.saveRefreshToken(users.getId(), refreshTokenValue);
         refreshTokenCookieUtil.addRefreshTokenToCookie(request, response, refreshTokenValue); // 리프레시 토큰을 쿠키에 추가
 
         return tokenDto;

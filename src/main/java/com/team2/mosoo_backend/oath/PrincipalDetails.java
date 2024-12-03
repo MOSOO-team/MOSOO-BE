@@ -1,7 +1,7 @@
 package com.team2.mosoo_backend.oath;
 
 
-import com.team2.mosoo_backend.user.entity.User;
+import com.team2.mosoo_backend.user.entity.Users;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,7 +12,7 @@ import java.util.Collections;
 import java.util.Map;
 
 public record PrincipalDetails(
-        User user,
+        Users users,
         Map<String, Object> attributes,
         String attributeKey) implements OAuth2User, UserDetails {
 
@@ -29,7 +29,7 @@ public record PrincipalDetails(
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.singletonList(
-                new SimpleGrantedAuthority(user.getAuthority().toString()));
+                new SimpleGrantedAuthority(users.getAuthority().toString()));
     }
 
     @Override
@@ -38,7 +38,7 @@ public record PrincipalDetails(
     }
 
     public String getUsername() {
-        return user.getFullName();
+        return users.getFullName();
     }
 
     @Override

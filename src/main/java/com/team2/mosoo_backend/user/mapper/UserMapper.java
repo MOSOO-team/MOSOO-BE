@@ -5,7 +5,7 @@ package com.team2.mosoo_backend.user.mapper;
 import com.team2.mosoo_backend.user.dto.UserInfoDto;
 import com.team2.mosoo_backend.user.dto.UserReqeustDto;
 import com.team2.mosoo_backend.user.dto.UserResponseDto;
-import com.team2.mosoo_backend.user.entity.User;
+import com.team2.mosoo_backend.user.entity.Users;
 import com.team2.mosoo_backend.user.entity.UserInfo;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -18,13 +18,13 @@ import java.util.List;
 public interface UserMapper {
 
     @Mapping(target = "password", source = "password", qualifiedByName = "encryptPassword")
-    User requestToUser(UserReqeustDto userReqeustDto);
+    Users requestToUser(UserReqeustDto userReqeustDto);
 
-    UserResponseDto userToResponse(User user);
+    UserResponseDto userToResponse(Users users);
 
     UserInfoDto userInfoToDto(UserInfo userInfo);
 
-    List<UserResponseDto> toDtoList(List<User> userList);
+    List<UserResponseDto> toDtoList(List<Users> usersList);
 
     @Named("encryptPassword") // 2
     default String encryptPassword(String password) {

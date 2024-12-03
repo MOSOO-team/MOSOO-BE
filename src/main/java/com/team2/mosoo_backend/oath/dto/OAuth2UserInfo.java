@@ -4,7 +4,7 @@ package com.team2.mosoo_backend.oath.dto;
 import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
 import com.team2.mosoo_backend.user.entity.Authority;
-import com.team2.mosoo_backend.user.entity.User;
+import com.team2.mosoo_backend.user.entity.Users;
 import lombok.Builder;
 
 import java.util.Map;
@@ -31,8 +31,8 @@ public record OAuth2UserInfo(
                 .build();
     }
 
-    public User toEntity() {
-        return User.builder()
+    public Users toEntity() {
+        return Users.builder()
                 .fullName(name)
                 .email(email)
                 .authority(Authority.ROLE_USER)

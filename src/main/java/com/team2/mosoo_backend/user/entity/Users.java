@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @SQLDelete(sql = "UPDATE member SET is_deleted = true WHERE member_id = ?")
 @Where(clause = "is_deleted = false")
 @EntityListeners(AuditingEntityListener.class)
-public class User {
+public class Users {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -59,7 +59,7 @@ public class User {
 
 
     @Builder
-    public User(Long id, String email, String password, String fullName, Authority authority, boolean isDeleted, LocalDateTime createdAt) {
+    public Users(Long id, String email, String password, String fullName, Authority authority, boolean isDeleted, LocalDateTime createdAt) {
         this.id = id;
         this.email = email;
         this.password = password;

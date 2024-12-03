@@ -2,7 +2,7 @@ package com.team2.mosoo_backend.oath.service;
 
 
 import com.team2.mosoo_backend.oath.util.CookieUtil;
-import com.team2.mosoo_backend.user.entity.User;
+import com.team2.mosoo_backend.user.entity.Users;
 import com.team2.mosoo_backend.user.repository.UserRepository;
 import com.team2.mosoo_backend.oath.PrincipalDetails;
 import com.team2.mosoo_backend.oath.dto.OAuth2UserInfo;
@@ -48,16 +48,16 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService implements
         OAuth2UserInfo oAuth2UserInfo = OAuth2UserInfo.of(registrationId, oAuth2UserAttributes);
 
         // 5. 회원가입 및 로그인
-        User user = getOrSave(oAuth2UserInfo);
+        Users users = getOrSave(oAuth2UserInfo);
 
         // 6. OAuth2User로 반환
-        return new PrincipalDetails(user, oAuth2UserAttributes, userNameAttributeName);
+        return new PrincipalDetails(users, oAuth2UserAttributes, userNameAttributeName);
     }
 
-    private User getOrSave(OAuth2UserInfo oAuth2UserInfo) {
-        User user = userRepository.findByEmail(oAuth2UserInfo.email())
+    private Users getOrSave(OAuth2UserInfo oAuth2UserInfo) {
+        Users users = userRepository.findByEmail(oAuth2UserInfo.email())
                 .orElseGet(oAuth2UserInfo::toEntity);
-        return userRepository.save(user);
+        return userRepository.save(users);
     }
 
     // 쿠키에서 OAuth2AuthorizationRequest 를 로드하는 메서드
