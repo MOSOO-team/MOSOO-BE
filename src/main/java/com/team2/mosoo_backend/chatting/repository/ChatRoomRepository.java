@@ -11,8 +11,8 @@ import java.util.Optional;
 
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
-    boolean existsByBidIdAndGosuId(Long bidId, Long gosuId);
-    boolean existsByPostIdAndGosuId(Long postId, Long gosuId);
+    boolean existsByBidIdAndUserIdAndGosuId(Long bidId, Long userId, Long gosuId);
+    boolean existsByPostIdAndUserIdAndGosuId(Long postId, Long userId, Long gosuId);
 
     Optional<ChatRoom> findByBidIdAndGosuId(Long bidId, Long gosuId);
     Optional<ChatRoom> findByPostIdAndGosuId(Long postId, Long gosuId);
