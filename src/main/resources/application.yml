@@ -34,4 +34,4 @@ spring:
       - s3bucket.yml
 
 jwt:
-  secret: 6eH@9fJ$2QwZ!8eX^4gT*7rA#5pL%1bK3uY8wE%2x
+  secret: KC2XjwwyNLVedIxmh1ys3cOxp5vImhoEDygJdFTcWd3NE3H3pAVnEhxAyKai0oOAwgxkvnb1xnb9dicv8gisd3sAfB9aVd0
