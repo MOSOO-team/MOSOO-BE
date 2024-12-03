@@ -52,9 +52,10 @@ deploy:
     - echo "DB_URL=$DB_URL" >> .env
     - echo "DB_USERNAME=$DB_USERNAME" >> .env
     - echo "DB_PASSWORD=$DB_PASSWORD" >> .env
+    - echo "DEPLOY_FRONT_URL=$DEPLOY_FRONT_URL" >> .env
     # GCP VM에 전송 및 SSH 접속 후 Docker-compose
-    - scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa .env $GCP_USER@$GCP_VM_IP:/path/to/your/project/
-    - scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml $GCP_USER@$GCP_VM_IP:/path/to/your/project/
-    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $GCP_USER@$GCP_VM_IP "cd /path/to/your/project && docker-compose up -d"
+    - scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa .env $GCP_USER@$GCP_VM_IP:/path/to/your/project/spring/
+    - scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml $GCP_USER@$GCP_VM_IP:/path/to/your/project/spring/
+    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $GCP_USER@$GCP_VM_IP "cd /path/to/your/project/spring/ && docker-compose up -d"
   only:
     - review
