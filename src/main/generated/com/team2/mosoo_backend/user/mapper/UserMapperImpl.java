@@ -1,7 +1,7 @@
 package com.team2.mosoo_backend.user.mapper;
 
 import com.team2.mosoo_backend.user.dto.UserInfoDto;
-import com.team2.mosoo_backend.user.dto.UserReqeustDto;
+import com.team2.mosoo_backend.user.dto.UserRequestDto;
 import com.team2.mosoo_backend.user.dto.UserResponseDto;
 import com.team2.mosoo_backend.user.entity.UserInfo;
 import com.team2.mosoo_backend.user.entity.Users;
@@ -12,23 +12,23 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-12-03T13:01:36+0900",
+    date = "2024-12-04T11:37:33+0900",
     comments = "version: 1.5.3.Final, compiler: javac, environment: Java 17.0.12 (Amazon.com Inc.)"
 )
 @Component
 public class UserMapperImpl implements UserMapper {
 
     @Override
-    public Users requestToUser(UserReqeustDto userReqeustDto) {
-        if ( userReqeustDto == null ) {
+    public Users requestToUser(UserRequestDto userRequestDto) {
+        if ( userRequestDto == null ) {
             return null;
         }
 
         Users.UsersBuilder<?, ?> users = Users.builder();
 
-        users.password( encryptPassword( userReqeustDto.getPassword() ) );
-        users.email( userReqeustDto.getEmail() );
-        users.fullName( userReqeustDto.getFullName() );
+        users.password( encryptPassword( userRequestDto.getPassword() ) );
+        users.email( userRequestDto.getEmail() );
+        users.fullName( userRequestDto.getFullName() );
 
         return users.build();
     }
@@ -62,7 +62,6 @@ public class UserMapperImpl implements UserMapper {
         userInfoDto.id( userInfo.getId() );
         userInfoDto.address( userInfo.getAddress() );
         userInfoDto.createdAt( userInfo.getCreatedAt() );
-        userInfoDto.updatedAt( userInfo.getUpdatedAt() );
 
         return userInfoDto.build();
     }

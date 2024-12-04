@@ -8,11 +8,13 @@ import com.team2.mosoo_backend.jwt.TokenProvider;
 import com.team2.mosoo_backend.oath.repository.RefreshTokenRepository;
 import com.team2.mosoo_backend.oath.util.RefreshTokenCookieUtil;
 import com.team2.mosoo_backend.user.dto.TokenDto;
-import com.team2.mosoo_backend.user.dto.UserReqeustDto;
+import com.team2.mosoo_backend.user.dto.UserRequestDto;
 import com.team2.mosoo_backend.user.dto.UserResponseDto;
 import com.team2.mosoo_backend.user.entity.Authority;
+import com.team2.mosoo_backend.user.entity.UserInfo;
 import com.team2.mosoo_backend.user.entity.Users;
 import com.team2.mosoo_backend.user.mapper.UserMapper;
+import com.team2.mosoo_backend.user.repository.UserInfoRepository;
 import com.team2.mosoo_backend.user.repository.UserRepository;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -35,21 +37,35 @@ public class AuthService {
     private final TokenProvider tokenProvider;
     private final RefreshTokenRepository refreshTokenRepository;
     private final RefreshTokenCookieUtil refreshTokenCookieUtil;
+    private final UserInfoRepository userInfoRepository;
 
-    public UserResponseDto signup(UserReqeustDto requestDto) {
+    public UserResponseDto signup(UserRequestDto requestDto) {
+        // 이메일 중복 확인
         if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
-        }
+        } // 이름 중복 확인
         if (userRepository.findByFullName(requestDto.getFullName()).isPresent()) {
             throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
         }
 
+        // User 엔티티 생성 및 저장
         Users users = userMapper.requestToUser(requestDto);
         users.setAuthority(Authority.ROLE_USER);
-        return userMapper.userToResponse(userRepository.save(users));
+        Users savedUser = userRepository.save(users);
+
+        // UserInfo 엔티티 생성
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUsers(savedUser); // 사용자와 연관된 UserInfo 생성
+        userInfo.setAddress(""); // 기본값 설정 (필요 시 수정 가능)
+        userInfo.setIsGosu(false); // 기본값 설정 (필요 시 수정 가능)
+
+        // UserInfo 저장
+        userInfoRepository.save(userInfo);
+
+        return userMapper.userToResponse(savedUser); // 응답 DTO 반환
     }
 
-    public TokenDto login(HttpServletRequest request, HttpServletResponse response, UserReqeustDto requestDto) {
+    public TokenDto login(HttpServletRequest request, HttpServletResponse response, UserRequestDto requestDto) {
 
         // 비밀번호 미 입력 시
         if(requestDto.getPassword() == null || requestDto.getPassword().isEmpty()) {

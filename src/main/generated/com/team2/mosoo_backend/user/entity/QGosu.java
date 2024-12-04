@@ -7,6 +7,7 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
+import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -16,6 +17,8 @@ import com.querydsl.core.types.Path;
 public class QGosu extends EntityPathBase<Gosu> {
 
     private static final long serialVersionUID = -1673966912L;
+
+    private static final PathInits INITS = PathInits.DIRECT2;
 
     public static final QGosu gosu = new QGosu("gosu");
 
@@ -39,22 +42,27 @@ public class QGosu extends EntityPathBase<Gosu> {
 
     public final NumberPath<Integer> points = createNumber("points", Integer.class);
 
-    public final NumberPath<Long> technologyProviderId = createNumber("technologyProviderId", Long.class);
-
-    public final DateTimePath<java.time.LocalDateTime> updatedAt = createDateTime("updatedAt", java.time.LocalDateTime.class);
-
-    public final NumberPath<Long> userInfoId = createNumber("userInfoId", Long.class);
+    public final QUserInfo userInfo;
 
     public QGosu(String variable) {
-        super(Gosu.class, forVariable(variable));
+        this(Gosu.class, forVariable(variable), INITS);
     }
 
     public QGosu(Path<? extends Gosu> path) {
-        super(path.getType(), path.getMetadata());
+        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
     }
 
     public QGosu(PathMetadata metadata) {
-        super(Gosu.class, metadata);
+        this(metadata, PathInits.getFor(metadata, INITS));
+    }
+
+    public QGosu(PathMetadata metadata, PathInits inits) {
+        this(Gosu.class, metadata, inits);
+    }
+
+    public QGosu(Class<? extends Gosu> type, PathMetadata metadata, PathInits inits) {
+        super(type, metadata, inits);
+        this.userInfo = inits.isInitialized("userInfo") ? new QUserInfo(forProperty("userInfo"), inits.get("userInfo")) : null;
     }
 
 }

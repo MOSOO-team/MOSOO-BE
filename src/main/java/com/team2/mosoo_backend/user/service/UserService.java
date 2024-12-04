@@ -25,7 +25,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class UserSerivce {
+public class UserService {
     private final UserRepository userRepository;
     private final UserInfoRepository userInfoRepository;
     private final PasswordEncoder passwordEncoder;
@@ -62,6 +62,7 @@ public class UserSerivce {
         return userMapper.userToResponse(userRepository.save(users));
     }
 
+    // 유저 비밀번호 변경
     @Transactional
     public UserResponseDto changeMemberPassword(String exPassword, String newPassword) {
         Users users = userRepository.findById(securityUtil.getCurrentMemberId())

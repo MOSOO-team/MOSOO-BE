@@ -11,6 +11,6 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ChangeNameRequestDto {
 
-    private String userName;
+    private String fullName;
 
 }
