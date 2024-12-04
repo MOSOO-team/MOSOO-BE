@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 public class UserInfoDto {
 
     private Long id;
-    private Long memberId;
+    private Long userId;
     private String address;
     private Boolean is_gosu;
     private LocalDateTime createdAt;

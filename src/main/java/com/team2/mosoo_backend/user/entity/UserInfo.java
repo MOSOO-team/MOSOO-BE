@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Entity
-@Table(name ="UserInfo")
+@Table(name ="userInfo")
 public class UserInfo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +21,9 @@ public class UserInfo {
     private Users users; // Users 엔티티와의 관계
 
     private String address;
-    private Boolean isGosu;
+
+    @Column(name = "is_gosu")
+    private Boolean isGosu = false;
     private LocalDateTime createdAt;
 
     @OneToOne(mappedBy = "userInfo") // Gosu와의 관계

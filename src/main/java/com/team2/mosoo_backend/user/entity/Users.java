@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
@@ -17,9 +16,10 @@ import java.time.LocalDateTime;
 @Getter
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
-@SQLDelete(sql = "UPDATE member SET is_deleted = true WHERE member_id = ?")
+@SQLDelete(sql = "UPDATE users SET is_deleted = true WHERE user_id = ?")
 @Where(clause = "is_deleted = false")
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "users")
 public class Users {
 
     @Id
@@ -30,13 +30,12 @@ public class Users {
     private String email;
     private String password;
 
-    @Column(name = "fullname")
     private String fullName;
 
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
-    @OneToOne(mappedBy = "users")
+    @OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
     private UserInfo userInfo; // UserInfo와의 관계
 
     private boolean isDeleted;

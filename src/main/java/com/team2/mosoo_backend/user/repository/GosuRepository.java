@@ -22,6 +22,6 @@ public interface GosuRepository extends JpaRepository<Gosu, Long> {
     // 고수 전체 조회
     Page<Gosu> findAll(Pageable pageable);
 
-    @Query(value = "SELECT * FROM member WHERE is_deleted = true", nativeQuery = true)
+    @Query(value = "SELECT * FROM users WHERE is_deleted = true", nativeQuery = true)
     Page<Users> findAllByIsDeleteTrue(Pageable pageable);
 }
