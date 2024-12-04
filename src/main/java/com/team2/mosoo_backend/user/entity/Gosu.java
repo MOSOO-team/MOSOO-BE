@@ -1,5 +1,6 @@
 package com.team2.mosoo_backend.user.entity;
 
+import com.team2.mosoo_backend.category.entity.Category;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
@@ -8,48 +9,46 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "gosuInfo")
+@Table(name = "gosu_info")
 public class Gosu {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+ @Id
+ @GeneratedValue(strategy = GenerationType.IDENTITY)
+ private Long id;
 
-   @OneToOne
-   @JoinColumn(name = "userInfo_id", nullable = false) // UserInfo 엔티티와의 관계
-   private UserInfo userInfo;
+ @OneToOne
+ @JoinColumn(name = "user_info_id", nullable = false) // UserInfo 엔티티와의 관계
+ private UserInfo userInfo;
 
-    @NotNull
-    @Column(nullable = false)
-    private String gender; // 성별
+ @NotNull
+ @Column(nullable = false)
+ private String gender; // 성별
 
-    @NotNull
-    @Column(name = "business_name", nullable = false)
-    private String businessName; // 사업자명
+ @NotNull
+ @Column(nullable = false)
+ private String businessName; // 사업자명
 
-    @NotNull
-    @Column(name = "business_number", nullable = false)
-    private String businessNumber; // 사업자 번호
+ @NotNull
+ @Column(nullable = false)
+ private String businessNumber; // 사업자 번호
 
-    @NotNull
-    @Column(name = "gosuinfo_address", nullable = false)
-    private String gosuInfoAddress; // 기술 제공 주소
+ @NotNull
+ @Column( nullable = false)
+ private String gosuInfoAddress; // 기술 제공 주소
 
-    @NotNull
-    @Column(name = "gosuinfo_phone", nullable = false)
-    private String gosuInfoPhone; // 기술 제공 번호
+ @NotNull
+ @Column(nullable = false)
+ private String gosuInfoPhone; // 기술 제공 번호
 
-    @NotNull
-    @Column(name = "category", nullable = false)
-    private String category; // 기술 제공 카테고리
+ @OneToOne
+ @JoinColumn(name = "category_id")
+ private Category category; // 기술 제공 카테고리
 
-    @NotNull
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt; // 생성일
+ @NotNull
+ @Column(nullable = false)
+ private LocalDateTime createdAt; // 생성일
 
+ private LocalDateTime deletedAt; // 탈퇴 시간
 
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt; // 탈퇴 시간
-
-    @Column
-    private Integer points; // 포인트
+ @Column
+ private Integer points; // 포인트
 }

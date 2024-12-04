@@ -43,9 +43,6 @@ public class AuthService {
         // 이메일 중복 확인
         if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
-        } // 이름 중복 확인
-        if (userRepository.findByFullName(requestDto.getFullName()).isPresent()) {
-            throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
         }
 
         // User 엔티티 생성 및 저장

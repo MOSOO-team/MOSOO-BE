@@ -16,7 +16,7 @@ public class UserInfoDto {
     private Long id;
     private Long userId;
     private String address;
-    private Boolean is_gosu;
+    private Boolean isGosu;
     private LocalDateTime createdAt;
 
 }

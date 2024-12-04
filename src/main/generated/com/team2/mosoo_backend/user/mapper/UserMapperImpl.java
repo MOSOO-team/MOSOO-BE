@@ -1,8 +1,10 @@
 package com.team2.mosoo_backend.user.mapper;
 
+import com.team2.mosoo_backend.user.dto.GosuRequestDto;
 import com.team2.mosoo_backend.user.dto.UserInfoDto;
 import com.team2.mosoo_backend.user.dto.UserRequestDto;
 import com.team2.mosoo_backend.user.dto.UserResponseDto;
+import com.team2.mosoo_backend.user.entity.Gosu;
 import com.team2.mosoo_backend.user.entity.UserInfo;
 import com.team2.mosoo_backend.user.entity.Users;
 import java.util.ArrayList;
@@ -12,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-12-04T11:37:33+0900",
+    date = "2024-12-04T17:17:35+0900",
     comments = "version: 1.5.3.Final, compiler: javac, environment: Java 17.0.12 (Amazon.com Inc.)"
 )
 @Component
@@ -59,11 +61,30 @@ public class UserMapperImpl implements UserMapper {
 
         UserInfoDto.UserInfoDtoBuilder userInfoDto = UserInfoDto.builder();
 
+        userInfoDto.userId( mapUsersToLong( userInfo.getUsers() ) );
         userInfoDto.id( userInfo.getId() );
         userInfoDto.address( userInfo.getAddress() );
+        userInfoDto.isGosu( userInfo.getIsGosu() );
         userInfoDto.createdAt( userInfo.getCreatedAt() );
 
         return userInfoDto.build();
+    }
+
+    @Override
+    public Gosu requestToGosu(GosuRequestDto gosuRequestDto) {
+        if ( gosuRequestDto == null ) {
+            return null;
+        }
+
+        Gosu gosu = new Gosu();
+
+        gosu.setGender( gosuRequestDto.getGender() );
+        gosu.setBusinessName( gosuRequestDto.getBusinessName() );
+        gosu.setBusinessNumber( gosuRequestDto.getBusinessNumber() );
+        gosu.setGosuInfoAddress( gosuRequestDto.getGosuInfoAddress() );
+        gosu.setGosuInfoPhone( gosuRequestDto.getGosuInfoPhone() );
+
+        return gosu;
     }
 
     @Override

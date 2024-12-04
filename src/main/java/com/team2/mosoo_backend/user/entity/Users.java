@@ -35,8 +35,6 @@ public class Users {
     @Enumerated(EnumType.STRING)
     private Authority authority;
 
-    @OneToOne(mappedBy = "users", cascade = CascadeType.ALL)
-    private UserInfo userInfo; // UserInfo와의 관계
 
     private boolean isDeleted;
 

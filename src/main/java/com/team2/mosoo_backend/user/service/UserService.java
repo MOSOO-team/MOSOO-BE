@@ -61,7 +61,12 @@ public class UserService {
 //            throw new RuntimeException("비밀번호가 맞지 않습니다");
         }
         users.setPassword(passwordEncoder.encode((newPassword)));
-        return userMapper.userToResponse(userRepository.save(users));
+        UserResponseDto userResponseDto = userMapper.userToResponse(userRepository.save(users));
+
+        UserInfo userInfo = userInfoRepository.findByUsersId(users.getId()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        userResponseDto.setUserInfoDto(userMapper.userInfoToDto(userInfo));
+        return userResponseDto;
     }
 
 
