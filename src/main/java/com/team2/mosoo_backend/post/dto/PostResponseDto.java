@@ -11,12 +11,12 @@ import java.util.List;
 @NoArgsConstructor
 public class PostResponseDto {
 
-    private long id;
+    private Long id;
     private String title;
     private String description;
     private int price;
     private String duration;
 
-    private List<String> ImgUrls;
+    private List<String> imgUrls;
 
 }
