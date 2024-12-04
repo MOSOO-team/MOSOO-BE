@@ -26,8 +26,6 @@ public class QUserInfo extends EntityPathBase<UserInfo> {
 
     public final DateTimePath<java.time.LocalDateTime> createdAt = createDateTime("createdAt", java.time.LocalDateTime.class);
 
-    public final QGosu gosu;
-
     public final NumberPath<Long> id = createNumber("id", Long.class);
 
     public final BooleanPath isGosu = createBoolean("isGosu");
@@ -52,7 +50,6 @@ public class QUserInfo extends EntityPathBase<UserInfo> {
 
     public QUserInfo(Class<? extends UserInfo> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.gosu = inits.isInitialized("gosu") ? new QGosu(forProperty("gosu"), inits.get("gosu")) : null;
         this.users = inits.isInitialized("users") ? new QUsers(forProperty("users"), inits.get("users")) : null;
     }
 

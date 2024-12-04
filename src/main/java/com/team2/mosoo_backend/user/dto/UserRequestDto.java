@@ -22,7 +22,7 @@ public class UserRequestDto {
     @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d).{8,}$",
             message = "비밀번호는 숫자를 포함한 문자 8자 이상 필요합니다.")
     private String password;
-    @NotBlank(message = "이름은 필수입니다.")
+
     private String fullName;
 
 
