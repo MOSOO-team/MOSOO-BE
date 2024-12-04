@@ -23,16 +23,15 @@ public class UserInfo {
     private String address;
     private Boolean isGosu;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+
+    @OneToOne(mappedBy = "userInfo") // Gosu와의 관계
+    private Gosu gosu; // Gosu 엔티티와의 관계
 
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
+
 
 }

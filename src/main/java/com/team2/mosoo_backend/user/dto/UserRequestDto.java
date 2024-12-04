@@ -1,9 +1,6 @@
 package com.team2.mosoo_backend.user.dto;
 
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +11,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserReqeustDto {
+public class UserRequestDto {
 
     @NotNull(message = "Email cannot be null")
     @Email(message = "Invalid email format")
@@ -25,6 +22,7 @@ public class UserReqeustDto {
     @Pattern(regexp = "^(?=.*[a-zA-Z])(?=.*\\d).{8,}$",
             message = "비밀번호는 숫자를 포함한 문자 8자 이상 필요합니다.")
     private String password;
+    @NotBlank(message = "이름은 필수입니다.")
     private String fullName;
 
 

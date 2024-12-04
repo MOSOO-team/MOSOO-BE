@@ -18,6 +18,5 @@ public class UserInfoDto {
     private String address;
     private Boolean is_gosu;
     private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
 
 }
