@@ -1,7 +1,7 @@
 version: "3"
 services:
   backend:
-    image: ${DOCKER_USER}/mosoo_spring
+    image: ${DOCKER_USER}/mosoo_spring:${CI_COMMIT_SHORT_SHA}
     container_name: mosoo_spring
     ports:
       - 8080:8080
