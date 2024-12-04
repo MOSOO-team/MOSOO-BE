@@ -26,16 +26,30 @@ public class GosuService {
 
     // 고수 정보 생성
     public Gosu createGosu(Gosu gosu) {
+        if (gosu.getUserInfo() != null) {
+            gosu.getUserInfo().setIsGosu(true);
+        }
+
         gosu.setCreatedAt(LocalDateTime.now());
-        gosu.setUpdatedAt(LocalDateTime.now());
         return gosuRepository.save(gosu);
     }
 
     // 고수 정보 업데이트
     public Optional<Gosu> updateGosu(Long id, Gosu gosuDetails) {
         return gosuRepository.findById(id).map(gosu ->{
-            gosu.setUserInfoId(gosuDetails.getUserInfoId());
-            gosu.set
-        })
+            gosu.setUserInfo(gosuDetails.getUserInfo());
+            gosu.setGender(gosuDetails.getGender());
+            gosu.setBusinessName(gosuDetails.getBusinessName());
+            gosu.setBusinessNumber(gosuDetails.getBusinessNumber());
+            gosu.setGosuInfoPhone(gosuDetails.getGosuInfoPhone());
+            gosu.setGosuInfoAddress(gosuDetails.getGosuInfoAddress());
+            gosu.setCategory(gosuDetails.getCategory());
+            return gosuRepository.save(gosu);
+        });
+    }
+
+    // 고수 정보 삭제
+    public void deleteGosu(Long id) {
+        gosuRepository.deleteById(id);
     }
 }

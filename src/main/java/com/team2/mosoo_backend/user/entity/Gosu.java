@@ -14,10 +14,9 @@ public class Gosu {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-
-    @NotNull
-    @Column(name = "user_info_id", nullable = false)
-    private Long userInfoId; // 유저 정보 ID
+   @OneToOne
+   @JoinColumn(name = "userInfo_id", nullable = false) // UserInfo 엔티티와의 관계
+   private UserInfo userInfo;
 
     @NotNull
     @Column(nullable = false)
@@ -47,9 +46,6 @@ public class Gosu {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt; // 생성일
 
-    @NotNull
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt; // 수정일
 
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt; // 탈퇴 시간
