@@ -1,4 +1,8 @@
 spring:
+  # h2 비활성화
+  h2:
+    console:
+      enabled: false
   # 업로드 파일 용령 설정
   servlet:
     multipart:
