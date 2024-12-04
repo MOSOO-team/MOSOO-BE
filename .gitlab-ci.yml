@@ -44,8 +44,8 @@ deploy:
     - ssh-keyscan -H $GCP_VM_IP >> ~/.ssh/known_hosts
   script:
     - echo "$DOCKER_PASSWORD" | docker login --username "$DOCKER_USER" --password-stdin
-    - docker build -t $DOCKER_USER/mosoo_spring:$CI_COMMIT_SHORT_SHA .
-    - docker push $DOCKER_USER/mosoo_spring:$CI_COMMIT_SHORT_SHA
+    - docker build -t $DOCKER_USER/mosoo_spring:latest .
+    - docker push $DOCKER_USER/mosoo_spring:latest
     # .env 파일 생성
     - echo "DOCKER_USER=$DOCKER_USER" > .env
 
