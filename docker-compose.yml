@@ -15,7 +15,7 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
     networks:
-      - app-network
+      - review
 
 networks:
   app-network:

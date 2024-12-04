@@ -13,7 +13,7 @@ build:
     paths:
       - build/libs/*.jar
   only:
-    - feat/category/#26/common
+    - review
 
 # Test Stage: 테스트 실행
 test:
@@ -22,7 +22,7 @@ test:
   script:
     - gradle test
   only:
-    - feat/category/#26/common
+    - review
 
 # Deploy Stage: Docker로 애플리케이션 배포
 deploy:
@@ -69,4 +69,4 @@ deploy:
       docker-compose up -d
       "
   only:
-    - feat/category/#26/common
+    - review
