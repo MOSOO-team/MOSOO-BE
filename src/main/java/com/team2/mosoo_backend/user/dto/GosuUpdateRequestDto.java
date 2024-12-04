@@ -4,18 +4,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
 @Data
-public class GosuRequestDto {
-    @NotNull
-    private Long userInfoId;
-
+public class GosuUpdateRequestDto {
     @NotNull
     private String gender;
-
-    @NotNull
-    private String businessName;
-
-    @NotNull
-    private String businessNumber;
 
     @NotNull
     private String gosuInfoAddress;
@@ -23,6 +14,4 @@ public class GosuRequestDto {
     @NotNull
     private String gosuInfoPhone;
 
-    @NotNull
-    private Long categoryId;
 }

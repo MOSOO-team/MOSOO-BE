@@ -21,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -49,18 +50,6 @@ public class UserService {
         return responseDto;
     }
 
-    @Transactional
-    public UserResponseDto changeMemberUserName(String fullName) {
-        Users users = userRepository.findById(securityUtil.getCurrentMemberId())
-                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        if (userRepository.findByFullName(fullName).isPresent()) {
-            throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
-        }
-        else {
-            users.setFullName(fullName);
-        }
-        return userMapper.userToResponse(userRepository.save(users));
-    }
 
     // 유저 비밀번호 변경
     @Transactional
@@ -72,7 +61,12 @@ public class UserService {
 //            throw new RuntimeException("비밀번호가 맞지 않습니다");
         }
         users.setPassword(passwordEncoder.encode((newPassword)));
-        return userMapper.userToResponse(userRepository.save(users));
+        UserResponseDto userResponseDto = userMapper.userToResponse(userRepository.save(users));
+
+        UserInfo userInfo = userInfoRepository.findByUsersId(users.getId()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        userResponseDto.setUserInfoDto(userMapper.userInfoToDto(userInfo));
+        return userResponseDto;
     }
 
 
@@ -146,6 +140,20 @@ public class UserService {
         return new UserListResponse(members, totalPages);
     }
 
+    // 주소 수정
+    public UserInfo updateUserInfoAddress(Long id, UserInfo updatedUserInfo) {
+        Optional<UserInfo> optionalUserInfo = userInfoRepository.findByUsersId(id);
 
+        if (optionalUserInfo.isPresent()) {
+            UserInfo existingUserInfo = optionalUserInfo.get();
+            // 주소 업데이트, 비어 있을 경우 허용
+            existingUserInfo.setAddress(updatedUserInfo.getAddress());
+            existingUserInfo.setIsGosu(updatedUserInfo.getIsGosu());
+
+            return userInfoRepository.save(existingUserInfo);
+        } else {
+            throw new RuntimeException("유저 정보를 찾을 수 없습니다. ID: " + id);
+        }
+    }
 
 }

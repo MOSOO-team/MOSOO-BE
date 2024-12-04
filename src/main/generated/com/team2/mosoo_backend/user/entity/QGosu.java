@@ -26,7 +26,7 @@ public class QGosu extends EntityPathBase<Gosu> {
 
     public final StringPath businessNumber = createString("businessNumber");
 
-    public final StringPath category = createString("category");
+    public final com.team2.mosoo_backend.category.entity.QCategory category;
 
     public final DateTimePath<java.time.LocalDateTime> createdAt = createDateTime("createdAt", java.time.LocalDateTime.class);
 
@@ -62,6 +62,7 @@ public class QGosu extends EntityPathBase<Gosu> {
 
     public QGosu(Class<? extends Gosu> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
+        this.category = inits.isInitialized("category") ? new com.team2.mosoo_backend.category.entity.QCategory(forProperty("category"), inits.get("category")) : null;
         this.userInfo = inits.isInitialized("userInfo") ? new QUserInfo(forProperty("userInfo"), inits.get("userInfo")) : null;
     }
 
