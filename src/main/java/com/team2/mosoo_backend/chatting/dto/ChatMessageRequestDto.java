@@ -3,7 +3,9 @@ package com.team2.mosoo_backend.chatting.dto;
 import com.team2.mosoo_backend.chatting.entity.ChatMessageType;
 import lombok.*;
 
-@Getter @Setter
+import java.time.LocalDateTime;
+
+@Data @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class ChatMessageRequestDto {
@@ -13,4 +15,5 @@ public class ChatMessageRequestDto {
     private String base64File;
     private String fileName;
     private String content;
+    private LocalDateTime createdAt;
 }

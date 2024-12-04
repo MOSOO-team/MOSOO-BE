@@ -33,15 +33,16 @@ public class PostController {
     // 게시글 작성 요청
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<CreatePostResponseDto> createRequestPost(
-            @ModelAttribute CreatePostRequestDto createPostRequestDto) throws IOException {
+            @ModelAttribute CreatePostRequestDto createPostRequestDto,
+            @RequestParam("isOffer") boolean isOffer) throws IOException {
 
-        CreatePostResponseDto createPost = postService.createPost(createPostRequestDto);
+        CreatePostResponseDto createPost = postService.createPost(createPostRequestDto, isOffer);
 
         return ResponseEntity.status(201).body(createPost);
     }
 
     // 고수 / 일반 게시글 조회 요청
-    @GetMapping("")
+    @GetMapping
     public ResponseEntity<PostListResponseDto> getOfferPosts(
             @RequestParam(required = false, value = "page", defaultValue = "1") @Positive int page,
             @RequestParam(value = "isOffer") boolean isOffer) {
@@ -69,9 +70,9 @@ public class PostController {
     }
 
     // 게시글 삭제 요청
-    @DeleteMapping("/{id}")
-    public ResponseEntity<PostResponseDto> deletePost(@PathVariable("id") Long id) {
-        PostResponseDto postResponseDto = postService.deletePost(id);
+    @DeleteMapping("/{postId}")
+    public ResponseEntity<PostResponseDto> deletePost(@PathVariable("postId") Long postId) {
+        PostResponseDto postResponseDto = postService.deletePost(postId);
         return ResponseEntity.status(204).body(postResponseDto);
     }
 

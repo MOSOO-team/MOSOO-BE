@@ -1,6 +1,8 @@
 package com.team2.mosoo_backend.config;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
@@ -9,15 +11,24 @@ import org.springframework.web.socket.config.annotation.WebSocketTransportRegist
 
 @Configuration
 @EnableWebSocketMessageBroker
+@RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    private final StompHandler stompHandler;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         // stomp 접속 주소 url = ws://localhost:8080/ws-stomp, 프로토콜이 http가 아니다!
         registry.addEndpoint("/ws-stomp") // 연결될 엔드포인트
-//                .setAllowedOrigins("*");
                 .setAllowedOriginPatterns("*")
                 .withSockJS();
+    }
+
+    // 클라이언트 인바운드 채널을 구성하는 메서드
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        // stompHandler를 인터셉터로 등록하여 STOMP 메시지 핸들링을 수행
+        registration.interceptors(stompHandler);
     }
 
     @Override
