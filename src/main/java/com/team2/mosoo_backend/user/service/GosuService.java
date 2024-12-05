@@ -6,8 +6,10 @@ import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
 import com.team2.mosoo_backend.user.dto.GosuRequestDto;
 import com.team2.mosoo_backend.user.dto.GosuUpdateRequestDto;
+import com.team2.mosoo_backend.user.entity.Authority;
 import com.team2.mosoo_backend.user.entity.Gosu;
 import com.team2.mosoo_backend.user.entity.UserInfo;
+import com.team2.mosoo_backend.user.entity.Users;
 import com.team2.mosoo_backend.user.mapper.UserMapper;
 import com.team2.mosoo_backend.user.repository.GosuRepository;
 import com.team2.mosoo_backend.user.repository.UserInfoRepository;
@@ -53,6 +55,11 @@ public class GosuService {
         // 유저인포에서 isGosu => true
         userInfo.setIsGosu(true);
 
+        // 해당하는 유저의 권한을 GOSU로 변경
+        Users user = userInfo.getUsers();
+        user.setAuthority(Authority.ROLE_GOSU);
+
+
         Category category = categoryRepository.findById(gosuRequestDto.getCategoryId())
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
@@ -86,6 +93,9 @@ public class GosuService {
         // 찾은 고수 내부에서 UserInfo 찾기
         UserInfo userInfo = gosu.getUserInfo();
         userInfo.setIsGosu(false);
+
+        Users user = userInfo.getUsers();
+        user.setAuthority(Authority.ROLE_USER);
 
         gosuRepository.delete(gosu);
     }
