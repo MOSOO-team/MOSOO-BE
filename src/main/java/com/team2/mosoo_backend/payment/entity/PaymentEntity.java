@@ -4,6 +4,8 @@ import com.team2.mosoo_backend.common.entity.BaseEntity;
 import com.team2.mosoo_backend.order.entity.Order;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -47,6 +49,7 @@ public class PaymentEntity extends BaseEntity {
     private BigDecimal price;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private PaymentStatusType status;
 
 
