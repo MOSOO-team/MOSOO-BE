@@ -1,6 +1,5 @@
 package com.team2.mosoo_backend.order.controller;
 
-import com.team2.mosoo_backend.order.dto.CreateOrderRequestDto;
 import com.team2.mosoo_backend.order.dto.OrderDetailsResponseDto;
 import com.team2.mosoo_backend.order.dto.OrderListResponseDto;
 import com.team2.mosoo_backend.order.dto.OrderResponseDto;
