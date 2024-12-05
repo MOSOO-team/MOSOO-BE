@@ -2,11 +2,14 @@ package com.team2.mosoo_backend.order.entity;
 
 import com.team2.mosoo_backend.chatting.entity.ChatRoom;
 import com.team2.mosoo_backend.common.entity.BaseEntity;
+import com.team2.mosoo_backend.user.entity.Users;
 import jakarta.persistence.*;
+import java.math.BigDecimal;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+import org.apache.catalina.User;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Entity
@@ -23,7 +26,7 @@ public class Order extends BaseEntity {
     @Column(name = "orders_id", nullable = false)
     private Long id;
 
-    private int price;
+    private BigDecimal price;
 
     @Enumerated(EnumType.STRING)
     private Status status;
@@ -34,7 +37,19 @@ public class Order extends BaseEntity {
     @JoinColumn(name = "chat_romm_id", nullable = false)
     private ChatRoom chatRoom;
 
-    public void setPrice(int price) {
+
+    private String merchantUid; // 주문번호
+
+    @ManyToOne
+    @JoinColumn(name = "user_user_id")
+    private Users user;
+
+
+    public void setMerchantUid(String merchantUid) {
+        this.merchantUid = merchantUid;
+    }
+
+    public void setPrice(BigDecimal price) {
         this.price = price;
     }
 
