@@ -159,6 +159,10 @@ public class PostService {
     public PostResponseDto getPostById(Long postId) {
         Post post = postRepository.findById(postId).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
-        return postMapper.postToPostResponseDto(post);
+        PostResponseDto postResponseDto = postMapper.postToPostResponseDto(post);
+
+        postResponseDto.setFullName(post.getUser().getFullName());
+
+        return postResponseDto;
     }
 }

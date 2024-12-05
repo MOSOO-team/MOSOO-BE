@@ -15,4 +15,6 @@ public class BidResponseDto {
     private int price;
     private LocalDateTime date;
 
+    private String fullName;
+
 }

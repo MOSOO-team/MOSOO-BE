@@ -41,7 +41,7 @@ dependencies {
 	implementation 'com.github.iamport:iamport-rest-client-java:0.2.21'
 	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.3.Final'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	runtimeOnly 'com.h2database:h2'
+	// runtimeOnly 'com.h2database:h2'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
@@ -62,6 +62,12 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	// Redis 의존성 추가
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// jackson-datatype-jsr310 의존성 추가 (LocalDateTime이 Jackson에서 지원되지 않는 문제 해결)
+	implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 }
 
 
