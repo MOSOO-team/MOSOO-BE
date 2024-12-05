@@ -38,6 +38,7 @@ public class BidService {
 
         for(Bid bid : bidList) {
             BidResponseDto bidResponseDto = bidMapper.bidToBidResponseDto(bid);
+            bidResponseDto.setFullName(bid.getUser().getFullName());
             dtoList.add(bidResponseDto);
         }
 
@@ -58,7 +59,10 @@ public class BidService {
 
         Bid createdBid = bidRepository.save(bid);
 
-        return bidMapper.bidToBidResponseDto(createdBid);
+        BidResponseDto bidResponseDto = bidMapper.bidToBidResponseDto(createdBid);
+        bidResponseDto.setFullName(user.getFullName());
+
+        return bidResponseDto;
     }
 
     //입찰 수정

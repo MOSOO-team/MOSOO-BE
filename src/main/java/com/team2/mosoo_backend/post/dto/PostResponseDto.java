@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -16,6 +17,9 @@ public class PostResponseDto {
     private String description;
     private int price;
     private String duration;
+    private boolean isOffer;
+    private LocalDateTime updatedAt;
+    private String fullName;
 
     private List<String> imgUrls;
 
