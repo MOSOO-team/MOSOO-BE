@@ -19,7 +19,7 @@ public class ReviewController {
 
 
     @GetMapping("/{postId}")
-    public ResponseEntity<ReviewListResponseDto> getReviewByPostId(@PathVariable Long postId) {
+    public ResponseEntity<ReviewListResponseDto> getReviewByPostId(@PathVariable("postId") Long postId) {
 
         ReviewListResponseDto reviewListResponseDto = reviewService.getReviewByPostId(postId);
 
@@ -28,7 +28,7 @@ public class ReviewController {
     }
 
     @GetMapping("/my/{userId}")
-    public ResponseEntity<ReviewListResponseDto> getReviewByUserId(@RequestParam Long userId) {
+    public ResponseEntity<ReviewListResponseDto> getReviewByUserId(@PathVariable("userId") Long userId) {
 
         ReviewListResponseDto reviewListResponseDto = reviewService.getReviewByUserId(userId);
 
@@ -40,7 +40,7 @@ public class ReviewController {
     public ResponseEntity<ReviewResponseDto> createReview(
             @PathVariable("postId") Long postId,
             @RequestBody CreateReviewRequestDto createReviewRequestDto,
-            @RequestParam Long userId) {
+            @RequestParam("userId") Long userId) {
 
         ReviewResponseDto reviewResponseDto = reviewService.createReview(userId, postId, createReviewRequestDto);
 

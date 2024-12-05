@@ -15,4 +15,6 @@ public class ReviewResponseDto {
     private String content;
 
     private int rating;
+
+    private String fullName;
 }
