@@ -54,6 +54,10 @@ public enum ErrorCode {
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅방을 찾을 수 없습니다."),
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 후기를 찾을 수 없습니다."),
 
+    PAYMENT_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "처리할 수 없는 결제 상태입니다."),
+    PAYMENT_VALID_ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 결제 정보가 없습니다."),
+    PAYMENT_VALID_IMP_NOT_FOUND(HttpStatus.NOT_FOUND, "Imp에 해당하는 결제 정보가 없습니다."),
+
     /* 409 : CONFLICT : Resource의 현재 상태와 충돌. 보통 중복된 데이터 존재, 조건을 만족하지 못함 */
     DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "데이터가 이미 존재합니다."),
     DUPLICATE_COUPON(HttpStatus.CONFLICT, "쿠폰 등록 이력이 존재합니다."),
@@ -80,9 +84,12 @@ public enum ErrorCode {
     /* 400 BAD_REQUEST : 잘못된 요청 */
     INVALID_CATEGORY_DATA(HttpStatus.BAD_REQUEST, "카테고리 정보가 유효하지 않습니다."),
     INVALID_FILE_DATA(HttpStatus.BAD_REQUEST, "파일 정보가 유효하지 않습니다."),
+    INVALID_PAYMENT_AMOUNT(HttpStatus.BAD_REQUEST, "결제 금액이 일치하지 않습니다."),
     /* 410 GONE : 리소스가 삭제된 상태 */
     CATEGORY_ALREADY_DELETED(HttpStatus.GONE, "이미 삭제된 카테고리입니다.")
     ;
+
+
 
     private final HttpStatus httpStatus;
     private final String message;

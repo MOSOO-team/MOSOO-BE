@@ -12,6 +12,7 @@ import com.team2.mosoo_backend.order.dto.UpdateOrderRequestDto;
 import com.team2.mosoo_backend.order.entity.Order;
 import com.team2.mosoo_backend.order.mapper.OrderMapper;
 import com.team2.mosoo_backend.order.repository.OrderRepository;
+import java.math.BigDecimal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -61,7 +62,7 @@ public class OrderService {
                 .orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
         if(updateOrderRequestDto.getPrice() != 0){
-            order.setPrice(updateOrderRequestDto.getPrice());
+            order.setPrice(BigDecimal.valueOf(updateOrderRequestDto.getPrice()));
         }
         if(updateOrderRequestDto.getStatus() != null){
             order.setStatus(updateOrderRequestDto.getStatus());
@@ -76,6 +77,12 @@ public class OrderService {
             throw new CustomException(ErrorCode.ORDER_NOT_FOUND);
         }
         orderRepository.deleteById(orderId);
+    }
+
+    public void updateOrderStatus(String merchantUid, String orderStatus){
+        Order order = orderRepository.findByMerchantUid(merchantUid);
+        order.setStatus(orderStatus);
+        orderRepository.save(order);
     }
 
 

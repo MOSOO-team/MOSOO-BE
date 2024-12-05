@@ -39,6 +39,10 @@ spring:
     import:
       - s3bucket.yml
 
+  portone:
+    imp_key : ${PORTONE_IMP_KEY}
+    imp_secret: ${PORTONE_IMP_SECRET}
+    
   security:
     oauth2:
       client:
