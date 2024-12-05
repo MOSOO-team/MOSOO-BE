@@ -27,16 +27,14 @@ public class PaymentController {
     @PostMapping("/complete")
     public ResponseEntity<PaymentResponse> completePayment(
             @RequestBody PaymentCompleteRequest request) {
-        try {
             PaymentResponse response = paymentService.verifyPayment(request);
             return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
         }
-    }
 /*
     @GetMapping("/paymentHistory/{userId}")
     public ResponseEntity<List<PaymentHistoryDto>> paymentList(@PathVariable Long userId){
         return ResponseEntity.status(HttpStatus.OK).body(paymentService.paymentHistoryList(userId));
     }*/
+
+
 }
