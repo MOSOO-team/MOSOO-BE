@@ -54,6 +54,7 @@ public enum ErrorCode {
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅방을 찾을 수 없습니다."),
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 후기를 찾을 수 없습니다."),
 
+
     PAYMENT_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "처리할 수 없는 결제 상태입니다."),
     PAYMENT_VALID_ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 결제 정보가 없습니다."),
     PAYMENT_VALID_IMP_NOT_FOUND(HttpStatus.NOT_FOUND, "Imp에 해당하는 결제 정보가 없습니다."),
@@ -80,6 +81,8 @@ public enum ErrorCode {
     PRODUCT_CREATION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 등록 중 서버 에러 발생!"),
     PRODUCT_UPDATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 수정 중 서버 에러 발생!"),
     PRODUCT_DELETION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 삭제 중 서버 에러 발생!"),
+    MERCHANT_NOT_FOUND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "해당 하는 주문이 없습니다."),
+
 
     /* 400 BAD_REQUEST : 잘못된 요청 */
     INVALID_CATEGORY_DATA(HttpStatus.BAD_REQUEST, "카테고리 정보가 유효하지 않습니다."),
