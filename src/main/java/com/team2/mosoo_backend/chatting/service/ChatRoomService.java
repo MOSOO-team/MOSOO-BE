@@ -22,7 +22,11 @@ import com.team2.mosoo_backend.post.entity.Post;
 import com.team2.mosoo_backend.post.mapper.PostMapper;
 import com.team2.mosoo_backend.post.repository.PostRepository;
 import com.team2.mosoo_backend.user.entity.Authority;
+import com.team2.mosoo_backend.user.entity.Gosu;
+import com.team2.mosoo_backend.user.entity.UserInfo;
 import com.team2.mosoo_backend.user.entity.Users;
+import com.team2.mosoo_backend.user.repository.GosuRepository;
+import com.team2.mosoo_backend.user.repository.UserInfoRepository;
 import com.team2.mosoo_backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -54,6 +58,8 @@ public class ChatRoomService {
     private final ChatMessageService chatMessageService;
     private final ChatRoomConnectionRepository chatRoomConnectionRepository;
     private final RedisTemplate<String, Object> redisTemplate;
+    private final UserInfoRepository userInfoRepository;
+    private final GosuRepository gosuRepository;
 
     // 채팅방 연결 시 메서드
     public void connectToChatRoom(Long chatRoomId, String userSessionId) {
@@ -214,12 +220,28 @@ public class ChatRoomService {
         Users loginUser = userRepository.findById(loginUserId).get();   // getAuthenticatedMemberId() 호출 시 예외 처리 완료
 
         // 채팅방 접근 권한 검증 후 찾은 채팅방 받아옴
-        ChatRoom foundChatRoom = chatRoomUtils.validateChatRoomOwnership(chatRoomId, loginUser);
+        ChatRoom chatRoom = chatRoomUtils.validateChatRoomOwnership(chatRoomId, loginUser);
 
-        // 채팅 상대 이름 저장
-        String opponentFullName = chatRoomUtils.getOpponentFullName(foundChatRoom, loginUser);
+        ChatRoomOpponentInfoResponseDto chatRoomOpponentInfoResponseDto;
+        // 로그인 유저가 고수 유저라면 => 상대 일반 유저 정보 담기
+        if(loginUserId.equals(chatRoom.getGosuId())) {
 
-        return new ChatRoomOpponentInfoResponseDto(opponentFullName);
+            Users opponentUser = userRepository.findById(chatRoom.getUserId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+            chatRoomOpponentInfoResponseDto = new ChatRoomOpponentInfoResponseDto(opponentUser.getFullName(), opponentUser.getEmail());
+        } else {    // 로그인 유저가 일반 유저라면 => 상대 고수 유저 정보 담기
+
+            Users opponentUser = userRepository.findById(chatRoom.getGosuId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+            UserInfo userInfo = userInfoRepository.findByUsersId(opponentUser.getId())
+                    .orElseThrow(() -> new CustomException(ErrorCode.USER_INFO_NOT_FOUND));
+            Gosu gosu = gosuRepository.findByUserInfoId(userInfo.getId()).get(0);
+
+            chatRoomOpponentInfoResponseDto = new ChatRoomOpponentInfoResponseDto(gosu.getBusinessName(), gosu.getBusinessNumber(), gosu.getGosuInfoAddress(), gosu.getGosuInfoPhone(), gosu.getCategory().getName());
+        }
+
+
+        return chatRoomOpponentInfoResponseDto;
     }
 
     // 채팅방 생성 메서드
