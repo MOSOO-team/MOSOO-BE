@@ -106,7 +106,7 @@ public class OrderService {
         Gosu gosu = gosuRepository.findByUserInfoId(byUsersId.getId()).get(0);
         GosuResponseDto gosuResponseDto = new GosuResponseDto(gosu.getGosuInfoAddress(), gosu.getBusinessName());
 
-        return new OrderDetailsResponseDto(postResponseDto, bidResponseDto, gosuResponseDto, order.getPrice());
+        return new OrderDetailsResponseDto(postResponseDto, bidResponseDto, gosuResponseDto, order.getPrice(), order.getMerchantUid());
     }
 
 
