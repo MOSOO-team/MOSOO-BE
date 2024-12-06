@@ -52,6 +52,21 @@ public class PostController {
         return ResponseEntity.status(200).body(postList);
     }
 
+    // 카테고리별 게시글
+    @GetMapping("/getBy/{categoryId}")
+    public ResponseEntity<SearchedPostListResponseDto> getPostByCategoryId(
+            @RequestParam(required = false, value = "page", defaultValue = "1") @Positive int page,
+            @PathVariable("categoryId") Long categoryId,
+            @RequestParam(value = "isOffer") boolean isOffer,
+            @RequestParam(required = false, value = "keyword", defaultValue = "") String keyword,
+            @RequestParam(required = false, value = "address", defaultValue = "") String address) {
+
+        SearchedPostListResponseDto postList = postService.getSearchedPost(page, categoryId, isOffer, keyword, address);
+
+        return ResponseEntity.status(200).body(postList);
+
+    }
+
     // 게시글 단건 조회
     @GetMapping("/{postId}")
     public ResponseEntity<PostResponseDto> getPostById(
