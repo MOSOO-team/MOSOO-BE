@@ -6,7 +6,6 @@ import com.team2.mosoo_backend.post.dto.CreatePostResponseDto;
 import com.team2.mosoo_backend.post.dto.PostResponseDto;
 import com.team2.mosoo_backend.post.entity.Post;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 
 
 @Mapper(componentModel = "spring")
@@ -14,7 +13,8 @@ public interface PostMapper {
 
     PostResponseDto postToPostResponseDto(Post post);
 
-    Post createPostRequestDtoToPost(CreatePostRequestDto CreatePostRequestDto);
+    Post createPostRequestDtoToPost(CreatePostRequestDto CreatePostRequest);
 
     CreatePostResponseDto postToCreatePostResponseDto(Post post);
+
 }
