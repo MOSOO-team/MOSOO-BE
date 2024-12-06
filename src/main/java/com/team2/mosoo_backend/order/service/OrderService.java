@@ -72,7 +72,7 @@ public class OrderService {
             Gosu gosu = gosuRepository.findByUserInfoId(byUsersId.getId()).get(0);
             String gosuName = gosu.getBusinessName();
 
-            orderResponseDtoList.add(new OrderResponseDto(workDate, order.getId(), order.getPrice(), paymentEntity.getCreatedAt(), gosuName));
+            orderResponseDtoList.add(new OrderResponseDto(workDate, order.getId(), order.getPrice(), paymentEntity.getCreatedAt(), gosuName, chatRoom.getPost().getId()));
         }
 
         return new OrderListResponseDto(orderResponseDtoList);
