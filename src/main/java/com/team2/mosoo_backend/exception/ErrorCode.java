@@ -38,7 +38,8 @@ public enum ErrorCode {
     USER_NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "권한이 없는 사용자입니다."),
 
     /* 404 NOT_FOUND : Resource를 찾을 수 없음 */
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 정보의 사용자를 찾을 수 없습니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    USER_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자 정보를 찾을 수 없습니다."),
     OBJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "대상을 찾을 수 없습니다."),
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "대상을 찾을 수 없습니다."),
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
@@ -53,6 +54,11 @@ public enum ErrorCode {
     BID_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 입찰을 찾을 수 없습니다."),
     CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅방을 찾을 수 없습니다."),
     REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 후기를 찾을 수 없습니다."),
+
+
+    PAYMENT_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "처리할 수 없는 결제 상태입니다."),
+    PAYMENT_VALID_ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 결제 정보가 없습니다."),
+    PAYMENT_VALID_IMP_NOT_FOUND(HttpStatus.NOT_FOUND, "Imp에 해당하는 결제 정보가 없습니다."),
 
     /* 409 : CONFLICT : Resource의 현재 상태와 충돌. 보통 중복된 데이터 존재, 조건을 만족하지 못함 */
     DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "데이터가 이미 존재합니다."),
@@ -74,15 +80,21 @@ public enum ErrorCode {
     PRODUCT_LIST_RETRIEVAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 목록 조회 중 서버 에러 발생!"),
     PRODUCT_DETAIL_RETRIEVAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 상세 조회 중 서버 에러 발생!"),
     PRODUCT_CREATION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 등록 중 서버 에러 발생!"),
+    FILE_NAME_CONVERSION_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "파일 이름 변환 중 예외가 발생했습니다."),
     PRODUCT_UPDATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 수정 중 서버 에러 발생!"),
     PRODUCT_DELETION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 삭제 중 서버 에러 발생!"),
+    MERCHANT_NOT_FOUND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "해당 하는 주문이 없습니다."),
+
 
     /* 400 BAD_REQUEST : 잘못된 요청 */
     INVALID_CATEGORY_DATA(HttpStatus.BAD_REQUEST, "카테고리 정보가 유효하지 않습니다."),
     INVALID_FILE_DATA(HttpStatus.BAD_REQUEST, "파일 정보가 유효하지 않습니다."),
+    INVALID_PAYMENT_AMOUNT(HttpStatus.BAD_REQUEST, "결제 금액이 일치하지 않습니다."),
     /* 410 GONE : 리소스가 삭제된 상태 */
     CATEGORY_ALREADY_DELETED(HttpStatus.GONE, "이미 삭제된 카테고리입니다.")
     ;
+
+
 
     private final HttpStatus httpStatus;
     private final String message;

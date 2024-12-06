@@ -38,7 +38,9 @@ public class ReviewService {
 
 
         for (Review review : reviewList) {
-            reviewResponseDtoList.add(reviewMapper.reviewToReviewResponseDto(review));
+            ReviewResponseDto reviewResponseDto = reviewMapper.reviewToReviewResponseDto(review);
+            reviewResponseDto.setFullName(review.getUser().getFullName());
+            reviewResponseDtoList.add(reviewResponseDto);
         }
 
         return new ReviewListResponseDto(reviewResponseDtoList);

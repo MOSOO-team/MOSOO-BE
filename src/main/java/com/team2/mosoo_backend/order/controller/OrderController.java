@@ -1,10 +1,13 @@
 package com.team2.mosoo_backend.order.controller;
 
-import com.team2.mosoo_backend.order.dto.CreateOrderRequestDto;
+import com.team2.mosoo_backend.order.dto.OrderDetailsResponseDto;
 import com.team2.mosoo_backend.order.dto.OrderListResponseDto;
 import com.team2.mosoo_backend.order.dto.OrderResponseDto;
+import com.team2.mosoo_backend.order.dto.OrderStatusUpdateResponseDto;
 import com.team2.mosoo_backend.order.dto.UpdateOrderRequestDto;
+import com.team2.mosoo_backend.order.entity.OrderStatus;
 import com.team2.mosoo_backend.order.service.OrderService;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,43 +20,36 @@ public class OrderController {
     private final OrderService orderService;
 
 
+    //조회
+    @Operation(summary = "주문서 조회", description = "사용자의 결제된 주문 전체 내역을 조회합니다.")
     @GetMapping
-    public ResponseEntity<OrderListResponseDto> getAllOrders() {
-        OrderListResponseDto responseDto = orderService.getAllOrders();
+    public ResponseEntity<OrderListResponseDto> getAllOrders(
+            @RequestParam(value = "orderStatus") OrderStatus orderStatus
+    ) {
+        OrderListResponseDto responseDto = orderService.getAllOrders(orderStatus);
 
         return ResponseEntity.status(200).body(responseDto);
     }
 
-    @GetMapping("/{ordersId}")
-    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable("ordersId") Long orderId) {
-        OrderResponseDto orderResponseDto = orderService.getOrderById(orderId);
 
-        return ResponseEntity.status(200).body(orderResponseDto);
-    }
-
+    @Operation(summary = "주문서 생성", description = "chatRoomID를 받아 주문서를 저장한다.")
     @PostMapping
-    public ResponseEntity<OrderResponseDto> createOrder(
-            @RequestParam(value = "chatroomId") Long chatroomId,
-            @RequestBody CreateOrderRequestDto createOrderRequestDto) {
-        OrderResponseDto orderResponseDto = orderService.createOrder(chatroomId, createOrderRequestDto);
+    public ResponseEntity<OrderDetailsResponseDto> createOrder(
+            @RequestParam(value = "chatroomId") Long chatroomId) {
+        OrderDetailsResponseDto orderDetailsResponseDto = orderService.createOrder(chatroomId);
 
-        return ResponseEntity.status(201).body(orderResponseDto);
+        return ResponseEntity.status(201).body(orderDetailsResponseDto);
     }
 
+    @Operation(summary = "주문상태 update", description = "서비스완료 버튼을 누르는경우 상태가 이용완료 상태로 변경됩니다.")
     @PutMapping("/{orderId}")
-    public ResponseEntity<OrderResponseDto> updateOrder(
-            @PathVariable("orderId") Long orderId,
-            @RequestBody UpdateOrderRequestDto updateOrderRequestDto
+    public ResponseEntity<OrderStatusUpdateResponseDto> updateOrder(
+            @PathVariable("orderId") Long orderId
     ) {
-        OrderResponseDto updatedOrderResponse = orderService.updateOrder(orderId, updateOrderRequestDto);
-        return ResponseEntity.status(201).body(updatedOrderResponse);
+        OrderStatusUpdateResponseDto orderStatusUpdateResponse = orderService.updateOrder(orderId);
+        return ResponseEntity.status(201).body(orderStatusUpdateResponse);
     }
 
-    @DeleteMapping("/{orderId}")
-    public ResponseEntity<Void> deleteOrder(@PathVariable("orderId") Long orderId) {
-        orderService.deleteOrder(orderId);
-        return ResponseEntity.status(204).build();
-    }
 
 
 }

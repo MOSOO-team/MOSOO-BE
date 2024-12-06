@@ -1,6 +1,6 @@
 package com.team2.mosoo_backend.config;
 
-import com.team2.mosoo_backend.chatting.service.RedisService;
+import com.team2.mosoo_backend.chatting.service.ChatRoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class StompHandler implements ChannelInterceptor {
 
-    private final RedisService redisService;
+    private final ChatRoomService chatRoomService;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel messageChannel) {
@@ -41,21 +41,19 @@ public class StompHandler implements ChannelInterceptor {
     private void connectToChatRoom(StompHeaderAccessor accessor) {
 
         Long chatRoomId = getChatRoomId(accessor);
-        String userId = accessor.getSessionId(); // 사용자 ID로 세션 ID 사용
+        String userSessionId = accessor.getSessionId(); // 사용자 ID로 세션 ID 사용
 
         // 사용자 상태 저장
-        redisService.saveUserChatRoom(userId, chatRoomId);
-        redisService.connectToChatRoom(chatRoomId);
+        chatRoomService.connectToChatRoom(chatRoomId, userSessionId);
     }
 
     private void disconnectFromChatRoom(StompHeaderAccessor accessor) {
 
-        String userId = accessor.getSessionId(); // 사용자 ID
-        Long chatRoomId = redisService.getUserChatRoom(userId); // 사용자에 대한 chatRoomId 가져오기
+        String userSessionId = accessor.getSessionId(); // 사용자 ID
+        Long chatRoomId = chatRoomService.getUserChatRoom(userSessionId); // 사용자에 대한 chatRoomId 가져오기
 
         if (chatRoomId != null) {
-            redisService.disconnectFromChatRoom(chatRoomId);
-            redisService.removeUserChatRoom(userId); // 사용자 ID로 저장된 채팅방 ID 삭제
+            chatRoomService.disconnectFromChatRoom(chatRoomId, userSessionId);
         }
     }
 

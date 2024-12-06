@@ -1,6 +1,7 @@
 package com.team2.mosoo_backend.order.dto;
 
-import com.team2.mosoo_backend.order.entity.Status;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,11 +11,16 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OrderResponseDto {
 
-    private Long id;
+    private String workDate;
 
-    private int price;
+    private Long orderId;
 
-    private Status status;
+    private BigDecimal price;
 
-    private String method;
+    private LocalDateTime paidAt;
+
+    private String gosuName;
+
+    private Long postId;
 }
+//고수 이름, 금액, 결제 완료일, 진행일자
