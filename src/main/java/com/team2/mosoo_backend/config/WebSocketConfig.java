@@ -27,21 +27,21 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     // 클라이언트 인바운드 채널을 구성하는 메서드
     @Override
     public void configureClientInboundChannel(ChannelRegistration registration) {
-        // stompHandler를 인터셉터로 등록하여 STOMP 메시지 핸들링을 수행
+        // stompHandler를 인터셉터로 등록하여 STOMP 메세지 핸들링을 수행
         registration.interceptors(stompHandler);
     }
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
-        // 메시지를 구독(수신)하는 요청 엔드포인트
+        // 메세지를 구독(수신)하는 요청 엔드포인트
         registry.enableSimpleBroker("/sub");
 
-        // 메시지를 발행(송신)하는 엔드포인트
+        // 메세지를 발행(송신)하는 엔드포인트
         registry.setApplicationDestinationPrefixes("/pub");
     }
 
     @Override
     public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
-        registration.setMessageSizeLimit(128 * 1024 * 1024); // 메시지 크기를 128MB로 설정
+        registration.setMessageSizeLimit(128 * 1024 * 1024); // 메세지 크기를 128MB로 설정
     }
 }

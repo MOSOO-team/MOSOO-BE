@@ -55,13 +55,19 @@ deploy:
     - echo "DB_USERNAME=$DB_USERNAME" >> .env
     - echo "DB_PASSWORD=$DB_PASSWORD" >> .env
     - echo "DEPLOY_FRONT_URL=$DEPLOY_FRONT_URL" >> .env
-    - echo "GOOGLE_CLIENT_ID" >> .env
-    - echo "GOOGLE_CLIENT_SECRET" >> .env
-
-    - echo "REACT_APP_API_BASE_URL=${REACT_APP_API_BASE_URL}" >> .env
+    - echo "GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID" >> .env
+    - echo "GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET" >> .env
     # GCP VM에 전송 및 SSH 접속 후 Docker-compose
     - scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa .env $GCP_USER@$GCP_VM_IP:/path/to/your/project/spring/
     - scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml $GCP_USER@$GCP_VM_IP:/path/to/your/project/spring/
-    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $GCP_USER@$GCP_VM_IP "cd /path/to/your/project/spring/ && docker-compose up -d"
+    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $GCP_USER@$GCP_VM_IP "
+      cd /path/to/your/project/spring/ &&
+      docker pull $DOCKER_USER/mosoo_spring:latest &&
+      docker-compose down || echo 'Containers were not running or failed to stop.'
+      "
+    - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $GCP_USER@$GCP_VM_IP "
+      cd /path/to/your/project/spring/ &&
+      docker-compose up -d
+      "
   only:
     - review

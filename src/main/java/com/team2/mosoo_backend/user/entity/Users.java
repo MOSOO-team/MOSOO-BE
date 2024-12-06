@@ -16,34 +16,34 @@ import java.time.LocalDateTime;
 @Getter
 @SuperBuilder(toBuilder = true)
 @NoArgsConstructor
-@SQLDelete(sql = "UPDATE member SET is_deleted = true WHERE member_id = ?")
+@SQLDelete(sql = "UPDATE users SET is_deleted = true WHERE user_id = ?")
 @Where(clause = "is_deleted = false")
 @EntityListeners(AuditingEntityListener.class)
+@Table(name = "users")
 public class Users {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", unique = true, nullable = false)
     private Long id;
-
     @Column(nullable = false)
     private String email;
-
     private String password;
 
-
-    @Column(nullable = false)
     private String fullName;
-
 
     @Enumerated(EnumType.STRING)
     private Authority authority;
+
 
     private boolean isDeleted;
 
     @CreatedDate
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
 
     public void setFullName(String fullName) {
@@ -59,7 +59,7 @@ public class Users {
 
 
     @Builder
-    public Users(Long id, String email, String password, String fullName, Authority authority, boolean isDeleted, LocalDateTime createdAt) {
+    public Users(Long id, String email, String password, String fullName, Authority authority, boolean isDeleted, LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.email = email;
         this.password = password;
@@ -67,6 +67,19 @@ public class Users {
         this.authority = authority;
         this.isDeleted = isDeleted;
         this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
 
+    }
+
+    @PrePersist
+    public void prePersist() {
+        LocalDateTime now = LocalDateTime.now();
+        this.createdAt = now;
+        this.updatedAt = now;
+    }
+
+    @PreUpdate
+    public void preUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }
