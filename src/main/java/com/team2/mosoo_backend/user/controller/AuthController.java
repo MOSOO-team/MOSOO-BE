@@ -3,7 +3,7 @@ package com.team2.mosoo_backend.user.controller;
 
 import com.team2.mosoo_backend.oath.util.RefreshTokenCookieUtil;
 import com.team2.mosoo_backend.user.dto.TokenDto;
-import com.team2.mosoo_backend.user.dto.UserReqeustDto;
+import com.team2.mosoo_backend.user.dto.UserRequestDto;
 import com.team2.mosoo_backend.user.dto.UserResponseDto;
 import com.team2.mosoo_backend.user.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -25,14 +25,14 @@ public class AuthController {
 
     // 회원가입
     @PostMapping("")
-    public ResponseEntity<UserResponseDto> signup(@Validated @RequestBody UserReqeustDto requestDto) {
+    public ResponseEntity<UserResponseDto> signup(@Validated @RequestBody UserRequestDto requestDto) {
         return ResponseEntity.ok(authService.signup(requestDto));
     }
 
     // 로그인
     @PostMapping("/login")
     public ResponseEntity<TokenDto> login(
-            @Validated @RequestBody UserReqeustDto requestDto,
+            @Validated @RequestBody UserRequestDto requestDto,
             HttpServletResponse response,
             HttpServletRequest request) {
         TokenDto tokenDto = authService.login(request, response, requestDto);

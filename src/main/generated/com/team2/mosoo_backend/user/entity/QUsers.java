@@ -33,6 +33,8 @@ public class QUsers extends EntityPathBase<Users> {
 
     public final StringPath password = createString("password");
 
+    public final DateTimePath<java.time.LocalDateTime> updatedAt = createDateTime("updatedAt", java.time.LocalDateTime.class);
+
     public QUsers(String variable) {
         super(Users.class, forVariable(variable));
     }

@@ -4,25 +4,37 @@ import com.siot.IamportRestClient.IamportClient;
 import com.siot.IamportRestClient.exception.IamportResponseException;
 import com.siot.IamportRestClient.response.IamportResponse;
 import com.siot.IamportRestClient.response.Payment;
+import com.team2.mosoo_backend.order.service.OrderService;
+import com.team2.mosoo_backend.payment.dto.PaymentCancelRequest;
+import com.team2.mosoo_backend.payment.dto.PaymentCompleteRequest;
+import com.team2.mosoo_backend.payment.dto.PaymentResponse;
+import com.team2.mosoo_backend.payment.service.PaymentService;
 import java.io.IOException;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
+@RestController
+@RequestMapping("/api/v1")
+@RequiredArgsConstructor
 public class PaymentController {
 
-    private final IamportClient iamportClient;
-
-    public PaymentController(IamportClient iamportClient) {
-        this.iamportClient = new IamportClient("5561133411260273", "5sw3JWEyzRDwt4G0Op58u2MeUcbcc7ODoLz3bshwnDjBDvRmrm9AVoCM6KaA33lEvgNeUj162Xt593gh");
-    }
+    private final PaymentService paymentService;
 
 
-    @ResponseBody
-    @RequestMapping("/verify/{imp_uid}")
-    public IamportResponse<Payment> paymentByImpUid(@PathVariable("imp_uid") String imp_uid)
-            throws IamportResponseException, IOException {
-        return iamportClient.paymentByImpUid(imp_uid);
-    }
+
+    @PostMapping("/complete")
+    public ResponseEntity<PaymentResponse> completePayment(
+            @RequestBody PaymentCompleteRequest request) {
+            PaymentResponse response = paymentService.verifyPayment(request);
+            return ResponseEntity.ok(response);
+        }
+/*
+    @GetMapping("/paymentHistory/{userId}")
+    public ResponseEntity<List<PaymentHistoryDto>> paymentList(@PathVariable Long userId){
+        return ResponseEntity.status(HttpStatus.OK).body(paymentService.paymentHistoryList(userId));
+    }*/
+
 
 }
