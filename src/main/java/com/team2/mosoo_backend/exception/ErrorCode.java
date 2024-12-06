@@ -79,6 +79,7 @@ public enum ErrorCode {
     PRODUCT_LIST_RETRIEVAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 목록 조회 중 서버 에러 발생!"),
     PRODUCT_DETAIL_RETRIEVAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 상세 조회 중 서버 에러 발생!"),
     PRODUCT_CREATION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 등록 중 서버 에러 발생!"),
+    FILE_NAME_CONVERSION_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "파일 이름 변환 중 예외가 발생했습니다."),
     PRODUCT_UPDATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 수정 중 서버 에러 발생!"),
     PRODUCT_DELETION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 삭제 중 서버 에러 발생!"),
     MERCHANT_NOT_FOUND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "해당 하는 주문이 없습니다."),
