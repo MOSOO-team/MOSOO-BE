@@ -7,7 +7,7 @@ public class PaymentResponse {
 
     private String impUid;
     private String merchantUid;
-    private Long amount;
     private Long price;
     private String status;
 }
+//진행날짜, 금액, 결제완료 날짜 추가
