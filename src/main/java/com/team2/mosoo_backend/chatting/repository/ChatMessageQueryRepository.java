@@ -10,15 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.jdbc.core.BatchPreparedStatementSetter;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Repository;
 
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -28,7 +22,7 @@ public class ChatMessageQueryRepository {
     // jpa의 EntityManager 의존 주입
     private final EntityManager em;
 
-    // 특정 채팅방에 대한 채팅 메시지를 no-offset 방식으로 조회하는 메서드
+    // 특정 채팅방에 대한 채팅 메세지를 no-offset 방식으로 조회하는 메서드
     public Page<ChatMessage> findChatMessagesByChatRoomIdUsingNoOffset(Pageable pageable, Long chatRoomId, @Nullable Long index) {
 
         // JPAQueryFactory 생성 => QueryDSL 쿼리 작성 가능

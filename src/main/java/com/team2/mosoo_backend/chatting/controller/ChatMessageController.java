@@ -3,7 +3,6 @@ package com.team2.mosoo_backend.chatting.controller;
 import com.team2.mosoo_backend.chatting.dto.ChatMessageRequestDto;
 import com.team2.mosoo_backend.chatting.dto.ChatMessageResponseWrapperDto;
 import com.team2.mosoo_backend.chatting.service.ChatMessageService;
-import com.team2.mosoo_backend.chatting.service.RedisService;
 import com.team2.mosoo_backend.config.swagger.ApiExceptionResponseExamples;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -31,21 +30,20 @@ import static com.team2.mosoo_backend.exception.ErrorCode.USER_NOT_AUTHORIZED;
 public class ChatMessageController {
 
     private final ChatMessageService chatMessageService;
-    private final RedisService redisService;
 
-    // 특정 채팅방에 대한 메시지 전송 및 저장
+    // 특정 채팅방에 대한 메세지 전송 및 저장
     @MessageMapping("/{chatRoomId}")
-    @SendTo("/sub/{chatRoomId}") // 해당 채팅방에 구독한 클라이언트들에게 메시지를 전송
+    @SendTo("/sub/{chatRoomId}") // 해당 채팅방에 구독한 클라이언트들에게 메세지를 전송
     public ResponseEntity<ChatMessageRequestDto> chat(@DestinationVariable("chatRoomId") Long chatRoomId, ChatMessageRequestDto chatMessageRequestDto) {
 
-        // 채팅 메시지 redis에 저장
-        redisService.saveChatMessageToSortedSet(chatRoomId, chatMessageRequestDto);
+        // 채팅 메세지 redis에 저장
+        chatMessageService.saveChatMessageToRedis(chatRoomId, chatMessageRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(chatMessageRequestDto);
     }
 
-    // 성능 개선한 채팅 메시지 조회
+    // 성능 개선한 채팅 메세지 조회
     @GetMapping("/api/chatroom/{chatRoomId}")
-    @Operation(summary = "채팅 메시지 목록 조회", description = "채팅 메시지 목록 조회")
+    @Operation(summary = "채팅 메세지 목록 조회", description = "채팅 메세지 목록 조회")
     @ApiExceptionResponseExamples({USER_NOT_AUTHORIZED, CHAT_ROOM_NOT_FOUND})
     /*
         403 에러 : 유저 정보가 일치하지 않는 경우

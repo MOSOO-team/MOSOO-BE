@@ -8,9 +8,11 @@ import com.team2.mosoo_backend.chatting.dto.*;
 import com.team2.mosoo_backend.chatting.entity.ChatMessage;
 import com.team2.mosoo_backend.chatting.entity.ChatMessageType;
 import com.team2.mosoo_backend.chatting.entity.ChatRoom;
+import com.team2.mosoo_backend.chatting.entity.ChatRoomConnection;
 import com.team2.mosoo_backend.chatting.mapper.ChatMessageMapper;
 import com.team2.mosoo_backend.chatting.mapper.ChatRoomMapper;
 import com.team2.mosoo_backend.chatting.repository.ChatMessageRepository;
+import com.team2.mosoo_backend.chatting.repository.ChatRoomConnectionRepository;
 import com.team2.mosoo_backend.chatting.repository.ChatRoomRepository;
 import com.team2.mosoo_backend.config.SecurityUtil;
 import com.team2.mosoo_backend.exception.CustomException;
@@ -26,9 +28,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,6 +52,74 @@ public class ChatRoomService {
     private final ChatMessageMapper chatMessageMapper;
     private final SecurityUtil securityUtil;
     private final ChatMessageService chatMessageService;
+    private final ChatRoomConnectionRepository chatRoomConnectionRepository;
+    private final RedisTemplate<String, Object> redisTemplate;
+
+    // 채팅방 연결 시 메서드
+    public void connectToChatRoom(Long chatRoomId, String userSessionId) {
+
+        // 레디스에 유저의 채팅방 접속 정보 저장 => 사용자 ID를 키로 하고, 채팅방 ID를 값으로 저장
+        redisTemplate.opsForValue().set(userSessionId, chatRoomId);
+
+        String chatRoomIdString = String.valueOf(chatRoomId);
+
+        // ChatRoomConnection 엔티티를 가져오거나 새로 생성
+        ChatRoomConnection connection = chatRoomConnectionRepository.findById(chatRoomIdString)
+                .orElse(ChatRoomConnection.builder()
+                        .id(chatRoomIdString)
+                        .connectionCount(0) // 초기 연결 수 0
+                        .build());
+
+        // 연결 수 증가
+        connection.incrementConnectionCount();
+
+        // 레디스에 연결 정보 저장
+        chatRoomConnectionRepository.save(connection);
+
+        // 읽지 않은 메세지가 있다면 읽음으로 변경
+        chatMessageService.setChatMessagesToRead(chatRoomId, getAuthenticatedMemberId());
+    }
+
+    // 채팅방 연결 해제 시 메서드
+    public void disconnectFromChatRoom(Long chatRoomId, String userSessionId) {
+
+        // 레디스에 있는 유저의 채팅방 접속 정보 삭제 => 사용자 ID로 저장된 채팅방 ID 삭제
+        redisTemplate.delete(userSessionId);
+
+        // ChatRoomConnection 엔티티 가져옴
+        ChatRoomConnection connection = chatRoomConnectionRepository.findById(String.valueOf(chatRoomId))
+                .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
+
+        // 연결 수 감소
+        connection.decrementConnectionCount();
+
+        // 레디스에 연결 정보 저장
+        chatRoomConnectionRepository.save(connection);
+
+        // 채팅방에 접속중인 유저가 0명이라면 레디스의 채팅 메세지를 db로 저장
+        if(connection.getConnectionCount() == 0) {
+            // 레디스 -> db 저장
+            chatMessageService.saveChatMessagesToDb(chatRoomId);
+
+            // Redis 키 삭제
+            String redisKey = "chatRoom:" + chatRoomId + ":messages";
+            redisTemplate.delete(redisKey); // redisTemplate을 사용하여 Redis에서 키 삭제
+
+            // 채팅방 연결 정보 키 삭제
+            redisTemplate.delete("chatRoomConnection:" + chatRoomId);
+        }
+    }
+
+    // 레디스에 저장된 사용자 세션 ID로 채팅방 ID를 가져오는 메서드
+    public Long getUserChatRoom(String userSessionId) {
+        Object value = redisTemplate.opsForValue().get(userSessionId);
+        if (value instanceof Long) {
+            return (Long) value;
+        } else if (value instanceof Integer) {
+            return ((Integer) value).longValue(); // Integer를 Long으로 변환
+        }
+        return null; // null 처리
+    }
 
     // 채팅방 목록 조회 메서드
     public ChatRoomResponseWrapperDto findAllChatRooms(int page) {
@@ -75,25 +147,28 @@ public class ChatRoomService {
             ChatMessage chatMessage;
 
             List<ChatMessageRequestDto> chatMessagesFromRedis = chatMessageService.findChatMessagesFromRedis(chatRoom.getId(), true);
-            if(chatMessagesFromRedis.size() > 0) {  // 최신 채팅 메세지가 레디스에 존재할 때
+            if(!chatMessagesFromRedis.isEmpty()) {  // 최신 채팅 메세지가 레디스에 존재할 때
                  chatMessage = chatMessageMapper.toEntity(chatMessagesFromRedis.get(0));
             } else {                                // 최신 채팅 메세지가 db에 존재할 때
                 chatMessage = chatMessageRepository.findTopByChatRoomIdOrderByCreatedAtDesc(chatRoom.getId())
                         .orElse(null);
             }
 
-            if(chatMessage.getType() == ChatMessageType.IMAGE) { // 메시지 타입이 이미지 인 경우: 가장 최근 채팅을 "이미지"로 설정
+            if(chatMessage.getType() == ChatMessageType.IMAGE) { // 메세지 타입이 이미지 인 경우: 가장 최근 채팅을 "이미지"로 설정
                 dto.setLastChatMessage("이미지");
-            } else if(chatMessage.getType() == ChatMessageType.VIDEO) { // 메시지 타입이 동영상 인 경우: 가장 최근 채팅을 "동영상"으로 설정
+            } else if(chatMessage.getType() == ChatMessageType.VIDEO) { // 메세지 타입이 동영상 인 경우: 가장 최근 채팅을 "동영상"으로 설정
                 dto.setLastChatMessage("동영상");
-            } else if(chatMessage.getType() == ChatMessageType.FILE) { // 메시지 타입이 파일 인 경우: 가장 최근 채팅을 "파일"로 설정
+            } else if(chatMessage.getType() == ChatMessageType.FILE) { // 메세지 타입이 파일 인 경우: 가장 최근 채팅을 "파일"로 설정
                 dto.setLastChatMessage("파일");
-            } else {    // 메시지 타입이 메시지 인 경우: 가장 최근 채팅을 메시지 내용으로 설정
+            } else {    // 메세지 타입이 메세지 인 경우: 가장 최근 채팅을 메세지 내용으로 설정
                 dto.setLastChatMessage(chatMessage.getContent());
             }
 
             // 가장 마지막 채팅 시간 설정
             dto.setLastChatDate(chatMessage.getCreatedAt());
+
+            // 안 읽은 메세지 존재 여부 설정
+            dto.setExistUnchecked(!chatMessage.getSourceUserId().equals(loginUserId) && !chatMessage.isChecked());
 
             result.add(dto);
 
@@ -207,7 +282,9 @@ public class ChatRoomService {
                 .sourceUserId(chatRoom.getGosuId()).type(ChatMessageType.ENTER).content(gosu.getFullName() + " 님이 입장했습니다.").build());
 
         userEnterChatMessage.setChatRoom(savedChatRoom);
+        userEnterChatMessage.setCreatedAt(LocalDateTime.now());
         gosuEnterChatMessage.setChatRoom(savedChatRoom);
+        gosuEnterChatMessage.setCreatedAt(LocalDateTime.now());
 
         // 채팅방 입장 메세지 저장
         chatMessageRepository.save(userEnterChatMessage);
@@ -286,6 +363,7 @@ public class ChatRoomService {
     // 따로 분리한 이유 : RuntimeException이 아닌 커스텀 예외 처리 위해서
     private Long getAuthenticatedMemberId() {
         try {
+//            return 1L;
             return securityUtil.getCurrentMemberId();
         } catch (RuntimeException e) {
             throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
