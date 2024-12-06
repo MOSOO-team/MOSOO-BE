@@ -29,10 +29,12 @@ import com.team2.mosoo_backend.user.repository.GosuRepository;
 import com.team2.mosoo_backend.user.repository.UserInfoRepository;
 import com.team2.mosoo_backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,6 +62,8 @@ public class ChatRoomService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final UserInfoRepository userInfoRepository;
     private final GosuRepository gosuRepository;
+
+    private final ApplicationContext applicationContext;
 
     // 채팅방 연결 시 메서드
     public void connectToChatRoom(Long chatRoomId, String userSessionId) {
@@ -130,8 +134,8 @@ public class ChatRoomService {
     // 채팅방 목록 조회 메서드
     public ChatRoomResponseWrapperDto findAllChatRooms(int page) {
 
-        // 페이지 당 채팅 10개, 최근 수정시간 기준 내림차순 정렬
-        PageRequest pageRequest = PageRequest.of(page - 1, 10,
+        // 페이지 당 채팅방5개, 최근 수정시간 기준 내림차순 정렬
+        PageRequest pageRequest = PageRequest.of(page - 1, 5,
                 Sort.by("updatedAt").descending());
 
         // 로그인 유저 정보 가져옴
@@ -342,15 +346,21 @@ public class ChatRoomService {
         // USER의 고수 여부 포함하여 채팅방 나가기
         chatRoom.quitChatRoom((loginUser.getAuthority() == Authority.ROLE_GOSU));
 
-        // TODO: 바로 새로고침 되게
         // 채팅방 퇴장 메세지 생성
         ChatMessageRequestDto chatMessageRequestDto = ChatMessageRequestDto.builder()
                 .sourceUserId(loginUser.getId())
                 .type(ChatMessageType.QUIT)
-                .content(loginUser.getFullName() + " 님이 채팅방을 나갔습니다.").build();
+                .content(loginUser.getFullName() + " 님이 채팅방을 나갔습니다.")
+                .createdAt(LocalDateTime.now())
+                .build();
         ChatMessage quitChatMessage = chatMessageMapper.toEntity(chatMessageRequestDto);
         quitChatMessage.setChatRoom(chatRoom);
         chatMessageRepository.save(quitChatMessage);
+
+        // 채팅방 나갔음을 알리는 메세지 전송
+        SimpMessagingTemplate template = applicationContext.getBean(SimpMessagingTemplate.class);
+        template.convertAndSend("/sub/" + chatRoomId, "quit chatroom!");
+
         return new ChatRoomDeleteResponseDto(chatRoomId);
     }
 

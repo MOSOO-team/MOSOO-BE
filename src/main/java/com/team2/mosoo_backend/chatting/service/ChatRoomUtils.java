@@ -27,14 +27,22 @@ public class ChatRoomUtils {
     // 로그인 유저, 채팅방 id 를 통해서 채팅방에 접근할 수 있는 지 판단하는 메서드
     public ChatRoom validateChatRoomOwnership(Long chatRoomId, Users loginUser) {
 
+        Long loginUserId = loginUser.getId();
+
         // 채팅방이 존재하지 않으면 404 에러 반환
         ChatRoom foundChatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
         // 유저 정보가 일치하지 않으면 403 에러 반환
-        if(!foundChatRoom.getUserId().equals(loginUser.getId())
-                && !foundChatRoom.getGosuId().equals(loginUser.getId())) {
+        if(!foundChatRoom.getUserId().equals(loginUserId)
+                && !foundChatRoom.getGosuId().equals(loginUserId)) {
             throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
+        }
+
+        // 채팅방을 나갔다면 410 에러 반환
+        if( (foundChatRoom.getGosuId().equals(loginUserId) && foundChatRoom.getGosuDeletedAt() != null) ||
+                (foundChatRoom.getUserId().equals(loginUserId) && foundChatRoom.getUserDeletedAt() != null)) {
+            throw new CustomException(ErrorCode.CHAT_ROOM_DELETED);
         }
 
         return foundChatRoom;
