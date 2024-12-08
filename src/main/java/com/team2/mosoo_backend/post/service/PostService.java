@@ -9,10 +9,13 @@ import com.team2.mosoo_backend.post.dto.*;
 import com.team2.mosoo_backend.post.entity.Post;
 import com.team2.mosoo_backend.post.mapper.PostMapper;
 import com.team2.mosoo_backend.post.repository.PostRepository;
+import com.team2.mosoo_backend.user.entity.UserInfo;
 import com.team2.mosoo_backend.user.entity.Users;
+import com.team2.mosoo_backend.user.repository.UserInfoRepository;
 import com.team2.mosoo_backend.user.repository.UserRepository;
 import com.team2.mosoo_backend.utils.s3bucket.service.S3BucketService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -25,11 +28,14 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class PostService {
 
+    private final UserInfoRepository userInfoRepository;
     @Value("${default.image.url}")
     private String defaultImageUrl;
 
@@ -65,6 +71,7 @@ public class PostService {
 
         Post post = postMapper.createPostRequestDtoToPost(createPostRequestDto);
         Users user = userRepository.findById(createPostRequestDto.getUserId()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        UserInfo userInfo = userInfoRepository.findByUsers(user).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Category category = categoryRepository.findById(createPostRequestDto.getCategoryId()).orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
         // 연관관계 매핑
@@ -72,6 +79,9 @@ public class PostService {
 
         // 고수/ 일반 게시글 분류
         post.setIsOffer(isOffer);
+
+        // 유저 정보로 주소 저장
+        post.setAddress(userInfo.getAddress());
 
         // 게시글 상태 초기화
         post.setStatus(createPostRequestDto.getStatus());
@@ -165,4 +175,40 @@ public class PostService {
 
         return postResponseDto;
     }
+
+    public SearchedPostListResponseDto getSearchedPost(int page, Long categoryId, boolean isOffer, String keyword, String address) {
+        Pageable pageable = PageRequest.of(page - 1, 9, Sort.by("id").descending());
+
+        // Category 확인
+        Category category = categoryRepository.findById(categoryId)
+                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
+
+        // 키워드를 기반으로 Post 검색
+        Page<Post> posts;
+        if ((keyword != null && !keyword.isEmpty()) && (address != null && !address.isEmpty())) {
+            // 키워드와 주소가 둘 다 있을 경우
+            posts = postRepository.findByTitleContainingAndAddressContainingAndIsOfferAndCategory(keyword, address, isOffer, category, pageable);
+
+        } else if (keyword != null && !keyword.isEmpty()) {
+            // 키워드만 있을 경우
+            posts = postRepository.findByTitleContainingAndIsOfferAndCategory(keyword, isOffer, category, pageable);
+        } else if (address != null && !address.isEmpty()) {
+            // 주소만 있을 경우
+            posts = postRepository.findByAddressContainingAndIsOfferAndCategory(address, isOffer, category, pageable);
+        } else {
+            // 키워드와 주소가 모두 없을 경우
+            posts = postRepository.findByIsOfferAndCategory(pageable, category, isOffer);
+        }
+
+
+        // 검색된 Post를 PostResponseDto로 변환
+        List<PostResponseDto> postResponseDtoList = posts.getContent().stream()
+                .map(postMapper::postToPostResponseDto)
+                .collect(Collectors.toList());
+
+        int totalPages = (posts.getTotalPages() == 0 ? 1 : posts.getTotalPages());
+
+        return new SearchedPostListResponseDto(postResponseDtoList, totalPages, keyword, address, category.getName());
+    }
+
 }

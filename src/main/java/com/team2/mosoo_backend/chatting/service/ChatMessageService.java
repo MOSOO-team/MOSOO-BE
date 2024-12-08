@@ -41,7 +41,6 @@ public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageMapper chatMessageMapper;
-    private final SecurityUtil securityUtil;
     private final ChatRoomUtils chatRoomUtils;
     private final ChatMessageQueryRepository chatMessageQueryRepository;
     private final UserRepository userRepository;
@@ -133,7 +132,7 @@ public class ChatMessageService {
     public ChatMessageResponseWrapperDto findChatMessages(Long chatRoomId, Long index, boolean isInit) {
 
         // 로그인 유저 정보 가져옴
-        Long loginUserId = getAuthenticatedMemberId();
+        Long loginUserId = chatRoomUtils.getAuthenticatedMemberId();
         Users loginUser = userRepository.findById(loginUserId).get();   // getAuthenticatedMemberId() 호출 시 예외 처리 완료
 
         // 채팅방 접근 권한 검증
@@ -225,14 +224,5 @@ public class ChatMessageService {
         template.convertAndSend("/sub/" + chatRoomId, "message read!");
     }
 
-    // 사용자의 권환 확인 + userId 가져오는 메서드
-    // 따로 분리한 이유 : RuntimeException이 아닌 커스텀 예외 처리 위해서
-    private Long getAuthenticatedMemberId() {
-        try {
-//            return 1L;
-            return securityUtil.getCurrentMemberId();
-        } catch (RuntimeException e) {
-            throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
-        }
-    }
+
 }

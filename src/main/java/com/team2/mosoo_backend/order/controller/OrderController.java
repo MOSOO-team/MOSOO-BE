@@ -21,7 +21,7 @@ public class OrderController {
 
 
     //조회
-    @Operation(summary = "주문서 조회", description = "주문서 전체 내역을 조회합니다.")
+    @Operation(summary = "주문서 조회", description = "사용자의 결제된 주문 전체 내역을 조회합니다.")
     @GetMapping
     public ResponseEntity<OrderListResponseDto> getAllOrders(
             @RequestParam(value = "orderStatus") OrderStatus orderStatus
@@ -41,6 +41,7 @@ public class OrderController {
         return ResponseEntity.status(201).body(orderDetailsResponseDto);
     }
 
+    @Operation(summary = "주문상태 update", description = "서비스완료 버튼을 누르는경우 상태가 이용완료 상태로 변경됩니다.")
     @PutMapping("/{orderId}")
     public ResponseEntity<OrderStatusUpdateResponseDto> updateOrder(
             @PathVariable("orderId") Long orderId
