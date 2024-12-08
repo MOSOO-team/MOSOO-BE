@@ -87,7 +87,7 @@ public class ChatRoomService {
         chatRoomConnectionRepository.save(connection);
 
         // 읽지 않은 메세지가 있다면 읽음으로 변경
-        chatMessageService.setChatMessagesToRead(chatRoomId, getAuthenticatedMemberId());
+        chatMessageService.setChatMessagesToRead(chatRoomId, chatRoomUtils.getAuthenticatedMemberId());
     }
 
     // 채팅방 연결 해제 시 메서드
@@ -139,7 +139,7 @@ public class ChatRoomService {
                 Sort.by("updatedAt").descending());
 
         // 로그인 유저 정보 가져옴
-        Long loginUserId = getAuthenticatedMemberId();
+        Long loginUserId = chatRoomUtils.getAuthenticatedMemberId();
         Users loginUser = userRepository.findById(loginUserId).get();   // getAuthenticatedMemberId() 호출 시 예외 처리 완료
 
         Page<ChatRoom> chatRooms;
@@ -194,7 +194,7 @@ public class ChatRoomService {
     public ChatRoomInfoResponseDto findChatRoomInfo(Long chatRoomId) {
 
         // 로그인 유저 정보 가져옴
-        Long loginUserId = getAuthenticatedMemberId();
+        Long loginUserId = chatRoomUtils.getAuthenticatedMemberId();
         Users loginUser = userRepository.findById(loginUserId).get();   // getAuthenticatedMemberId() 호출 시 예외 처리 완료
 
         // 채팅방 접근 권한 검증 후 찾은 채팅방 받아옴
@@ -220,7 +220,7 @@ public class ChatRoomService {
     public ChatRoomOpponentInfoResponseDto findChatRoomOpponentInfo(Long chatRoomId) {
 
         // 로그인 유저 정보 가져옴
-        Long loginUserId = getAuthenticatedMemberId();
+        Long loginUserId = chatRoomUtils.getAuthenticatedMemberId();
         Users loginUser = userRepository.findById(loginUserId).get();   // getAuthenticatedMemberId() 호출 시 예외 처리 완료
 
         // 채팅방 접근 권한 검증 후 찾은 채팅방 받아옴
@@ -253,7 +253,7 @@ public class ChatRoomService {
     public ChatRoomCreateResponseDto createChatRoom(ChatRoomRequestDto chatRoomRequestDto) {
 
         // 로그인 유저 정보 가져옴
-        Long loginUserId = getAuthenticatedMemberId();
+        Long loginUserId = chatRoomUtils.getAuthenticatedMemberId();
         Users loginUser = userRepository.findById(loginUserId).get();   // getAuthenticatedMemberId() 호출 시 예외 처리 완료
 
         // 고수 정보 검증, 고수 유저가 존재하지 않으면 404 에러 반환
@@ -324,7 +324,7 @@ public class ChatRoomService {
     public ChatRoomDeleteResponseDto quitChatRoom(Long chatRoomId) {
 
         // 로그인 유저 정보 가져옴
-        Long loginUserId = getAuthenticatedMemberId();
+        Long loginUserId = chatRoomUtils.getAuthenticatedMemberId();
         Users loginUser = userRepository.findById(loginUserId).get();   // getAuthenticatedMemberId() 호출 시 예외 처리 완료
 
         // 채팅방 정보 가져옴, 존재하지 않다면 404 에러 반환
@@ -374,7 +374,7 @@ public class ChatRoomService {
         }
 
         // 로그인 유저 정보 가져옴
-        Long loginUserId = getAuthenticatedMemberId();
+        Long loginUserId = chatRoomUtils.getAuthenticatedMemberId();
         Users loginUser = userRepository.findById(loginUserId).get();   // getAuthenticatedMemberId() 호출 시 예외 처리 완료
 
         // 채팅방 정보가 없다면 404 에러 반환
@@ -389,16 +389,5 @@ public class ChatRoomService {
         chatRoom.setPrice(price);
 
         return new ChatRoomPriceResponseDto(price);
-    }
-
-    // 사용자의 권환 확인 + userId 가져오는 메서드
-    // 따로 분리한 이유 : RuntimeException이 아닌 커스텀 예외 처리 위해서
-    private Long getAuthenticatedMemberId() {
-        try {
-//            return 1L;
-            return securityUtil.getCurrentMemberId();
-        } catch (RuntimeException e) {
-            throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
-        }
     }
 }
