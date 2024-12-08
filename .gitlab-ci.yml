@@ -63,7 +63,8 @@ deploy:
     - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $GCP_USER@$GCP_VM_IP "
       cd /path/to/your/project/spring/ &&
       docker pull $DOCKER_USER/mosoo_spring:latest &&
-      docker-compose down || echo 'Containers were not running or failed to stop.'
+      docker-compose down || echo 'Containers were not running or failed to stop.' &&
+      docker image prune -f
       "
     - ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa $GCP_USER@$GCP_VM_IP "
       cd /path/to/your/project/spring/ &&
