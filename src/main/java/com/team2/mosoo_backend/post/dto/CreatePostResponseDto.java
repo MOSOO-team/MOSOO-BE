@@ -14,5 +14,7 @@ public class CreatePostResponseDto {
     private String description;
     private int price;
     private String duration;
+    private String address;
+    private boolean isOffer;
 
 }

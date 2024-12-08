@@ -1,5 +1,6 @@
 package com.team2.mosoo_backend.chatting.dto;
 
+import com.team2.mosoo_backend.chatting.entity.ChatMessageType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,7 +12,12 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class ChatMessageResponseDto {
 
-    private String userFullName;
+    private Long chatMessageId; // 조회한 가장 마지막 채팅 메세지 id
+    private Long sourceUserId;
     private String content;
+    private String fileName;
     private LocalDateTime createdAt;
+    private ChatMessageType type;
+
+    private boolean checked;
 }
