@@ -14,7 +14,6 @@ import com.team2.mosoo_backend.chatting.mapper.ChatRoomMapper;
 import com.team2.mosoo_backend.chatting.repository.ChatMessageRepository;
 import com.team2.mosoo_backend.chatting.repository.ChatRoomConnectionRepository;
 import com.team2.mosoo_backend.chatting.repository.ChatRoomRepository;
-import com.team2.mosoo_backend.config.SecurityUtil;
 import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
 import com.team2.mosoo_backend.post.dto.PostResponseDto;
