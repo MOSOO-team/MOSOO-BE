@@ -4,6 +4,7 @@ import com.team2.mosoo_backend.chatting.dto.ByteArrayMultipartFile;
 import com.team2.mosoo_backend.chatting.dto.ChatMessageRequestDto;
 import com.team2.mosoo_backend.chatting.entity.ChatRoom;
 import com.team2.mosoo_backend.chatting.repository.ChatRoomRepository;
+import com.team2.mosoo_backend.config.SecurityUtil;
 import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
 import com.team2.mosoo_backend.user.entity.Users;
@@ -23,6 +24,7 @@ public class ChatRoomUtils {
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
     private final S3BucketService s3BucketService;
+    private final SecurityUtil securityUtil;
 
     // 로그인 유저, 채팅방 id 를 통해서 채팅방에 접근할 수 있는 지 판단하는 메서드
     public ChatRoom validateChatRoomOwnership(Long chatRoomId, Users loginUser) {
@@ -85,5 +87,16 @@ public class ChatRoomUtils {
         }
 
         return chatMessageRequestDto;
+    }
+
+    // 사용자의 권환 확인 + userId 가져오는 메서드
+    // 따로 분리한 이유 : RuntimeException이 아닌 커스텀 예외 처리 위해서
+    public Long getAuthenticatedMemberId() {
+        try {
+//            return 1L;
+            return securityUtil.getCurrentMemberId();
+        } catch (RuntimeException e) {
+            throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
+        }
     }
 }
