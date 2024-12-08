@@ -41,7 +41,6 @@ public class ChatMessageService {
     private final ChatMessageRepository chatMessageRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final ChatMessageMapper chatMessageMapper;
-    private final SecurityUtil securityUtil;
     private final ChatRoomUtils chatRoomUtils;
     private final ChatMessageQueryRepository chatMessageQueryRepository;
     private final UserRepository userRepository;

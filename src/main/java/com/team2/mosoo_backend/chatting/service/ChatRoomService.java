@@ -56,7 +56,6 @@ public class ChatRoomService {
     private final BidMapper bidMapper;
     private final ChatRoomUtils chatRoomUtils;
     private final ChatMessageMapper chatMessageMapper;
-    private final SecurityUtil securityUtil;
     private final ChatMessageService chatMessageService;
     private final ChatRoomConnectionRepository chatRoomConnectionRepository;
     private final RedisTemplate<String, Object> redisTemplate;
