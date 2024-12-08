@@ -17,6 +17,7 @@ public class PostResponseDto {
     private String description;
     private int price;
     private String duration;
+    private String address;
     private boolean isOffer;
     private LocalDateTime updatedAt;
     private String fullName;

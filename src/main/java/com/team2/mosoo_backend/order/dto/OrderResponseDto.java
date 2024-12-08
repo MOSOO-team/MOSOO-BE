@@ -20,6 +20,7 @@ public class OrderResponseDto {
     private LocalDateTime paidAt;
 
     private String gosuName;
-}
 
+    private Long postId;
+}
 //고수 이름, 금액, 결제 완료일, 진행일자

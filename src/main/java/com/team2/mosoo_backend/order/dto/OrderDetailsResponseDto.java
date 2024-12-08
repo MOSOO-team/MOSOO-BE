@@ -16,6 +16,7 @@ public class OrderDetailsResponseDto {
     private BidResponseDto bidResponseDto; // 금액, 날짜
     private GosuResponseDto gosuResponseDto;
     private BigDecimal price;
+    private String merchantUid;
 
 
 
