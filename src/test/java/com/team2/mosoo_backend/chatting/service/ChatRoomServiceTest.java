@@ -138,7 +138,7 @@ class ChatRoomServiceTest {
         post = Post.builder().id(1L).build();
         bid = Bid.builder().id(1L).build();
 
-        chatRoom = ChatRoom.builder().id(1L).userId(1L).gosuId(2L).post(post).bid(bid).price(10000).build();
+        chatRoom = ChatRoom.builder().id(1L).userId(1L).gosuId(2L).post(post).bid(bid).price(10000).userDeletedAt(null).build();
         chatMessage = ChatMessage.builder().id(1L).chatRoom(chatRoom).content("내용").type(ChatMessageType.MESSAGE).sourceUserId(1L).createdAt(LocalDateTime.now()).checked(false).build();
     }
 
@@ -151,10 +151,9 @@ class ChatRoomServiceTest {
         given(chatRoomConnectionRepository.findById(String.valueOf(chatRoomId))).willReturn(Optional.empty());
         // opsForValue() 메서드가 valueOperations를 반환하도록 모킹
         given(redisTemplate.opsForValue()).willReturn(valueOperations);
-        given(chatRoomUtils.getAuthenticatedMemberId()).willReturn(user.getId());
 
         //when
-        chatRoomService.connectToChatRoom(chatRoomId, userSessionId);
+        chatRoomService.connectToChatRoom(user.getId(), chatRoomId, userSessionId);
 
         //then
         verify(chatRoomConnectionRepository, times(1)).save(any());
@@ -213,12 +212,11 @@ class ChatRoomServiceTest {
     public void findChatRoomInfoTest() {
 
         //given
-        given(chatRoomUtils.getAuthenticatedMemberId()).willReturn(user.getId());
         given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
         given(chatRoomUtils.validateChatRoomOwnership(chatRoomId, user)).willReturn(chatRoom);
 
         //when
-        ChatRoomInfoResponseDto result = chatRoomService.findChatRoomInfo(chatRoomId);
+        ChatRoomInfoResponseDto result = chatRoomService.findChatRoomInfo(user.getId(), chatRoomId);
 
         //then
         assertThat(result.isGosu()).isEqualTo(false);
@@ -231,14 +229,13 @@ class ChatRoomServiceTest {
     public void findChatRoomOpponentInfoTest() {
 
         //given
-        given(chatRoomUtils.getAuthenticatedMemberId()).willReturn(gosu.getId());
         given(userRepository.findById(gosu.getId())).willReturn(Optional.of(gosu));
         given(chatRoomUtils.validateChatRoomOwnership(chatRoomId, gosu)).willReturn(chatRoom);
 
         given(userRepository.findById(chatRoom.getUserId())).willReturn(Optional.ofNullable(user));
 
         //when
-        ChatRoomOpponentInfoResponseDto result = chatRoomService.findChatRoomOpponentInfo(chatRoomId);
+        ChatRoomOpponentInfoResponseDto result = chatRoomService.findChatRoomOpponentInfo(gosu.getId(), chatRoomId);
 
         //then
         assertThat(result.getFullName()).isEqualTo(user.getFullName());
@@ -250,20 +247,18 @@ class ChatRoomServiceTest {
     @DisplayName("채팅방 나가기 메서드 테스트")
     public void quitChatRoomTest() {
 
-        //given
-        // 채팅방의 spy 객체
+        // given
         ChatRoom spyChatRoom = spy(chatRoom);
-        given(chatRoomUtils.getAuthenticatedMemberId()).willReturn(user.getId());
         given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
-        given(chatRoomRepository.findById(chatRoomId)).willReturn(Optional.ofNullable(spyChatRoom));
-        given(applicationContext.getBean(SimpMessagingTemplate.class)).willReturn(messagingTemplate); // SimpMessagingTemplate 주입
+        given(chatRoomUtils.validateChatRoomOwnership(any(), any())).willReturn(spyChatRoom);
+        given(applicationContext.getBean(SimpMessagingTemplate.class)).willReturn(messagingTemplate);
         given(chatMessageMapper.toEntity(any())).willReturn(chatMessage);
 
-        //when
-        ChatRoomDeleteResponseDto result = chatRoomService.quitChatRoom(chatRoomId);
+        // when
+        ChatRoomDeleteResponseDto result = chatRoomService.quitChatRoom(user.getId(), chatRoomId);
 
-        //then
-        verify(spyChatRoom, times(1)).quitChatRoom((false));
+        // then
+        verify(spyChatRoom, times(1)).quitChatRoom(false);
         verify(chatMessageRepository, times(1)).save(any());
         assertThat(result.getChatRoomId()).isEqualTo(chatRoomId);
     }
@@ -276,12 +271,11 @@ class ChatRoomServiceTest {
         //given
         int updatePrice = 9999;
         ChatRoom spyChatRoom = spy(chatRoom);
-        given(chatRoomUtils.getAuthenticatedMemberId()).willReturn(gosu.getId());
         given(userRepository.findById(gosu.getId())).willReturn(Optional.of(gosu));
         given(chatRoomRepository.findById(chatRoomId)).willReturn(Optional.ofNullable(spyChatRoom));
 
         //when
-        ChatRoomPriceResponseDto result = chatRoomService.updatePrice(chatRoomId, updatePrice);
+        ChatRoomPriceResponseDto result = chatRoomService.updatePrice(gosu.getId(), chatRoomId, updatePrice);
 
         //then
         verify(spyChatRoom, times(1)).setPrice(updatePrice);
