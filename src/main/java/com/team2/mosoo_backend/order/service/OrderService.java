@@ -29,6 +29,8 @@ import com.team2.mosoo_backend.user.repository.UserRepository;
 import java.math.BigDecimal;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -51,9 +53,9 @@ public class OrderService {
 
 
     //todo : 리팩토링 하기..
-    public OrderListResponseDto getAllOrders(OrderStatus status) {
+    public OrderListResponseDto getAllOrders(OrderStatus status, UserDetails userDetails) {
 
-        Long userId = getAuthenticatedMemberId();
+        Long userId = Long.parseLong(userDetails.getUsername());
         List<Order> orders = orderRepository.findOrdersByChatRoomUserIdAndOrderStatus(userId, status); // 사용자가 결제한 주문 조회
         List<OrderResponseDto> orderResponseDtoList = new ArrayList<>();
 
