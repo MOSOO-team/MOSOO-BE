@@ -15,12 +15,12 @@ import java.util.List;
 public interface CategoryMapper {
     CategoryMapper INSTANCE = Mappers.getMapper(CategoryMapper.class);
 
-    @Mapping(source = "parent_id", target = "parent.category_id")
+    @Mapping(source = "parentId", target = "parent.categoryId")
     @Mapping(target = "level", ignore = true) // level 매핑 제외
     @Mapping(target = "icon", ignore = true) // icon 매핑 제외
     Category toEntity(CategoryRequestDto request);
 
-    @Mapping(source = "parent.category_id", target = "parent_id")
+    @Mapping(source = "parent.categoryId", target = "parentId")
     CategoryResponseDto toDto(Category category);
 
     FirstCategoryResponseDto firstCategoryToDto(Category category);

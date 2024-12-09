@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 public class FirstCategoryResponseDto {
-    private Long category_id;
+    private Long categoryId;
     private String name;
     private String description;
     private String icon;
