@@ -14,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -34,10 +37,13 @@ public class ChatMessageController {
     // 특정 채팅방에 대한 메세지 전송 및 저장
     @MessageMapping("/{chatRoomId}")
     @SendTo("/sub/{chatRoomId}") // 해당 채팅방에 구독한 클라이언트들에게 메세지를 전송
-    public ResponseEntity<ChatMessageRequestDto> chat(@DestinationVariable("chatRoomId") Long chatRoomId, ChatMessageRequestDto chatMessageRequestDto) {
+    public ResponseEntity<ChatMessageRequestDto> chat(
+            StompHeaderAccessor accessor,
+            @DestinationVariable("chatRoomId") Long chatRoomId,
+            ChatMessageRequestDto chatMessageRequestDto) {
 
         // 채팅 메세지 redis에 저장
-        chatMessageService.saveChatMessageToRedis(chatRoomId, chatMessageRequestDto);
+        chatMessageService.saveChatMessageToRedis(accessor, chatRoomId, chatMessageRequestDto);
         return ResponseEntity.status(HttpStatus.OK).body(chatMessageRequestDto);
     }
 
@@ -53,11 +59,13 @@ public class ChatMessageController {
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ChatMessageResponseWrapperDto.class)))
     public ResponseEntity<ChatMessageResponseWrapperDto> findChatRoom(
+            @AuthenticationPrincipal UserDetails userDetails,
             @PathVariable("chatRoomId") Long chatRoomId,
             @RequestParam(value = "index", required = false) Long index,
             @RequestParam(value = "isInit") boolean isInit) {
 
-        ChatMessageResponseWrapperDto chatMessageResponseWrapperDto = chatMessageService.findChatMessages(chatRoomId, index, isInit);
+        ChatMessageResponseWrapperDto chatMessageResponseWrapperDto
+                = chatMessageService.findChatMessages(Long.parseLong(userDetails.getUsername()), chatRoomId, index, isInit);
         return ResponseEntity.status(HttpStatus.OK).body(chatMessageResponseWrapperDto);
     }
 }
