@@ -1,9 +1,7 @@
 package com.team2.mosoo_backend.user.controller;
 
 
-import com.team2.mosoo_backend.user.dto.ChangeNameRequestDto;
 import com.team2.mosoo_backend.user.dto.ChangePasswordRequestDto;
-import com.team2.mosoo_backend.user.dto.UserInfoDto;
 import com.team2.mosoo_backend.user.dto.UserResponseDto;
 import com.team2.mosoo_backend.user.entity.UserInfo;
 import com.team2.mosoo_backend.user.service.UserService;
