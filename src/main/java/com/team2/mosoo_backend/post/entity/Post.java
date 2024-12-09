@@ -45,6 +45,8 @@ public class Post extends BaseEntity {
     @Column(name = "duration")
     private String duration;
 
+    private String address;
+
     @Column(name = "is_offer", nullable = false)
     private boolean isOffer;
 
@@ -82,6 +84,10 @@ public class Post extends BaseEntity {
 
     public void setDuration(String duration) {
         this.duration = duration;
+    }
+
+    public void setAddress(String address){
+        this.address = address;
     }
 
     public void setIsOffer(boolean isOffer) {

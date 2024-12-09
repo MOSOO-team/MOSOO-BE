@@ -14,7 +14,6 @@ import com.team2.mosoo_backend.chatting.mapper.ChatRoomMapper;
 import com.team2.mosoo_backend.chatting.repository.ChatMessageRepository;
 import com.team2.mosoo_backend.chatting.repository.ChatRoomConnectionRepository;
 import com.team2.mosoo_backend.chatting.repository.ChatRoomRepository;
-import com.team2.mosoo_backend.config.SecurityUtil;
 import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
 import com.team2.mosoo_backend.post.dto.PostResponseDto;
@@ -29,10 +28,12 @@ import com.team2.mosoo_backend.user.repository.GosuRepository;
 import com.team2.mosoo_backend.user.repository.UserInfoRepository;
 import com.team2.mosoo_backend.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationContext;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -54,12 +55,13 @@ public class ChatRoomService {
     private final BidMapper bidMapper;
     private final ChatRoomUtils chatRoomUtils;
     private final ChatMessageMapper chatMessageMapper;
-    private final SecurityUtil securityUtil;
     private final ChatMessageService chatMessageService;
     private final ChatRoomConnectionRepository chatRoomConnectionRepository;
     private final RedisTemplate<String, Object> redisTemplate;
     private final UserInfoRepository userInfoRepository;
     private final GosuRepository gosuRepository;
+
+    private final ApplicationContext applicationContext;
 
     // 채팅방 연결 시 메서드
     public void connectToChatRoom(Long chatRoomId, String userSessionId) {
@@ -83,7 +85,7 @@ public class ChatRoomService {
         chatRoomConnectionRepository.save(connection);
 
         // 읽지 않은 메세지가 있다면 읽음으로 변경
-        chatMessageService.setChatMessagesToRead(chatRoomId, getAuthenticatedMemberId());
+        chatMessageService.setChatMessagesToRead(chatRoomId, chatRoomUtils.getAuthenticatedMemberId());
     }
 
     // 채팅방 연결 해제 시 메서드
@@ -130,12 +132,12 @@ public class ChatRoomService {
     // 채팅방 목록 조회 메서드
     public ChatRoomResponseWrapperDto findAllChatRooms(int page) {
 
-        // 페이지 당 채팅 10개, 최근 수정시간 기준 내림차순 정렬
-        PageRequest pageRequest = PageRequest.of(page - 1, 10,
+        // 페이지 당 채팅방5개, 최근 수정시간 기준 내림차순 정렬
+        PageRequest pageRequest = PageRequest.of(page - 1, 5,
                 Sort.by("updatedAt").descending());
 
         // 로그인 유저 정보 가져옴
-        Long loginUserId = getAuthenticatedMemberId();
+        Long loginUserId = chatRoomUtils.getAuthenticatedMemberId();
         Users loginUser = userRepository.findById(loginUserId).get();   // getAuthenticatedMemberId() 호출 시 예외 처리 완료
 
         Page<ChatRoom> chatRooms;
@@ -190,7 +192,7 @@ public class ChatRoomService {
     public ChatRoomInfoResponseDto findChatRoomInfo(Long chatRoomId) {
 
         // 로그인 유저 정보 가져옴
-        Long loginUserId = getAuthenticatedMemberId();
+        Long loginUserId = chatRoomUtils.getAuthenticatedMemberId();
         Users loginUser = userRepository.findById(loginUserId).get();   // getAuthenticatedMemberId() 호출 시 예외 처리 완료
 
         // 채팅방 접근 권한 검증 후 찾은 채팅방 받아옴
@@ -216,7 +218,7 @@ public class ChatRoomService {
     public ChatRoomOpponentInfoResponseDto findChatRoomOpponentInfo(Long chatRoomId) {
 
         // 로그인 유저 정보 가져옴
-        Long loginUserId = getAuthenticatedMemberId();
+        Long loginUserId = chatRoomUtils.getAuthenticatedMemberId();
         Users loginUser = userRepository.findById(loginUserId).get();   // getAuthenticatedMemberId() 호출 시 예외 처리 완료
 
         // 채팅방 접근 권한 검증 후 찾은 채팅방 받아옴
@@ -249,7 +251,7 @@ public class ChatRoomService {
     public ChatRoomCreateResponseDto createChatRoom(ChatRoomRequestDto chatRoomRequestDto) {
 
         // 로그인 유저 정보 가져옴
-        Long loginUserId = getAuthenticatedMemberId();
+        Long loginUserId = chatRoomUtils.getAuthenticatedMemberId();
         Users loginUser = userRepository.findById(loginUserId).get();   // getAuthenticatedMemberId() 호출 시 예외 처리 완료
 
         // 고수 정보 검증, 고수 유저가 존재하지 않으면 404 에러 반환
@@ -320,7 +322,7 @@ public class ChatRoomService {
     public ChatRoomDeleteResponseDto quitChatRoom(Long chatRoomId) {
 
         // 로그인 유저 정보 가져옴
-        Long loginUserId = getAuthenticatedMemberId();
+        Long loginUserId = chatRoomUtils.getAuthenticatedMemberId();
         Users loginUser = userRepository.findById(loginUserId).get();   // getAuthenticatedMemberId() 호출 시 예외 처리 완료
 
         // 채팅방 정보 가져옴, 존재하지 않다면 404 에러 반환
@@ -342,15 +344,21 @@ public class ChatRoomService {
         // USER의 고수 여부 포함하여 채팅방 나가기
         chatRoom.quitChatRoom((loginUser.getAuthority() == Authority.ROLE_GOSU));
 
-        // TODO: 바로 새로고침 되게
         // 채팅방 퇴장 메세지 생성
         ChatMessageRequestDto chatMessageRequestDto = ChatMessageRequestDto.builder()
                 .sourceUserId(loginUser.getId())
                 .type(ChatMessageType.QUIT)
-                .content(loginUser.getFullName() + " 님이 채팅방을 나갔습니다.").build();
+                .content(loginUser.getFullName() + " 님이 채팅방을 나갔습니다.")
+                .createdAt(LocalDateTime.now())
+                .build();
         ChatMessage quitChatMessage = chatMessageMapper.toEntity(chatMessageRequestDto);
         quitChatMessage.setChatRoom(chatRoom);
         chatMessageRepository.save(quitChatMessage);
+
+        // 채팅방 나갔음을 알리는 메세지 전송
+        SimpMessagingTemplate template = applicationContext.getBean(SimpMessagingTemplate.class);
+        template.convertAndSend("/sub/" + chatRoomId, "quit chatroom!");
+
         return new ChatRoomDeleteResponseDto(chatRoomId);
     }
 
@@ -364,7 +372,7 @@ public class ChatRoomService {
         }
 
         // 로그인 유저 정보 가져옴
-        Long loginUserId = getAuthenticatedMemberId();
+        Long loginUserId = chatRoomUtils.getAuthenticatedMemberId();
         Users loginUser = userRepository.findById(loginUserId).get();   // getAuthenticatedMemberId() 호출 시 예외 처리 완료
 
         // 채팅방 정보가 없다면 404 에러 반환
@@ -379,16 +387,5 @@ public class ChatRoomService {
         chatRoom.setPrice(price);
 
         return new ChatRoomPriceResponseDto(price);
-    }
-
-    // 사용자의 권환 확인 + userId 가져오는 메서드
-    // 따로 분리한 이유 : RuntimeException이 아닌 커스텀 예외 처리 위해서
-    private Long getAuthenticatedMemberId() {
-        try {
-//            return 1L;
-            return securityUtil.getCurrentMemberId();
-        } catch (RuntimeException e) {
-            throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
-        }
     }
 }
