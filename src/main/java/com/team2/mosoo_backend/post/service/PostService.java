@@ -67,10 +67,10 @@ public class PostService {
 
     // 게시글 생성
     @Transactional
-    public CreatePostResponseDto createPost(CreatePostRequestDto createPostRequestDto, boolean isOffer) throws IOException {
+    public CreatePostResponseDto createPost(Long userId, CreatePostRequestDto createPostRequestDto, boolean isOffer) throws IOException {
 
         Post post = postMapper.createPostRequestDtoToPost(createPostRequestDto);
-        Users user = userRepository.findById(createPostRequestDto.getUserId()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Users user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         UserInfo userInfo = userInfoRepository.findByUsers(user).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         Category category = categoryRepository.findById(createPostRequestDto.getCategoryId()).orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
@@ -87,14 +87,13 @@ public class PostService {
         post.setStatus(createPostRequestDto.getStatus());
 
         // 이미지 저장
-        if(createPostRequestDto.getImageUrls() != null){
+        if (createPostRequestDto.getImageUrls() != null) {
             List<MultipartFile> imageList = createPostRequestDto.getImageUrls();
 
             List<String> postImageUrls = s3BucketService.uploadFileList(imageList);
 
             post.setImgUrls(postImageUrls);
-        }
-        else{
+        } else {
             List<String> postImageUrls = new ArrayList<>();
 
             postImageUrls.add(defaultImageUrl);
@@ -126,8 +125,15 @@ public class PostService {
 
     // 게시글 수정
     @Transactional
-    public PostResponseDto updatePost(PostUpdateRequestDto postUpdateRequestDto) {
+    public PostResponseDto updatePost(Long userId, PostUpdateRequestDto postUpdateRequestDto) {
         Post post = postRepository.findById(postUpdateRequestDto.getId()).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        Users users = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 작성자 인증
+        if(post.getUser() != users){
+            throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
+        }
+
         Post savedPost = update(post, postUpdateRequestDto);
 
         return postMapper.postToPostResponseDto(savedPost);
@@ -144,8 +150,14 @@ public class PostService {
 
     // 게시글 삭제
     @Transactional
-    public PostResponseDto deletePost(Long id) {
-        Post post = postRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+    public PostResponseDto deletePost(Long userId, Long postId) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        Users users = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 작성자 인증
+        if(post.getUser() != users){
+            throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
+        }
 
         PostResponseDto postResponseDto = postMapper.postToPostResponseDto(post);
 
@@ -156,9 +168,15 @@ public class PostService {
 
     // 게시글 상태 수정
     @Transactional
-    public PostResponseDto updatePostStatus(UpdatePostStatusRequestDto updatePostStatusRequestDto){
+    public PostResponseDto updatePostStatus(Long userId, UpdatePostStatusRequestDto updatePostStatusRequestDto) {
 
         Post post = postRepository.findById(updatePostStatusRequestDto.getId()).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        Users users = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 작성자 인증
+        if(post.getUser() != users){
+            throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
+        }
 
         post.setStatus(updatePostStatusRequestDto.getStatus());
 
@@ -176,39 +194,56 @@ public class PostService {
         return postResponseDto;
     }
 
+    //조건 필터링 게시글 목록 조회
     public SearchedPostListResponseDto getSearchedPost(int page, Long categoryId, boolean isOffer, String keyword, String address) {
         Pageable pageable = PageRequest.of(page - 1, 9, Sort.by("id").descending());
 
         // Category 확인
-        Category category = categoryRepository.findById(categoryId)
-                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
-
-        // 키워드를 기반으로 Post 검색
-        Page<Post> posts;
-        if ((keyword != null && !keyword.isEmpty()) && (address != null && !address.isEmpty())) {
-            // 키워드와 주소가 둘 다 있을 경우
-            posts = postRepository.findByTitleContainingAndAddressContainingAndIsOfferAndCategory(keyword, address, isOffer, category, pageable);
-
-        } else if (keyword != null && !keyword.isEmpty()) {
-            // 키워드만 있을 경우
-            posts = postRepository.findByTitleContainingAndIsOfferAndCategory(keyword, isOffer, category, pageable);
-        } else if (address != null && !address.isEmpty()) {
-            // 주소만 있을 경우
-            posts = postRepository.findByAddressContainingAndIsOfferAndCategory(address, isOffer, category, pageable);
-        } else {
-            // 키워드와 주소가 모두 없을 경우
-            posts = postRepository.findByIsOfferAndCategory(pageable, category, isOffer);
+        Category category = null;
+        if (categoryId != null) {
+            category = categoryRepository.findById(categoryId).orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
         }
 
+        // 키워드와 주소 여부 확인
+        boolean hasKeyword = keyword != null && !keyword.isBlank();
+        boolean hasAddress = address != null && !address.isBlank();
+
+        // 조건에 따라 Post 검색
+        Page<Post> posts;
+
+        if (category != null && hasKeyword && hasAddress) {
+            // 카테고리, 키워드, 주소 모두 있는 경우
+            posts = postRepository.findByTitleContainingAndAddressContainingAndIsOfferAndCategory(keyword, address, isOffer, category, pageable);
+        } else if (category != null && hasKeyword) {
+            // 카테고리와 키워드만 있는 경우
+            posts = postRepository.findByTitleContainingAndIsOfferAndCategory(keyword, isOffer, category, pageable);
+        } else if (category != null && hasAddress) {
+            // 카테고리와 주소만 있는 경우
+            posts = postRepository.findByAddressContainingAndIsOfferAndCategory(address, isOffer, category, pageable);
+        } else if (category != null) {
+            // 카테고리만 있는 경우
+            posts = postRepository.findByIsOfferAndCategory(pageable, isOffer, category);
+        } else if (hasKeyword && hasAddress) {
+            // 키워드와 주소만 있는 경우
+            posts = postRepository.findByTitleContainingAndAddressContainingAndIsOffer(keyword, address, isOffer, pageable);
+        } else if (hasKeyword) {
+            // 키워드만 있는 경우
+            posts = postRepository.findByTitleContainingAndIsOffer(keyword, isOffer, pageable);
+        } else if (hasAddress) {
+            // 주소만 있는 경우
+            posts = postRepository.findByAddressContainingAndIsOffer(address, isOffer, pageable);
+        } else {
+            // 조건이 없는 경우 (기본 검색)
+            posts = postRepository.findByIsOffer(pageable, isOffer);
+        }
 
         // 검색된 Post를 PostResponseDto로 변환
-        List<PostResponseDto> postResponseDtoList = posts.getContent().stream()
-                .map(postMapper::postToPostResponseDto)
-                .collect(Collectors.toList());
+        List<PostResponseDto> postResponseDtoList = posts.getContent().stream().map(postMapper::postToPostResponseDto).collect(Collectors.toList());
 
-        int totalPages = (posts.getTotalPages() == 0 ? 1 : posts.getTotalPages());
+        int totalPages = Math.max(posts.getTotalPages(), 1);
 
-        return new SearchedPostListResponseDto(postResponseDtoList, totalPages, keyword, address, category.getName());
+        return new SearchedPostListResponseDto(postResponseDtoList, totalPages, keyword, address, category != null ? category.getName() : null);
     }
+
 
 }
