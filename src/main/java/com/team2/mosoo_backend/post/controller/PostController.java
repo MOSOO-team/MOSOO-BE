@@ -1,7 +1,6 @@
 package com.team2.mosoo_backend.post.controller;
 
 
-import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.post.dto.*;
 import com.team2.mosoo_backend.post.service.PostService;
 import jakarta.validation.constraints.Positive;
@@ -20,7 +19,6 @@ import java.io.IOException;
 public class PostController {
 
     private final PostService postService;
-
 
     // 게시글 전체 조회 요청
     @GetMapping("/posts")
@@ -67,7 +65,6 @@ public class PostController {
         SearchedPostListResponseDto postList = postService.getSearchedPost(page, categoryId, isOffer, keyword, address);
 
         return ResponseEntity.status(200).body(postList);
-
     }
 
     // 게시글 단건 조회
@@ -80,7 +77,7 @@ public class PostController {
     }
 
     // 게시글 수정 요청
-    @PutMapping("")
+    @PutMapping
     public ResponseEntity<PostResponseDto> updatePost(
             @AuthenticationPrincipal UserDetails userDetails,
             @RequestBody PostUpdateRequestDto postUpdateRequestDto) {
