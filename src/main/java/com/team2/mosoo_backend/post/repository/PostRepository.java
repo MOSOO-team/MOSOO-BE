@@ -18,7 +18,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findAll(Pageable pageable);
 
-    Page<Post> findByIsOfferAndCategory(Pageable pageable, Category category, boolean isOffer);
+    Page<Post> findByIsOfferAndCategory(Pageable pageable, boolean isOffer, Category category);
 
     Page<Post> findByTitleContainingAndAddressContainingAndIsOfferAndCategory(
             String keyword,
@@ -30,4 +30,10 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByTitleContainingAndIsOfferAndCategory(String keyword, boolean isOffer, Category category, Pageable pageable);
 
     Page<Post> findByAddressContainingAndIsOfferAndCategory(String address, boolean isOffer, Category category, Pageable pageable);
+
+    Page<Post> findByTitleContainingAndAddressContainingAndIsOffer(String keyword, String address, boolean isOffer, Pageable pageable);
+
+    Page<Post> findByTitleContainingAndIsOffer(String keyword, boolean isOffer, Pageable pageable);
+
+    Page<Post> findByAddressContainingAndIsOffer(String address, boolean isOffer, Pageable pageable);
 }
