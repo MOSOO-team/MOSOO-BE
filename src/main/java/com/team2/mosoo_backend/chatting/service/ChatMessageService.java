@@ -11,7 +11,6 @@ import com.team2.mosoo_backend.chatting.repository.ChatMessageQueryRepository;
 import com.team2.mosoo_backend.chatting.repository.ChatMessageRepository;
 import com.team2.mosoo_backend.chatting.repository.ChatRoomConnectionRepository;
 import com.team2.mosoo_backend.chatting.repository.ChatRoomRepository;
-import com.team2.mosoo_backend.config.SecurityUtil;
 import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
 import com.team2.mosoo_backend.user.entity.Users;
@@ -24,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,7 +63,14 @@ public class ChatMessageService {
     }
 
     // 레디스에 채팅 저장 메서드
-    public void saveChatMessageToRedis(Long chatRoomId, ChatMessageRequestDto chatMessageRequestDto) {
+    public void saveChatMessageToRedis(StompHeaderAccessor accessor, Long chatRoomId, ChatMessageRequestDto chatMessageRequestDto) {
+
+        // UserDetails가 WebSocket 메세지에서 역직렬화될 수 없음 => 직접 로그인 유저 id 가져오는 방법
+        // 세션에서 사용자 ID 가져오기
+        Long loginUserId = (Long) accessor.getSessionAttributes().get("loginUserId");
+
+        // 로그인 유저 정보 가져옴
+        userRepository.findById(loginUserId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         String redisKey = "chatRoom:" + chatRoomId + ":messages";
 
@@ -129,11 +136,11 @@ public class ChatMessageService {
     // 첫 조회 : 레디스에서 조회
     // 이후 조회 or 레디스의 체팅 메세지가 적은 경우 : db에서 추가적으로 조회
     @Transactional
-    public ChatMessageResponseWrapperDto findChatMessages(Long chatRoomId, Long index, boolean isInit) {
+    public ChatMessageResponseWrapperDto findChatMessages(Long loginUserId, Long chatRoomId, Long index, boolean isInit) {
 
         // 로그인 유저 정보 가져옴
-        Long loginUserId = chatRoomUtils.getAuthenticatedMemberId();
-        Users loginUser = userRepository.findById(loginUserId).get();   // getAuthenticatedMemberId() 호출 시 예외 처리 완료
+        Users loginUser = userRepository.findById(loginUserId)
+                .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 채팅방 접근 권한 검증
         ChatRoom foundChatRoom = chatRoomUtils.validateChatRoomOwnership(chatRoomId, loginUser);
