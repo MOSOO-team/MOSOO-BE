@@ -79,13 +79,6 @@ public class OrderService {
 
     }
 
-    public OrderResponseDto getOrderById(Long orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
-
-        return orderMapper.orderToOrderResponseDto(order);
-    }
-
-
     public OrderDetailsResponseDto createOrder(Long chatroomId) {
         ChatRoom chatRoom = chatRoomRepository.findById(chatroomId).orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
