@@ -38,8 +38,8 @@ public class CategoryService {
         category.setCreatedAt(currentTime);
         category.setUpdatedAt(currentTime);
 
-        if (categoryRequestDto.getParent_id() != null){
-            Category parent = categoryRepository.findById(categoryRequestDto.getParent_id())
+        if (categoryRequestDto.getParentId() != null){
+            Category parent = categoryRepository.findById(categoryRequestDto.getParentId())
                     .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
            category.setParent(parent);
@@ -80,14 +80,14 @@ public class CategoryService {
     private List<CategoryResponseDto> buildCategoryHierarchy(List<Category> categories) {
         Map<Long, CategoryResponseDto> categoryMap = categories.stream()
                 .map(CategoryMapper.INSTANCE::toDto)
-                .collect(Collectors.toMap(CategoryResponseDto::getCategory_id, category -> category));
+                .collect(Collectors.toMap(CategoryResponseDto::getCategoryId, category -> category));
 
         List<CategoryResponseDto> roots = new ArrayList<>();
         for (CategoryResponseDto category : categoryMap.values()) {
-            if (category.getParent_id() == null) {
+            if (category.getParentId() == null) {
                 roots.add(category); // 부모가 없는 대분류
             } else {
-                CategoryResponseDto parent = categoryMap.get(category.getParent_id());
+                CategoryResponseDto parent = categoryMap.get(category.getParentId());
                 if (parent != null) {
                     parent.getChildren().add(category);
                 }
@@ -106,16 +106,16 @@ public class CategoryService {
 
     // 하위 카테고리 조회
     @Transactional
-    public List<SubCategoryResponseDto> readSubCategories(Long parent_id) {
-       List<Category> categories = categoryRepository.findByParentId(parent_id);
+    public List<SubCategoryResponseDto> readSubCategories(Long parentId) {
+       List<Category> categories = categoryRepository.findByParentId(parentId);
 
        return CategoryMapper.INSTANCE.subCategoryToDtoList(categories);
     }
 
     // 카테고리 수정
     @Transactional
-    public CategoryResponseDto updateCategory(Long category_id, CategoryRequestDto categoryRequestDto) {
-        Category category = categoryRepository.findById(category_id)
+    public CategoryResponseDto updateCategory(Long categoryId, CategoryRequestDto categoryRequestDto) {
+        Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
         category.setName(categoryRequestDto.getName());
@@ -132,8 +132,8 @@ public class CategoryService {
     
     // 카테고리 삭제
     @Transactional
-    public CategoryResponseDto deleteCategory(Long category_id) {
-        Category category = categoryRepository.findById(category_id)
+    public CategoryResponseDto deleteCategory(Long categoryId) {
+        Category category = categoryRepository.findById(categoryId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND));
 
         deleteSubCategories(category);
@@ -147,7 +147,7 @@ public class CategoryService {
     // 하위 카테고리 삭제
     @Transactional
     private void deleteSubCategories(Category parentCategory) {
-        List<Category> subCategories = categoryRepository.findByParentId(parentCategory.getCategory_id());
+        List<Category> subCategories = categoryRepository.findByParentId(parentCategory.getCategoryId());
 
         for (Category subCategory : subCategories) {
             deleteSubCategories(subCategory);
