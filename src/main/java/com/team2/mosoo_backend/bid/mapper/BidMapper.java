@@ -10,7 +10,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface BidMapper {
 
-    BidResponseDto bidToBidResponseDto(Bid bid);
+    BidResponseDto bidToBidResponseDto(Bid bidDto);
 
     @Mapping(target = "post", ignore = true)
     Bid createBidRequestDtoToBid(CreateBidRequestDto createBidRequestDto);

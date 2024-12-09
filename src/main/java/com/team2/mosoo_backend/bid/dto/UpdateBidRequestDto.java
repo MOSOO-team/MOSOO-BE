@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class UpdateBidRequestDto {
 
-    private long id;
+    private long bidId;
     private int price;
     private LocalDateTime date;
 

@@ -68,7 +68,7 @@ public class BidService {
     //입찰 수정
     public BidResponseDto updateBid(UpdateBidRequestDto updateBidRequestDto) {
 
-        Bid bid = bidRepository.findById(updateBidRequestDto.getId()).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        Bid bid = bidRepository.findById(updateBidRequestDto.getBidId()).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
         bid.updateBid(updateBidRequestDto);
 
