@@ -6,12 +6,15 @@ import com.team2.mosoo_backend.chatting.dto.*;
 import com.team2.mosoo_backend.chatting.service.ChatRoomService;
 import com.team2.mosoo_backend.jwt.TokenProvider;
 import com.team2.mosoo_backend.post.dto.PostResponseDto;
+import com.team2.mosoo_backend.user.entity.Users;
+import com.team2.mosoo_backend.user.repository.UserRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -19,8 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -43,6 +45,19 @@ class ChatRoomControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @MockBean
+    private UserRepository userRepository;
+
+    private Users user;
+
+    @BeforeEach
+    public void setUp() {
+        // 테스트용 유저 정보 미리 저장
+        user = Users.builder().email("email1234").id(1L).build();
+
+        userRepository.save(user);
+    }
 
     static final String URL = "/api/chatroom";
     static final Long chatRoomId = 1L;
@@ -77,10 +92,11 @@ class ChatRoomControllerTest {
     @Test
     @Order(1)
     @DisplayName("채팅방 전체 조회 메서드 테스트")
+    @WithMockUser(username = "1", roles = "AUTHORITY_USER") // Mock 사용자 추가
     public void findChatRoomTest() throws Exception {
 
         //given
-        given(chatRoomService.findAllChatRooms(anyInt()))
+        given(chatRoomService.findAllChatRooms(eq(user.getId()), anyInt()))
                 .willReturn(createChatRoomResponseWrapperDto());
 
         //when
@@ -100,9 +116,10 @@ class ChatRoomControllerTest {
     @Test
     @Order(2)
     @DisplayName("채팅방 관련 정보 조회 메서드 테스트")
+    @WithMockUser(username = "1", roles = "AUTHORITY_USER") // Mock 사용자 추가
     public void findChatRoomInfoTest() throws Exception {
         //given
-        given(chatRoomService.findChatRoomInfo(chatRoomId))
+        given(chatRoomService.findChatRoomInfo(user.getId(), chatRoomId))
                 .willReturn(createChatRoomInfoResponseDto());
 
         //when
@@ -120,9 +137,10 @@ class ChatRoomControllerTest {
     @Test
     @Order(3)
     @DisplayName("채팅방 상대방 정보 조회 메서드 테스트")
+    @WithMockUser(username = "1", roles = "AUTHORITY_USER") // Mock 사용자 추가
     public void findChatRoomOpponentInfoTest() throws Exception {
         //given
-        given(chatRoomService.findChatRoomOpponentInfo(chatRoomId))
+        given(chatRoomService.findChatRoomOpponentInfo(user.getId(), chatRoomId))
                 .willReturn(createChatRoomOpponentInfoResponseDto());
 
         //when
@@ -139,9 +157,10 @@ class ChatRoomControllerTest {
     @Test
     @Order(4)
     @DisplayName("채팅방 생성 메서드 테스트")
+    @WithMockUser(username = "1", roles = "AUTHORITY_USER") // Mock 사용자 추가
     public void createChatRoomTest() throws Exception {
         //given
-        given(chatRoomService.createChatRoom(any()))
+        given(chatRoomService.createChatRoom(eq(user.getId()), any()))
                 .willReturn(new ChatRoomCreateResponseDto(chatRoomId));
 
         //when
@@ -158,9 +177,10 @@ class ChatRoomControllerTest {
     @Test
     @Order(5)
     @DisplayName("채팅방 나가기 메서드 테스트")
+    @WithMockUser(username = "1", roles = "AUTHORITY_USER") // Mock 사용자 추가
     public void quitChatRoomTest() throws Exception {
         //given
-        given(chatRoomService.quitChatRoom(chatRoomId))
+        given(chatRoomService.quitChatRoom(user.getId(), chatRoomId))
                 .willReturn(new ChatRoomDeleteResponseDto(chatRoomId));
 
         //when
@@ -175,10 +195,11 @@ class ChatRoomControllerTest {
     @Test
     @Order(6)
     @DisplayName("채팅방 내부 가격 수정 메서드 테스트")
+    @WithMockUser(username = "1", roles = "AUTHORITY_USER") // Mock 사용자 추가
     public void updatePriceTest() throws Exception {
         //given
         int updatePrice = 20000;
-        given(chatRoomService.updatePrice(chatRoomId, updatePrice))
+        given(chatRoomService.updatePrice(user.getId(), chatRoomId, updatePrice))
                 .willReturn(new ChatRoomPriceResponseDto(updatePrice));
 
         //when
