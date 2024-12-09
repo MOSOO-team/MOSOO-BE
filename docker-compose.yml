@@ -1,0 +1,22 @@
+version: "3"
+services:
+  backend:
+    image: ${DOCKER_USER}/mosoo_spring:latest
+    container_name: mosoo_spring
+    ports:
+      - 8080:8080
+    environment:
+      AWS_S3_AK: ${AWS_S3_AK}
+      AWS_S3_SK: ${AWS_S3_SK}
+      DB_URL: ${DB_URL}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DEPLOY_FRONT_URL: ${DEPLOY_FRONT_URL}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    external: true  # 외부 네트워크를 사용

@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 @Getter
 public enum ErrorCode {
     /* 400 BAD_REQUEST : 잘못된 요청 */
+    METHOD_ARGUMENT_NOT_VALID(HttpStatus.BAD_REQUEST, "유효하지 않은 메서드 인자값입니다."),
+    PAGE_NOT_VALID(HttpStatus.BAD_REQUEST, "페이지는 1 이상이여야 합니다."),
     POST_DELETED(HttpStatus.BAD_REQUEST, "삭제된 게시글입니다."),
     REVIEW_DELETED(HttpStatus.BAD_REQUEST, "삭제된 리뷰입니다."),
     COMMENT_DELETED(HttpStatus.BAD_REQUEST, "삭제된 댓글입니다."),
@@ -36,7 +38,8 @@ public enum ErrorCode {
     USER_NOT_AUTHORIZED(HttpStatus.FORBIDDEN, "권한이 없는 사용자입니다."),
 
     /* 404 NOT_FOUND : Resource를 찾을 수 없음 */
-    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 정보의 사용자를 찾을 수 없습니다."),
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+    USER_INFO_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자 정보를 찾을 수 없습니다."),
     OBJECT_NOT_FOUND(HttpStatus.NOT_FOUND, "대상을 찾을 수 없습니다."),
     RESOURCE_NOT_FOUND(HttpStatus.NOT_FOUND, "대상을 찾을 수 없습니다."),
     PRODUCT_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 상품을 찾을 수 없습니다."),
@@ -49,7 +52,13 @@ public enum ErrorCode {
     ADDRESS_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 배송지를 찾을 수 없습니다."),
     POST_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 게시글을 찾을 수 없습니다."),
     BID_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 입찰을 찾을 수 없습니다."),
-    CHATROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅방을 찾을 수 없습니다."),
+    CHAT_ROOM_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 채팅방을 찾을 수 없습니다."),
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 후기를 찾을 수 없습니다."),
+
+
+    PAYMENT_STATUS_NOT_FOUND(HttpStatus.NOT_FOUND, "처리할 수 없는 결제 상태입니다."),
+    PAYMENT_VALID_ORDER_NOT_FOUND(HttpStatus.NOT_FOUND, "해당하는 결제 정보가 없습니다."),
+    PAYMENT_VALID_IMP_NOT_FOUND(HttpStatus.NOT_FOUND, "Imp에 해당하는 결제 정보가 없습니다."),
 
     /* 409 : CONFLICT : Resource의 현재 상태와 충돌. 보통 중복된 데이터 존재, 조건을 만족하지 못함 */
     DUPLICATE_RESOURCE(HttpStatus.CONFLICT, "데이터가 이미 존재합니다."),
@@ -62,6 +71,7 @@ public enum ErrorCode {
     /* 410 : GONE : 리소스가 더 이상 유효하지 않음 */
     USER_ALREADY_DELETED(HttpStatus.GONE, "탈퇴된 사용자입니다."),
     PLACE_DELETED(HttpStatus.GONE, "삭제된 장소입니다"),
+    CHAT_ROOM_DELETED(HttpStatus.GONE, "이미 나간 채팅방입니다."),
 
     /* 500 INTERNAL_SERVER_ERROR : 서버 내부 에러 */
     IO_EXCEPTION_ON_IMAGE_UPLOAD(HttpStatus.INTERNAL_SERVER_ERROR, "이미지 업로드 중 입출력 오류가 발생했습니다."),
@@ -70,14 +80,21 @@ public enum ErrorCode {
     PRODUCT_LIST_RETRIEVAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 목록 조회 중 서버 에러 발생!"),
     PRODUCT_DETAIL_RETRIEVAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 상세 조회 중 서버 에러 발생!"),
     PRODUCT_CREATION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 등록 중 서버 에러 발생!"),
+    FILE_NAME_CONVERSION_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "파일 이름 변환 중 예외가 발생했습니다."),
     PRODUCT_UPDATE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 수정 중 서버 에러 발생!"),
     PRODUCT_DELETION_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "상품 삭제 중 서버 에러 발생!"),
+    MERCHANT_NOT_FOUND_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "해당 하는 주문이 없습니다."),
+
 
     /* 400 BAD_REQUEST : 잘못된 요청 */
     INVALID_CATEGORY_DATA(HttpStatus.BAD_REQUEST, "카테고리 정보가 유효하지 않습니다."),
+    INVALID_FILE_DATA(HttpStatus.BAD_REQUEST, "파일 정보가 유효하지 않습니다."),
+    INVALID_PAYMENT_AMOUNT(HttpStatus.BAD_REQUEST, "결제 금액이 일치하지 않습니다."),
     /* 410 GONE : 리소스가 삭제된 상태 */
     CATEGORY_ALREADY_DELETED(HttpStatus.GONE, "이미 삭제된 카테고리입니다.")
     ;
+
+
 
     private final HttpStatus httpStatus;
     private final String message;

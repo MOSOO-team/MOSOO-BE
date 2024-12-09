@@ -3,14 +3,16 @@ package com.team2.mosoo_backend.chatting.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 public class ChatRoomResponseDto {
 
-    // 일단은 id -> 추후에 유저 정보 직접 포함으로 변경 고민 (프론트에서 api 호출을 한 번 더 해야하므로)
-    private Long userId;
-    private Long gosuId;
+    private Long chatRoomId;            // 채팅방 id
+    private String opponentFullName;    // 채팅에 참여하고 있는 상대방의 이름
+    private String lastChatMessage;     // 마지막 채팅 (메세지 타입이 아니면 타입을 넣음)
+    private LocalDateTime lastChatDate; // 마지막 채팅 날짜
 
-    private Long postId;    // 게시글 id
-    private Long bidId;     // 입찰 id
+    private boolean existUnchecked;     // 읽지 않은 메세지 존재 여부
 }
