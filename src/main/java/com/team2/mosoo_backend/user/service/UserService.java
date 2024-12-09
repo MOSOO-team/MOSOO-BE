@@ -34,13 +34,13 @@ public class UserService {
     private final SecurityUtil securityUtil;
 
     // 맴버 정보 조회
-    public UserResponseDto getMyInfoBySecurity() {
+    public UserResponseDto getMyInfoBySecurity(long userId) {
        // 사용자 ID를 가져와서 정보 조회하기
-        Users me = userRepository.findById(securityUtil.getCurrentMemberId())
+        Users me = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 멤버 상세 정보 조회하기
-        UserInfo userInfo = userInfoRepository.findByUsersId(securityUtil.getCurrentMemberId())
+        UserInfo userInfo = userInfoRepository.findByUsersId(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // UserResponseDto 생성

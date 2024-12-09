@@ -20,7 +20,5 @@ public class CreatePostRequestDto {
     private String status = Status.OPEN.toString();
     private List<MultipartFile> imageUrls;
     private boolean isOffer;
-
-    private Long userId;
     private Long categoryId;
 }

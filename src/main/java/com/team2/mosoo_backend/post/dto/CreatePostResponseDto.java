@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CreatePostResponseDto {
 
-    private long id;
+    private long postId;
     private String title;
     private String description;
     private int price;
