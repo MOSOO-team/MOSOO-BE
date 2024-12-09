@@ -20,6 +20,8 @@ import jakarta.annotation.PostConstruct;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 
@@ -53,11 +55,11 @@ public class PaymentService {
     }
 
 
-    public PaymentResponse verifyPayment(PaymentCompleteRequest request){
+    public PaymentResponse verifyPayment(PaymentCompleteRequest request, Long loginUserId) {
             IamportClient iamportClient = new IamportClient(impKey, impSecret);
 
             String impUid = request.getImpUid();
-            String merchantUid = request.getMerchantId();
+            String merchantUid = request.getMerchantUid();
             Payment importPayment;
 
 
@@ -86,13 +88,15 @@ public class PaymentService {
                     .impUid(request.getImpUid())
                     .merchantUid(importPayment.getMerchantUid())
                     .price(importPayment.getAmount())
-                    .status(PaymentStatusType.valueOf(importPayment.getStatus()))
+                    .status(PaymentStatusType.valueOf((importPayment.getStatus()).toUpperCase()))
+                    .userId(loginUserId)
                     .build();
 
             paymentRepository.save(paymentEntity);
 
 
             //4. 포트원에서 반환해준 결제 정보의 상태를 가져와서, 상태의 값에 따라 주문 상태 업데이트
+        //import  가 반환하는 status 를 알아야 함.
             switch(importPayment.getStatus()){
                 case "ready":
                     orderService.updateOrderStatus(merchantUid, OrderStatus.PAY_READY);
@@ -109,6 +113,7 @@ public class PaymentService {
                     .merchantUid(importPayment.getMerchantUid())
                     .price(importPayment.getAmount().longValue())
                     .status(importPayment.getStatus())
+                    .createTime(paymentEntity.getCreatedAt())
                     .build();
     }
 

@@ -31,7 +31,6 @@ public class OrderController {
         return ResponseEntity.status(200).body(responseDto);
     }
 
-
     @Operation(summary = "주문서 생성", description = "chatRoomID를 받아 주문서를 저장한다.")
     @PostMapping
     public ResponseEntity<OrderDetailsResponseDto> createOrder(
