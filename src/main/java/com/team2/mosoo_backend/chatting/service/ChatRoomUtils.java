@@ -35,19 +35,29 @@ public class ChatRoomUtils {
         ChatRoom foundChatRoom = chatRoomRepository.findById(chatRoomId)
                 .orElseThrow(() -> new CustomException(ErrorCode.CHAT_ROOM_NOT_FOUND));
 
-        // 유저 정보가 일치하지 않으면 403 에러 반환
+        isLoginUserValidate(foundChatRoom, loginUserId);
+
+        isLoginUserQuitChatRoom(foundChatRoom, loginUserId);
+
+        return foundChatRoom;
+    }
+
+    // 유저 정보가 일치하지 않으면 403 에러 반환
+    private void isLoginUserValidate(ChatRoom foundChatRoom, Long loginUserId) {
+
         if(!foundChatRoom.getUserId().equals(loginUserId)
                 && !foundChatRoom.getGosuId().equals(loginUserId)) {
             throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
         }
+    }
 
-        // 채팅방을 나갔다면 410 에러 반환
+    // 채팅방을 나갔다면 410 에러 반환
+    private void isLoginUserQuitChatRoom(ChatRoom foundChatRoom, Long loginUserId) {
+
         if( (foundChatRoom.getGosuId().equals(loginUserId) && foundChatRoom.getGosuDeletedAt() != null) ||
                 (foundChatRoom.getUserId().equals(loginUserId) && foundChatRoom.getUserDeletedAt() != null)) {
             throw new CustomException(ErrorCode.CHAT_ROOM_DELETED);
         }
-
-        return foundChatRoom;
     }
 
     public String getOpponentFullName(ChatRoom chatRoom, Users loginUser) {
@@ -57,10 +67,10 @@ public class ChatRoomUtils {
 
         // 로그인한 유저가 고수인 경우 (상대방이 일반 유저인 경우)
         if(loginUser.getId().equals(chatRoom.getGosuId())) {
-            Users user = userRepository.findById(chatRoom.getUserId()).orElse(null);
+            Users user = userRepository.findById(chatRoom.getUserId()).orElseGet(() -> { return null; });
             opponentFullName = ( (user != null) ? user.getFullName() : "찾을 수 없는 유저");
         } else {    // 로그인한 유저가 일반 유저인 경우 (상대방이 고수인 경우)
-            Users gosu = userRepository.findById(chatRoom.getGosuId()).orElse(null);
+            Users gosu = userRepository.findById(chatRoom.getGosuId()).orElseGet(() -> { return null; });
             opponentFullName = ( (gosu != null) ? gosu.getFullName() : "찾을 수 없는 고수");
         }
 
@@ -87,16 +97,5 @@ public class ChatRoomUtils {
         }
 
         return chatMessageRequestDto;
-    }
-
-    // 사용자의 권환 확인 + userId 가져오는 메서드
-    // 따로 분리한 이유 : RuntimeException이 아닌 커스텀 예외 처리 위해서
-    public Long getAuthenticatedMemberId() {
-        try {
-//            return 1L;
-            return securityUtil.getCurrentMemberId();
-        } catch (RuntimeException e) {
-            throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
-        }
     }
 }
