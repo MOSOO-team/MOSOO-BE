@@ -30,10 +30,20 @@ public class CustomExceptionHandler {
                 .map(error -> error.getField() + ": " + error.getDefaultMessage())
                 .collect(Collectors.joining(", "));
 
+
+
+        // 각 필드에 대한 에러 메시지를 기반으로 적절한 ErrorCode 반환
+        if (ex.getBindingResult().getFieldErrors().stream().anyMatch(error -> error.getField().equals("email"))) {
+            return ErrorResponseEntity.toResponseEntity(ErrorCode.INVALID_EMAIL_FORMAT);
+        } else if (ex.getBindingResult().getFieldErrors().stream().anyMatch(error -> error.getField().equals("password"))) {
+            return ErrorResponseEntity.toResponseEntity(ErrorCode.INVALID_PASSWORD);
+        }
+
         logger.error("Validation failed: {}", errorMessage);
 
         return ErrorResponseEntity.toResponseEntity(ErrorCode.METHOD_ARGUMENT_NOT_VALID);
     }
+
 
     // 페이지 양수 조건 예외 처리
     @ExceptionHandler(ConstraintViolationException.class)
