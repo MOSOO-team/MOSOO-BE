@@ -58,7 +58,6 @@ public class CategoryService {
 
         categoryRepository.save(category);
         CategoryResponseDto categoryResponseDto = CategoryMapper.INSTANCE.toDto(category);
-        categoryResponseDto.setMessage("카테고리 생성 성공");
         return categoryResponseDto;
     }
 
@@ -67,10 +66,6 @@ public class CategoryService {
     public List<CategoryResponseDto> readAllCategories() {
         List<Category> categories = categoryRepository.findAll();
         List<CategoryResponseDto> categoryResponseDtos = buildCategoryHierarchy(categories);
-
-        for (CategoryResponseDto category : categoryResponseDtos) {
-            category.setMessage("카테고리 전체 조회 성공");
-        }
 
         return categoryResponseDtos;
     }
@@ -126,7 +121,6 @@ public class CategoryService {
 
         categoryRepository.save(category);
         CategoryResponseDto categoryResponseDto = CategoryMapper.INSTANCE.toDto(category);
-        categoryResponseDto.setMessage("카테고리 수정 성공");
         return categoryResponseDto;
     }
     
@@ -140,7 +134,6 @@ public class CategoryService {
 
         CategoryResponseDto categoryResponseDto = CategoryMapper.INSTANCE.toDto(category);
         categoryRepository.delete(category);
-        categoryResponseDto.setMessage("카테고리 삭제 성공");
         return categoryResponseDto;
     }
     

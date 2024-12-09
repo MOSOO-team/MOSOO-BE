@@ -11,7 +11,6 @@ import java.util.List;
 @Getter
 @Setter
 public class CategoryResponseDto {
-    private String message;
     private Long categoryId;
     private String name;
     private String description;
