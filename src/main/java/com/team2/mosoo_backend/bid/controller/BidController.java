@@ -5,6 +5,8 @@ import com.team2.mosoo_backend.bid.service.BidService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,9 +19,7 @@ public class BidController {
 
     @GetMapping("/{postId}")
     public ResponseEntity<BidListResponseDto> getBidByPost(@PathVariable("postId") Long postId) {
-
         BidListResponseDto bidListResponseDto = bidService.getBidByPost(postId);
-
         return ResponseEntity.status(200).body(bidListResponseDto);
     }
 
@@ -27,9 +27,9 @@ public class BidController {
     public ResponseEntity<BidResponseDto> createBid(
             @PathVariable("postId") Long postId,
             @RequestBody CreateBidRequestDto createBidRequestDto,
-            @RequestParam(value = "userId") Long userId) {
+            @AuthenticationPrincipal UserDetails userDetails) {
 
-        BidResponseDto bidResponseDto = bidService.createBidByPost(userId, postId, createBidRequestDto);
+        BidResponseDto bidResponseDto = bidService.createBidByPost(Long.parseLong(userDetails.getUsername()), postId, createBidRequestDto);
 
         return ResponseEntity.status(201).body(bidResponseDto);
     }
