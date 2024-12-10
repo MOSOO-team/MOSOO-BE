@@ -130,6 +130,7 @@ public class ChatRoomService {
     }
 
     // 채팅방 목록 조회 메서드
+    // TODO: 가장 최신 메세지 기준 정렬
     public ChatRoomResponseWrapperDto findAllChatRooms(Long loginUserId, int page) {
 
         // 페이지 당 채팅방5개, 최근 수정시간 기준 내림차순 정렬
