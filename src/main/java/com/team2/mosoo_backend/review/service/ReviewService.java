@@ -5,10 +5,7 @@ import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
 import com.team2.mosoo_backend.post.entity.Post;
 import com.team2.mosoo_backend.post.repository.PostRepository;
-import com.team2.mosoo_backend.review.dto.CreateReviewRequestDto;
-import com.team2.mosoo_backend.review.dto.ReviewListResponseDto;
-import com.team2.mosoo_backend.review.dto.ReviewResponseDto;
-import com.team2.mosoo_backend.review.dto.UpdateReviewRequestDto;
+import com.team2.mosoo_backend.review.dto.*;
 import com.team2.mosoo_backend.review.entity.Review;
 import com.team2.mosoo_backend.review.mapper.ReviewMapper;
 import com.team2.mosoo_backend.review.repository.ReviewRepository;
@@ -49,16 +46,20 @@ public class ReviewService {
     }
 
     // 본인 후기 조회
-    public ReviewListResponseDto getReviewByUserId(Long userId) {
+    public MyReviewListResponseDto getReviewByUserId(Long userId) {
         List<Review> reviewList = reviewRepository.findAllByUserId(userId);
-        List<ReviewResponseDto> reviewResponseDtoList = new ArrayList<>();
+        List<MyReviewResponseDto> reviewResponseDtoList = new ArrayList<>();
 
 
         for (Review review : reviewList) {
-            reviewResponseDtoList.add(reviewMapper.reviewToReviewResponseDto(review));
+            MyReviewResponseDto myReviewResponseDto = reviewMapper.reviewToMyReviewResponseDto(review);
+            myReviewResponseDto.setPostTitle(review.getPost().getTitle());
+            myReviewResponseDto.setPostId(review.getPost().getId());
+
+            reviewResponseDtoList.add(myReviewResponseDto);
         }
 
-        return new ReviewListResponseDto(reviewResponseDtoList);
+        return new MyReviewListResponseDto(reviewResponseDtoList);
     }
 
     // 후기 생성
