@@ -5,9 +5,11 @@ import com.team2.mosoo_backend.user.dto.GosuUpdateRequestDto;
 import com.team2.mosoo_backend.user.entity.Gosu;
 import com.team2.mosoo_backend.user.service.GosuService;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import retrofit2.http.Path;
 
@@ -50,9 +52,9 @@ public class GosuController {
     }
 
     // 고수 정보 삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteGosu(@PathVariable(value = "id") Long id) {
-        gosuService.deleteGosu(id);
+    @DeleteMapping("/deleted/{userInfoId}")
+    public ResponseEntity<Void> deleteGosu(@PathVariable(value = "userInfoId") Long userinfoId) {
+        gosuService.deleteGosu(userinfoId);
         return ResponseEntity.noContent().build();
     }
 }
