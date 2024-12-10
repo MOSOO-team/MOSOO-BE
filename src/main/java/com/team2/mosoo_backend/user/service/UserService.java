@@ -4,6 +4,7 @@ package com.team2.mosoo_backend.user.service;
 import com.team2.mosoo_backend.config.SecurityUtil;
 import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
+import com.team2.mosoo_backend.user.dto.UserInfoRequestDto;
 import com.team2.mosoo_backend.user.dto.UserListResponse;
 import com.team2.mosoo_backend.user.dto.UserResponseDto;
 import com.team2.mosoo_backend.user.entity.Users;
@@ -73,12 +74,6 @@ public class UserService {
     @Transactional
     public UserResponseDto deleteMember(){
         Long memberId = securityUtil.getCurrentMemberId();
-
-//        List<Order> orders = orderRepository.findByMemberId(memberId);
-//        if(!orders.isEmpty()){
-//            orderRepository.deleteAll(orders);
-//        }
-
         Users users = userRepository.findById(memberId)
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         userRepository.delete(users);
@@ -114,9 +109,6 @@ public class UserService {
 
     @Transactional
     public void deleteMemberByMemberId(Long memberId) {
-//        List<Order> orders = orderRepository.findByMemberId(memberId);
-//        if(!orders.isEmpty()){
-//            orderRepository.deleteAll(orders);
 //        }
 
         Users users = userRepository.findById(memberId)
@@ -140,20 +132,32 @@ public class UserService {
         return new UserListResponse(members, totalPages);
     }
 
-    // 주소 수정
-    public UserInfo updateUserInfoAddress(Long id, UserInfo updatedUserInfo) {
-        Optional<UserInfo> optionalUserInfo = userInfoRepository.findByUsersId(id);
+//    public UserInfo updateUserInfoAddress(Long userId, String newAddress) {
+//        Optional<UserInfo> optionalUserInfo = userInfoRepository.findByUsersId(userId);
+//
+//        if (optionalUserInfo.isPresent()) {
+//            UserInfo existingUserInfo = optionalUserInfo.get();
+//            existingUserInfo.setAddress(newAddress); // address 업데이트
+//            return userInfoRepository.save(existingUserInfo);
+//        } else {
+//            throw new RuntimeException("유저 정보를 찾을 수 없습니다. ID: " + userId);
+//        }
+//
+//
+//    }
 
-        if (optionalUserInfo.isPresent()) {
-            UserInfo existingUserInfo = optionalUserInfo.get();
-            // 주소 업데이트, 비어 있을 경우 허용
-            existingUserInfo.setAddress(updatedUserInfo.getAddress());
-            existingUserInfo.setIsGosu(updatedUserInfo.getIsGosu());
-
-            return userInfoRepository.save(existingUserInfo);
-        } else {
-            throw new RuntimeException("유저 정보를 찾을 수 없습니다. ID: " + id);
-        }
+    // 이메일로 userId를 찾는 메서드
+    public Long getUserIdByEmail(String email) {
+        Optional<Users> user = userRepository.findByEmail(email);
+        return user.map(Users::getId).orElse(null);
     }
 
+    @Transactional
+    public UserInfo updateUserInfoAddress(Long userId, UserInfoRequestDto userInfoRequestDto) {
+        UserInfo userInfo = userInfoRepository.findByUsersId(userId).orElseThrow(() ->new CustomException(ErrorCode.USER_NOT_FOUND));
+        userInfo.setAddress(userInfoRequestDto.getNewAddress());
+        userInfoRepository.save(userInfo);
+
+        return userInfo;
+    }
 }
