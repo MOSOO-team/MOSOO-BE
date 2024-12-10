@@ -86,9 +86,9 @@ public class GosuService {
     }
 
     // 고수 정보 삭제
-    public void deleteGosu(Long id) {
+    public void deleteGosu(Long userinfoId) {
         // 고수 찾기
-        Gosu gosu = gosuRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Gosu gosu = gosuRepository.findByUserInfoId(userinfoId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 찾은 고수 내부에서 UserInfo 찾기
         UserInfo userInfo = gosu.getUserInfo();
