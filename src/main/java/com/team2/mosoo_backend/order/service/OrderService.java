@@ -71,7 +71,7 @@ public class OrderService {
             PaymentEntity paymentEntity = paymentRepository.findPaymentEntityByMerchantUid(order.getMerchantUid()).orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
             UserInfo byUsersId = userInfoRepository.findByUsersId(chatRoom.getGosuId()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-            Gosu gosu = gosuRepository.findByUserInfoId(byUsersId.getId()).get(0);
+            Gosu gosu = gosuRepository.findByUserInfoId(byUsersId.getId()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
             String gosuName = gosu.getBusinessName();
 
             orderResponseDtoList.add(new OrderResponseDto(workDate, order.getId(), order.getPrice(), paymentEntity.getCreatedAt(), gosuName, chatRoom.getPost().getId()));
@@ -98,7 +98,7 @@ public class OrderService {
         BidResponseDto bidResponseDto = bidMapper.bidToBidResponseDto(chatRoom.getBid());
 
         UserInfo byUsersId = userInfoRepository.findByUsersId(chatRoom.getGosuId()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
-        Gosu gosu = gosuRepository.findByUserInfoId(byUsersId.getId()).get(0);
+        Gosu gosu = gosuRepository.findByUserInfoId(byUsersId.getId()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         GosuResponseDto gosuResponseDto = new GosuResponseDto(gosu.getGosuInfoAddress(), gosu.getBusinessName());
 
         return new OrderDetailsResponseDto(postResponseDto, bidResponseDto, gosuResponseDto, order.getPrice(), order.getMerchantUid());

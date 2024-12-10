@@ -237,7 +237,7 @@ public class ChatRoomService {
                     .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
             UserInfo userInfo = userInfoRepository.findByUsersId(opponentUser.getId())
                     .orElseThrow(() -> new CustomException(ErrorCode.USER_INFO_NOT_FOUND));
-            Gosu gosu = gosuRepository.findByUserInfoId(userInfo.getId()).get(0);
+            Gosu gosu = gosuRepository.findByUserInfoId(userInfo.getId()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
             chatRoomOpponentInfoResponseDto = new ChatRoomOpponentInfoResponseDto(gosu.getBusinessName(), gosu.getBusinessNumber(), gosu.getGosuInfoAddress(), gosu.getGosuInfoPhone(), gosu.getCategory().getName());
         }
