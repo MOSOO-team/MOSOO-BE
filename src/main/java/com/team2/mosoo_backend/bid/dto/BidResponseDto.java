@@ -16,5 +16,5 @@ public class BidResponseDto {
     private LocalDateTime date;
 
     private String fullName;
-
+    private Long userId;
 }
