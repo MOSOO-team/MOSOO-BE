@@ -23,15 +23,15 @@ public class GosuController {
     private final GosuService gosuService;
 
     // 모든 고수 정보 조회
-    @GetMapping("/all")
+    @GetMapping("/")
     public List<Gosu> getAllGosu() {
         return gosuService.getAllGosu();
     }
 
     // 특정 고수 정보 ID 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<Gosu> getGosuById(@PathVariable(value = "id") Long id) {
-        Optional <Gosu> gosu = gosuService.getGosuById(id);
+    @GetMapping("/{gosuId}")
+    public ResponseEntity<Gosu> getGosuById(@PathVariable(value = "id") Long gosuId) {
+        Optional <Gosu> gosu = gosuService.getGosuById(gosuId);
         return gosu.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 

@@ -44,8 +44,6 @@ public class AuthService {
             throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
         }
 
-
-
         // User 엔티티 생성 및 저장
         Users users = userMapper.requestToUser(requestDto);
         users.setAuthority(Authority.ROLE_USER);

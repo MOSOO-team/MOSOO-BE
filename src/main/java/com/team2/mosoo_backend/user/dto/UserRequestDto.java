@@ -1,5 +1,6 @@
 package com.team2.mosoo_backend.user.dto;
 
+import com.team2.mosoo_backend.user.entity.Authority;
 import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

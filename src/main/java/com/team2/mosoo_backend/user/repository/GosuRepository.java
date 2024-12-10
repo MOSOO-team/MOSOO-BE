@@ -16,7 +16,6 @@ public interface GosuRepository extends JpaRepository<Gosu, Long> {
     //특정 유저 정보 ID로 고수 정보 조회
     List<Gosu> findByUserInfoId(Long userInfoId);
 
-
     // 고수 전체 조회
     Page<Gosu> findAll(Pageable pageable);
 
