@@ -44,9 +44,9 @@ public class ReviewController {
     public ResponseEntity<ReviewResponseDto> createReview(
             @PathVariable("postId") Long postId,
             @RequestBody CreateReviewRequestDto createReviewRequestDto,
-            @RequestParam("userId") Long userId) {
+            @AuthenticationPrincipal UserDetails userDetails) {
 
-        ReviewResponseDto reviewResponseDto = reviewService.createReview(userId, postId, createReviewRequestDto);
+        ReviewResponseDto reviewResponseDto = reviewService.createReview(Long.parseLong(userDetails.getUsername()), postId, createReviewRequestDto);
 
         return ResponseEntity.status(201).body(reviewResponseDto);
 
