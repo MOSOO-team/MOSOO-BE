@@ -26,6 +26,8 @@ public class UserRequestDto {
 
     private String fullName;
 
+    private Authority authority;
+
 
 
     public UsernamePasswordAuthenticationToken toAuthentication() {
