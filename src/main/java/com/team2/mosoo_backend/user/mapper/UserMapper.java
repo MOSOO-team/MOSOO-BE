@@ -21,7 +21,7 @@ public interface UserMapper {
 
     @Mapping(target = "password", source = "password", qualifiedByName = "encryptPassword")
     Users requestToUser(UserRequestDto userRequestDto);
-
+    @Mapping(target = "authority", source = "users.authority") // authority 매핑 추가
     UserResponseDto userToResponse(Users users);
 
     @Mapping(source = "users", target = "userId")
@@ -29,6 +29,8 @@ public interface UserMapper {
 
     @Mapping(target = "category", ignore = true)
     Gosu requestToGosu(GosuRequestDto gosuRequestDto);
+
+
 
     default Long mapUsersToLong(Users users) { return users != null ? users.getId() : null; }
 
