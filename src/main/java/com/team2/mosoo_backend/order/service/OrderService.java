@@ -68,7 +68,7 @@ public class OrderService {
                 workDate = chatRoom.getPost().getDuration();
             }
 
-            PaymentEntity paymentEntity = paymentRepository.findPaymentEntityByOrderId(order.getId()).orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
+            PaymentEntity paymentEntity = paymentRepository.findPaymentEntityByMerchantUid(order.getMerchantUid()).orElseThrow(() -> new CustomException(ErrorCode.ORDER_NOT_FOUND));
 
             UserInfo byUsersId = userInfoRepository.findByUsersId(chatRoom.getGosuId()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
             Gosu gosu = gosuRepository.findByUserInfoId(byUsersId.getId()).get(0);
