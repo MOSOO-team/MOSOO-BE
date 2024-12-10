@@ -246,4 +246,22 @@ public class PostService {
     }
 
 
+    public PostListResponseDto getPostsByUser(Long userId, int page) {
+        Pageable pageable = PageRequest.of(page - 1, 9, Sort.by("id").descending());
+
+        Users user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        Page<Post> posts = postRepository.findByUser(user);
+
+        List<PostResponseDto> postResponseDtoList = new ArrayList<>();
+
+        for (Post post : posts) {
+            postResponseDtoList.add(postMapper.postToPostResponseDto(post));
+        }
+
+        int totalPages = (posts.getTotalPages() == 0 ? 1 : posts.getTotalPages());
+
+        return new PostListResponseDto(postResponseDtoList, totalPages);
+
+    }
 }
