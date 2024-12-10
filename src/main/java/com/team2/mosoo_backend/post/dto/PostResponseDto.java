@@ -20,6 +20,8 @@ public class PostResponseDto {
     private String address;
     private boolean isOffer;
     private LocalDateTime updatedAt;
+
+    private Long userId;
     private String fullName;
 
     private List<String> imgUrls;

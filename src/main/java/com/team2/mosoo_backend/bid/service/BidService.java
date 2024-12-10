@@ -40,6 +40,7 @@ public class BidService {
         for(Bid bid : bidList) {
             BidResponseDto bidResponseDto = bidMapper.bidToBidResponseDto(bid);
             bidResponseDto.setFullName(bid.getUser().getFullName());
+            bidResponseDto.setUserId(bid.getUser().getId());
             dtoList.add(bidResponseDto);
         }
 
@@ -63,6 +64,7 @@ public class BidService {
 
         BidResponseDto bidResponseDto = bidMapper.bidToBidResponseDto(createdBid);
         bidResponseDto.setFullName(user.getFullName());
+        bidResponseDto.setUserId(user.getId());
 
         return bidResponseDto;
     }

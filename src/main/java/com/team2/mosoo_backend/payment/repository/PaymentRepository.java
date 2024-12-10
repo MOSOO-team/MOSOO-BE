@@ -10,5 +10,5 @@ import org.springframework.stereotype.Repository;
 public interface PaymentRepository extends JpaRepository<PaymentEntity, Long> {
 
 
-    Optional<PaymentEntity> findPaymentEntityByOrderId(Long orderId);
+    Optional<PaymentEntity> findPaymentEntityByMerchantUid(String merchantUid);
 }

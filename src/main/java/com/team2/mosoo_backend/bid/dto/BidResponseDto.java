@@ -11,10 +11,10 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class BidResponseDto {
 
-    private long bidId;
+    private long id;
     private int price;
     private LocalDateTime date;
 
     private String fullName;
-
+    private Long userId;
 }

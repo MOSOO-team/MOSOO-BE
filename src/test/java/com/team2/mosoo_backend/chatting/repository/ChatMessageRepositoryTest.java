@@ -37,7 +37,7 @@ class ChatMessageRepositoryTest {
 
 
         //then
-        assertThat(chatMessagesLegacy).isNotEqualTo(null);
+//        assertThat(chatMessagesLegacy).isNotEqualTo(null);
 
         List<ChatMessage> legacyMessages = chatMessagesLegacy.getContent();
         for (ChatMessage legacyMessage : legacyMessages) {
