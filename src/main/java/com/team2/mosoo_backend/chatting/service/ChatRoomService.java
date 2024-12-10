@@ -267,7 +267,7 @@ public class ChatRoomService {
 
             // 해당 게시글에 대한 채팅방이 이미 존재하는 경우
             if(chatRoomRepository.existsByPostIdAndUserIdAndGosuId(post.getId(), loginUserId, chatRoomRequestDto.getGosuId())) {
-                ChatRoom existChatRoom = chatRoomRepository.findByPostIdAndGosuId(post.getId(), chatRoomRequestDto.getGosuId()).get();
+                ChatRoom existChatRoom = chatRoomRepository.findByPostIdAndUserIdAndGosuId(post.getId(), loginUserId, chatRoomRequestDto.getGosuId()).get();
                 existChatRoom.reCreate();
                 return new ChatRoomCreateResponseDto(existChatRoom.getId());
             }
@@ -279,7 +279,7 @@ public class ChatRoomService {
 
             // 해당 입찰에 대한 채팅방이 이미 존재하는 경우
             if(chatRoomRepository.existsByBidIdAndUserIdAndGosuId(bid.getId(), loginUserId, chatRoomRequestDto.getGosuId())) {
-                ChatRoom existChatRoom = chatRoomRepository.findByBidIdAndGosuId(bid.getId(), chatRoomRequestDto.getGosuId()).get();
+                ChatRoom existChatRoom = chatRoomRepository.findByBidIdAndUserIdAndGosuId(bid.getId(), loginUserId, chatRoomRequestDto.getGosuId()).get();
                 existChatRoom.reCreate();
                 return new ChatRoomCreateResponseDto(existChatRoom.getId());
             }
