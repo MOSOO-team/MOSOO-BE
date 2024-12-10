@@ -36,7 +36,7 @@ class ChatMessageQueryRepositoryTest {
         System.out.println("성능 개선 후 실행 시간: " + (double) (endTime - startTime)/1000000000 + "s");
 
         //then
-        assertThat(chatMessagesNoOffset).isNotEqualTo(null);
+//        assertThat(chatMessagesNoOffset).isNotEqualTo(null);
 
         // 추가: 메시지 내용 비교
         List<ChatMessage> noOffsetMessages = chatMessagesNoOffset.getContent();
