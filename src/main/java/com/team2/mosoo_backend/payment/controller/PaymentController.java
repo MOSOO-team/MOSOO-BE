@@ -13,6 +13,8 @@ import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,10 +26,10 @@ public class PaymentController {
 
 
 
-    @PostMapping("/complete")
+    @PostMapping(value = "/complete", produces = "application/json")
     public ResponseEntity<PaymentResponse> completePayment(
-            @RequestBody PaymentCompleteRequest request) {
-            PaymentResponse response = paymentService.verifyPayment(request);
+            @AuthenticationPrincipal UserDetails userDetails, @RequestBody PaymentCompleteRequest request) {
+            PaymentResponse response = paymentService.verifyPayment(request, Long.parseLong(userDetails.getUsername()));
             return ResponseEntity.ok(response);
         }
 /*

@@ -31,6 +31,7 @@ public class ReviewService {
     private final PostRepository postRepository;
 
 
+    // 게시글 내의 후기 조회
     public ReviewListResponseDto getReviewByPostId(Long postId) {
 
         List<Review> reviewList = reviewRepository.findAllByPostId(postId);
@@ -47,6 +48,7 @@ public class ReviewService {
 
     }
 
+    // 본인 후기 조회
     public ReviewListResponseDto getReviewByUserId(Long userId) {
         List<Review> reviewList = reviewRepository.findAllByUserId(userId);
         List<ReviewResponseDto> reviewResponseDtoList = new ArrayList<>();
@@ -59,6 +61,7 @@ public class ReviewService {
         return new ReviewListResponseDto(reviewResponseDtoList);
     }
 
+    // 후기 생성
     @Transactional
     public ReviewResponseDto createReview(Long userId, Long postId, CreateReviewRequestDto createReviewRequestDto) {
 
@@ -73,6 +76,7 @@ public class ReviewService {
         return reviewMapper.reviewToReviewResponseDto(savedReview);
     }
 
+    // 후기 수정
     @Transactional
     public ReviewResponseDto updateReview(UpdateReviewRequestDto updateReviewRequestDto) {
 
@@ -83,6 +87,7 @@ public class ReviewService {
         return reviewMapper.reviewToReviewResponseDto(review);
     }
 
+    // 후기 삭제
     @Transactional
     public ReviewResponseDto deleteReview(Long reviewId) {
 

@@ -30,6 +30,7 @@ public class Users {
     private String email;
     private String password;
 
+    @Column(name = "fullName")
     private String fullName;
 
     @Enumerated(EnumType.STRING)

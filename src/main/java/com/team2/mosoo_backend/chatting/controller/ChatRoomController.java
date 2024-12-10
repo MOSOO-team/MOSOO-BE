@@ -8,9 +8,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,10 +34,12 @@ public class ChatRoomController {
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ChatRoomResponseWrapperDto.class)))
     public ResponseEntity<ChatRoomResponseWrapperDto> findAllChatRooms(
-            @RequestParam(required = false, value = "page", defaultValue = "1")
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestParam(value = "page", defaultValue = "1")
             @Positive int page) {
 
-        ChatRoomResponseWrapperDto chatRoomResponseWrapperDto = chatRoomService.findAllChatRooms(page);
+        ChatRoomResponseWrapperDto chatRoomResponseWrapperDto
+                = chatRoomService.findAllChatRooms(Long.parseLong(userDetails.getUsername()),page);
         return ResponseEntity.status(HttpStatus.OK).body(chatRoomResponseWrapperDto);
     }
 
@@ -49,9 +54,12 @@ public class ChatRoomController {
     @ApiResponse(responseCode = "200", description = "채팅방 관련 세부 정보 조회 성공",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ChatRoomInfoResponseDto.class)))
-    public ResponseEntity<ChatRoomInfoResponseDto> findChatRoomInfo(@PathVariable("chatRoomId") Long chatRoomId) {
+    public ResponseEntity<ChatRoomInfoResponseDto> findChatRoomInfo(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable("chatRoomId") Long chatRoomId) {
 
-        ChatRoomInfoResponseDto chatRoomInfoResponseDto = chatRoomService.findChatRoomInfo(chatRoomId);
+        ChatRoomInfoResponseDto chatRoomInfoResponseDto
+                = chatRoomService.findChatRoomInfo(Long.parseLong(userDetails.getUsername()), chatRoomId);
         return ResponseEntity.status(HttpStatus.OK).body(chatRoomInfoResponseDto);
     }
 
@@ -66,9 +74,12 @@ public class ChatRoomController {
     @ApiResponse(responseCode = "200", description = "채팅방 관련 상대 정보 조회 성공",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ChatRoomOpponentInfoResponseDto.class)))
-    public ResponseEntity<ChatRoomOpponentInfoResponseDto> findChatRoomOpponentInfo(@PathVariable("chatRoomId") Long chatRoomId) {
+    public ResponseEntity<ChatRoomOpponentInfoResponseDto> findChatRoomOpponentInfo(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable("chatRoomId") Long chatRoomId) {
 
-        ChatRoomOpponentInfoResponseDto chatRoomOpponentInfoResponseDto = chatRoomService.findChatRoomOpponentInfo(chatRoomId);
+        ChatRoomOpponentInfoResponseDto chatRoomOpponentInfoResponseDto
+                = chatRoomService.findChatRoomOpponentInfo(Long.parseLong(userDetails.getUsername()), chatRoomId);
         return ResponseEntity.status(HttpStatus.OK).body(chatRoomOpponentInfoResponseDto);
     }
 
@@ -84,9 +95,12 @@ public class ChatRoomController {
     @ApiResponse(responseCode = "201", description = "채팅방 생성 성공",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ChatRoomCreateResponseDto.class)))
-    public ResponseEntity<ChatRoomCreateResponseDto> createChatRoom(@RequestBody ChatRoomRequestDto chatRoomRequestDto) {
+    public ResponseEntity<ChatRoomCreateResponseDto> createChatRoom(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @RequestBody ChatRoomRequestDto chatRoomRequestDto) {
 
-        ChatRoomCreateResponseDto result = chatRoomService.createChatRoom(chatRoomRequestDto);
+        ChatRoomCreateResponseDto result
+                = chatRoomService.createChatRoom(Long.parseLong(userDetails.getUsername()), chatRoomRequestDto);
         return ResponseEntity.status(HttpStatus.CREATED).body(result);
     }
 
@@ -101,9 +115,12 @@ public class ChatRoomController {
     @ApiResponse(responseCode = "200", description = "채팅방 나가기 성공",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ChatRoomDeleteResponseDto.class)))
-    public ResponseEntity<ChatRoomDeleteResponseDto> quitChatRoom(@PathVariable("chatRoomId") Long chatRoomId) {
+    public ResponseEntity<ChatRoomDeleteResponseDto> quitChatRoom(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable("chatRoomId") Long chatRoomId) {
 
-        ChatRoomDeleteResponseDto result = chatRoomService.quitChatRoom(chatRoomId);
+        ChatRoomDeleteResponseDto result
+                = chatRoomService.quitChatRoom(Long.parseLong(userDetails.getUsername()), chatRoomId);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
@@ -118,10 +135,13 @@ public class ChatRoomController {
     @ApiResponse(responseCode = "200", description = "가격 변경 성공",
             content = @Content(mediaType = "application/json",
                     schema = @Schema(implementation = ChatRoomPriceResponseDto.class)))
-    public ResponseEntity<ChatRoomPriceResponseDto> updatePrice(@PathVariable("chatRoomId") Long chatRoomId,
-                                                            @RequestParam(value = "price") int price) {
+    public ResponseEntity<ChatRoomPriceResponseDto> updatePrice(
+            @AuthenticationPrincipal UserDetails userDetails,
+            @PathVariable("chatRoomId") Long chatRoomId,
+            @RequestParam(value = "price") @PositiveOrZero int price) {
 
-        ChatRoomPriceResponseDto result = chatRoomService.updatePrice(chatRoomId, price);
+        ChatRoomPriceResponseDto result
+                = chatRoomService.updatePrice(Long.parseLong(userDetails.getUsername()), chatRoomId, price);
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 

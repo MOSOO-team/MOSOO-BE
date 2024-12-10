@@ -14,6 +14,7 @@ import com.team2.mosoo_backend.post.entity.Post;
 import com.team2.mosoo_backend.post.repository.PostRepository;
 import com.team2.mosoo_backend.user.entity.Users;
 import com.team2.mosoo_backend.user.repository.UserRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +48,7 @@ public class BidService {
 
 
     // 입찰 생성
+    @Transactional
     public BidResponseDto createBidByPost(Long userId, Long postId, CreateBidRequestDto createBidRequestDto) {
 
         Bid bid = bidMapper.createBidRequestDtoToBid(createBidRequestDto);
@@ -66,9 +68,10 @@ public class BidService {
     }
 
     //입찰 수정
+    @Transactional
     public BidResponseDto updateBid(UpdateBidRequestDto updateBidRequestDto) {
 
-        Bid bid = bidRepository.findById(updateBidRequestDto.getId()).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        Bid bid = bidRepository.findById(updateBidRequestDto.getBidId()).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
         bid.updateBid(updateBidRequestDto);
 
@@ -77,6 +80,7 @@ public class BidService {
     }
 
     // 입찰 삭제
+    @Transactional
     public BidResponseDto deleteBid(Long bidId) {
         Bid bid = bidRepository.findById(bidId).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
 
@@ -85,5 +89,20 @@ public class BidService {
         bidRepository.delete(bid);
 
         return bidResponseDto;
+    }
+
+    // 회원 입찰 조회
+    public BidListResponseDto getMyBid(Long userId) {
+        List<BidResponseDto> dtoList = new ArrayList<>();
+        Users user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        List<Bid> bidList = bidRepository.findByUser(user);
+
+        for(Bid bid : bidList) {
+            BidResponseDto bidResponseDto = bidMapper.bidToBidResponseDto(bid);
+            bidResponseDto.setFullName(bid.getUser().getFullName());
+            dtoList.add(bidResponseDto);
+        }
+
+        return new BidListResponseDto(dtoList);
     }
 }

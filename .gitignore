@@ -4,6 +4,7 @@ build/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
+src/main/generated
 
 ### STS ###
 .apt_generated
@@ -39,3 +40,4 @@ out/
 
 ### env
 src/main/resources/env.properties
+src/main/generated/
