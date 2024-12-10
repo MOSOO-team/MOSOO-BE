@@ -189,6 +189,7 @@ public class PostService {
 
         PostResponseDto postResponseDto = postMapper.postToPostResponseDto(post);
 
+        postResponseDto.setUserId(post.getUser().getId());
         postResponseDto.setFullName(post.getUser().getFullName());
 
         return postResponseDto;
