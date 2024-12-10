@@ -1,14 +1,14 @@
 package com.team2.mosoo_backend.user.controller;
 
 
-import com.team2.mosoo_backend.user.dto.ChangeNameRequestDto;
 import com.team2.mosoo_backend.user.dto.ChangePasswordRequestDto;
-import com.team2.mosoo_backend.user.dto.UserInfoDto;
 import com.team2.mosoo_backend.user.dto.UserResponseDto;
 import com.team2.mosoo_backend.user.entity.UserInfo;
 import com.team2.mosoo_backend.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,8 +21,8 @@ public class UserController {
 
     // 유저 개인 정보 가져오기
     @GetMapping("/me")
-    public ResponseEntity<UserResponseDto> getMyMemberInfo() {
-        UserResponseDto myInfoBySecurity = userService.getMyInfoBySecurity();
+    public ResponseEntity<UserResponseDto> getMyMemberInfo(@AuthenticationPrincipal UserDetails userDetails) {
+        UserResponseDto myInfoBySecurity = userService.getMyInfoBySecurity(Long.parseLong(userDetails.getUsername()));
         System.out.println(myInfoBySecurity.getFullName());
         return ResponseEntity.ok((myInfoBySecurity));
     }

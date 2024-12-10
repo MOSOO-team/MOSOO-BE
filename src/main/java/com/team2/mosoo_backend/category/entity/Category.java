@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 public class Category {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long category_id;
+    private Long categoryId;
 
     private String name;
 
@@ -25,7 +25,7 @@ public class Category {
     private String icon;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "parent_id")
+    @JoinColumn(name = "parentId")
     private Category parent;
 
     private int level;

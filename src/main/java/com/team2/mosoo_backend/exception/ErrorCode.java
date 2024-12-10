@@ -29,6 +29,9 @@ public enum ErrorCode {
     OUT_OF_STOCK(HttpStatus.BAD_REQUEST, "현재 주문 가능한 상품의 개수를 초과했습니다."),
     ORDER_MODIFICATION_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "배송이 시작된 주문은 수정할 수 없습니다."),
     CART_OUT_OF_RANGE(HttpStatus.BAD_REQUEST, "상품 수량은 1개 이상 20개 이하여야 합니다."),
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 반드시 문자와 숫자로 8자 이상이여야 합니다."),
+    INVALID_EMAIL_FORMAT(HttpStatus.BAD_REQUEST, "이메일 형식이여야 합니다." ),
+
 
     /* 401 UNAUTHORIZED : 인증되지 않은 사용자 */
     INVALID_AUTH_TOKEN(HttpStatus.UNAUTHORIZED, "권한 정보가 없는 토큰입니다."),
@@ -91,8 +94,8 @@ public enum ErrorCode {
     INVALID_FILE_DATA(HttpStatus.BAD_REQUEST, "파일 정보가 유효하지 않습니다."),
     INVALID_PAYMENT_AMOUNT(HttpStatus.BAD_REQUEST, "결제 금액이 일치하지 않습니다."),
     /* 410 GONE : 리소스가 삭제된 상태 */
-    CATEGORY_ALREADY_DELETED(HttpStatus.GONE, "이미 삭제된 카테고리입니다.")
-    ;
+    CATEGORY_ALREADY_DELETED(HttpStatus.GONE, "이미 삭제된 카테고리입니다.");
+
 
 
 

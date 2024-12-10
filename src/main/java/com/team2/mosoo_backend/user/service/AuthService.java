@@ -35,7 +35,6 @@ public class AuthService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final TokenProvider tokenProvider;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final RefreshTokenCookieUtil refreshTokenCookieUtil;
     private final UserInfoRepository userInfoRepository;
 
@@ -44,6 +43,8 @@ public class AuthService {
         if (userRepository.existsByEmail(requestDto.getEmail())) {
             throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
         }
+
+
 
         // User 엔티티 생성 및 저장
         Users users = userMapper.requestToUser(requestDto);

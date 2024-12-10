@@ -11,12 +11,11 @@ import java.util.List;
 @Getter
 @Setter
 public class CategoryResponseDto {
-    private String message;
-    private Long category_id;
+    private Long categoryId;
     private String name;
     private String description;
     private String icon;
     private int level;
-    private Long parent_id;
+    private Long parentId;
     private List<CategoryResponseDto> children = new ArrayList<>();;
 }

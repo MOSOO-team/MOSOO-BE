@@ -6,6 +6,6 @@ import lombok.Data;
 public class CategoryRequestDto {
     private String name;
     private String description;
-    private Long parent_id;
+    private Long parentId;
     private int level;
 }

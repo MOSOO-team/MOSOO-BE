@@ -6,11 +6,14 @@ import com.team2.mosoo_backend.chatting.dto.ChatMessageResponseWrapperDto;
 import com.team2.mosoo_backend.chatting.entity.ChatMessageType;
 import com.team2.mosoo_backend.chatting.service.ChatMessageService;
 import com.team2.mosoo_backend.jwt.TokenProvider;
+import com.team2.mosoo_backend.user.entity.Users;
+import com.team2.mosoo_backend.user.repository.UserRepository;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -32,6 +35,9 @@ class ChatMessageControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
+    private UserRepository userRepository;
+
+    @MockBean
     private TokenProvider tokenProvider;    // TokenProvider 빈을 로드하지 못하는 에러 해결 위해서 명시적으로 빈으로 등록
 
     @MockBean
@@ -39,6 +45,16 @@ class ChatMessageControllerTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    private Users user;
+
+    @BeforeEach
+    public void setUp() {
+        // 테스트용 유저 정보 미리 저장
+        user = Users.builder().email("email1234").build();
+
+        userRepository.save(user);
+    }
 
     static Long chatRoomId = 1L;
 
@@ -56,10 +72,11 @@ class ChatMessageControllerTest {
     @Test
     @Order(1)
     @DisplayName("채팅 메세지 조회 메서드 테스트")
+    @WithMockUser(username = "1", roles = "AUTHORITY_USER") // Mock 사용자 추가
     public void findChatRoomTest() throws Exception {
 
         //given
-        given(chatMessageService.findChatMessages(chatRoomId, null, false))
+        given(chatMessageService.findChatMessages(user.getId(), chatRoomId, null, false))
                 .willReturn(chatMessageResponseWrapperDto());
 
         //when
