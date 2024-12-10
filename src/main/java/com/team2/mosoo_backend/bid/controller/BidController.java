@@ -17,12 +17,21 @@ public class BidController {
     private final BidService bidService;
 
 
+    // 게시글 내에 입찰 조회
     @GetMapping("/{postId}")
     public ResponseEntity<BidListResponseDto> getBidByPost(@PathVariable("postId") Long postId) {
         BidListResponseDto bidListResponseDto = bidService.getBidByPost(postId);
         return ResponseEntity.status(200).body(bidListResponseDto);
     }
 
+    // 로그인 회원의 입찰 조회
+    @GetMapping("/myBid")
+    public ResponseEntity<BidListResponseDto> getMyBid(@AuthenticationPrincipal UserDetails userDetails) {
+        BidListResponseDto bidListResponseDto = bidService.getMyBid(Long.parseLong(userDetails.getUsername()));
+        return ResponseEntity.status(200).body(bidListResponseDto);
+    }
+
+    // 입찰 생성
     @PostMapping("/{postId}")
     public ResponseEntity<BidResponseDto> createBid(
             @PathVariable("postId") Long postId,
@@ -34,6 +43,7 @@ public class BidController {
         return ResponseEntity.status(201).body(bidResponseDto);
     }
 
+    // 입찰 데이터 수정
     @PutMapping
     public ResponseEntity<BidResponseDto> updateBid(@RequestBody UpdateBidRequestDto updateBidRequestDto) {
 
@@ -42,6 +52,7 @@ public class BidController {
         return ResponseEntity.status(201).body(bidResponseDto);
     }
 
+    // 입찰 삭제
     @DeleteMapping("/{bidId}")
     public ResponseEntity<BidResponseDto> deleteBid(@PathVariable("bidId") Long bidId) {
 
