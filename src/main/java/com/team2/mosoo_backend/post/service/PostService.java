@@ -251,7 +251,7 @@ public class PostService {
 
         Users user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        Page<Post> posts = postRepository.findByUser(user);
+        Page<Post> posts = postRepository.findByUser(user, pageable);
 
         List<PostResponseDto> postResponseDtoList = new ArrayList<>();
 

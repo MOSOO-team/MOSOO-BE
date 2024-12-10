@@ -38,5 +38,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findByAddressContainingAndIsOffer(String address, boolean isOffer, Pageable pageable);
 
-    Page<Post> findByUser(Users user);
+    Page<Post> findByUser(Users user, Pageable pageable);
 }
