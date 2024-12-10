@@ -179,6 +179,10 @@ public class ChatRoomService {
             // 안 읽은 메세지 존재 여부 설정
             dto.setExistUnchecked(!chatMessage.getSourceUserId().equals(loginUserId) && !chatMessage.isChecked());
 
+            // 관련 게시글 정보 설정
+            dto.setPostId(chatRoom.getPost().getId());
+            dto.setPostTitle(chatRoom.getPost().getTitle());
+
             result.add(dto);
 
         }
