@@ -76,6 +76,15 @@ public class PostController {
         return ResponseEntity.status(200).body(postResponseDto);
     }
 
+    // 로그인 회원 게시글 조회
+    @GetMapping("/myPosts")
+    public ResponseEntity<PostListResponseDto> getMyPosts(@AuthenticationPrincipal UserDetails userDetails,
+                                                          @RequestParam(required = false, value = "page", defaultValue = "1") @Positive int page) {
+        PostListResponseDto postListResponseDto = postService.getPostsByUser(Long.parseLong(userDetails.getUsername()), page);
+
+        return ResponseEntity.status(200).body(postListResponseDto);
+    }
+
     // 게시글 수정 요청
     @PutMapping
     public ResponseEntity<PostResponseDto> updatePost(

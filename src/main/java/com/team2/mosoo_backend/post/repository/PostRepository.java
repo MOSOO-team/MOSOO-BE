@@ -3,6 +3,7 @@ package com.team2.mosoo_backend.post.repository;
 
 import com.team2.mosoo_backend.category.entity.Category;
 import com.team2.mosoo_backend.post.entity.Post;
+import com.team2.mosoo_backend.user.entity.Users;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -36,4 +37,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findByTitleContainingAndIsOffer(String keyword, boolean isOffer, Pageable pageable);
 
     Page<Post> findByAddressContainingAndIsOffer(String address, boolean isOffer, Pageable pageable);
+
+    Page<Post> findByUser(Users user, Pageable pageable);
 }

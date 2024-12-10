@@ -40,4 +40,4 @@ out/
 
 ### env
 src/main/resources/env.properties
-src/main/generated
+src/main/generated/
