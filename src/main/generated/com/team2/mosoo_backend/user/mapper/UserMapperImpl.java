@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2024-12-04T17:17:35+0900",
+    date = "2024-12-10T17:17:58+0900",
     comments = "version: 1.5.3.Final, compiler: javac, environment: Java 17.0.12 (Amazon.com Inc.)"
 )
 @Component
@@ -31,6 +31,7 @@ public class UserMapperImpl implements UserMapper {
         users.password( encryptPassword( userRequestDto.getPassword() ) );
         users.email( userRequestDto.getEmail() );
         users.fullName( userRequestDto.getFullName() );
+        users.authority( userRequestDto.getAuthority() );
 
         return users.build();
     }
@@ -43,6 +44,7 @@ public class UserMapperImpl implements UserMapper {
 
         UserResponseDto.UserResponseDtoBuilder userResponseDto = UserResponseDto.builder();
 
+        userResponseDto.authority( users.getAuthority() );
         if ( users.getId() != null ) {
             userResponseDto.id( users.getId() );
         }
