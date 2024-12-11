@@ -1,6 +1,7 @@
 package com.team2.mosoo_backend.jwt;
 
 import com.team2.mosoo_backend.user.dto.TokenDto;
+import com.team2.mosoo_backend.user.entity.Authority;
 import com.team2.mosoo_backend.user.entity.Users;
 import com.team2.mosoo_backend.user.repository.UserRepository;
 import io.jsonwebtoken.*;
@@ -35,7 +36,7 @@ public class TokenProvider {
     private static final String BEARER_TYPE = "bearer";
 
     public static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 30L;
-//    public static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 30;
+    //    public static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 30;
     public static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60L * 24 * 7;
 
     private final Key key;
@@ -50,8 +51,8 @@ public class TokenProvider {
 
 
     // 토큰DTO 생성
-    public TokenDto generateTokenDto(Authentication authentication) {
-        String accessToken = generateAccessToken(authentication);
+    public TokenDto generateTokenDto(Long userId, Authority authority) {
+        String accessToken = generateAccessToken(userId, authority);
         return TokenDto.builder()
                 .grantType(BEARER_TYPE)
                 .accessToken(accessToken)
@@ -59,25 +60,23 @@ public class TokenProvider {
                 .build();
     }
 
-    public String generateAccessToken(Authentication authentication) {
-        return generateToken(authentication, ACCESS_TOKEN_EXPIRE_TIME);
+    public String generateAccessToken(Long userId, Authority authority) {
+        return generateToken(userId, authority, ACCESS_TOKEN_EXPIRE_TIME);
     }
 
     // 1. refresh token 발급
-    public String generateRefreshToken(Authentication authentication) {
-        return generateToken(authentication, REFRESH_TOKEN_EXPIRE_TIME);
+    public String generateRefreshToken(Long userId, Authority authority) {
+        return generateToken(userId, authority, REFRESH_TOKEN_EXPIRE_TIME);
     }
 
-    private String generateToken(Authentication authentication, long expireTime) {
+    private String generateToken(Long userId, Authority authority, long expireTime) {
         Date now = new Date();
         Date expiredDate = new Date(now.getTime() + expireTime);
 
-        String authorities = authentication.getAuthorities().stream()
-                .map(GrantedAuthority::getAuthority)
-                .collect(Collectors.joining());
+        String authorities = authority.toString();
 
         return Jwts.builder()
-                .setSubject(authentication.getName())
+                .setSubject(String.valueOf(userId))
                 .claim(AUTHORITIES_KEY, authorities)
                 .setExpiration(expiredDate)
                 .signWith(key, SignatureAlgorithm.HS512)
