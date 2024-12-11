@@ -19,6 +19,7 @@ public class PostResponseDto {
     private String duration;
     private String address;
     private boolean isOffer;
+    private String status;
     private LocalDateTime updatedAt;
 
     private Long userId;
