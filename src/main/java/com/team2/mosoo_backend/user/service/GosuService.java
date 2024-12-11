@@ -34,9 +34,15 @@ public class GosuService {
         return gosuRepository.findAll();
     }
 
+    public Gosu getGosuByuserInfoId (Long userInfoId) {
+       return gosuRepository.findByUserInfoId(userInfoId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    }
+
+
     // 특정 고수를 ID로 가져오는 메서드
     public Optional<Gosu> getGosuById(Long id) {
-        return gosuRepository.findById(id);
+     Gosu gosu = gosuRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+     return Optional.ofNullable(gosu);
     }
 
     // 고수 정보 생성
