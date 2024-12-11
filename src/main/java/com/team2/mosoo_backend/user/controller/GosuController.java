@@ -3,6 +3,7 @@ package com.team2.mosoo_backend.user.controller;
 import com.team2.mosoo_backend.user.dto.GosuRequestDto;
 import com.team2.mosoo_backend.user.dto.GosuUpdateRequestDto;
 import com.team2.mosoo_backend.user.entity.Gosu;
+import com.team2.mosoo_backend.user.repository.GosuRepository;
 import com.team2.mosoo_backend.user.service.GosuService;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
@@ -21,7 +22,7 @@ import java.util.Optional;
 @RequestMapping("/api/gosu")
 public class GosuController {
 
-
+    private final GosuRepository gosuRepository;
     private final GosuService gosuService;
 
     // 모든 고수 정보 조회
@@ -31,10 +32,14 @@ public class GosuController {
     }
 
     // 특정 고수 정보 ID 조회
-    @GetMapping("/{gosuId}")
-    public ResponseEntity<Gosu> getGosuById(@PathVariable(value = "id") Long gosuId) {
-        Optional <Gosu> gosu = gosuService.getGosuById(gosuId);
-        return gosu.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    @GetMapping("/{userInfoId}")
+    public ResponseEntity<Gosu> getGosuById(@PathVariable("userInfoId") Long userInfId) {
+       Gosu gosu = gosuService.getGosuByuserInfoId(userInfId);
+       if (gosu != null) {
+           return ResponseEntity.ok(gosu);
+       } else {
+           return ResponseEntity.notFound().build();
+       }
     }
 
     // 고수 정보 저장
