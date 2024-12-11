@@ -32,6 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -289,5 +290,18 @@ public class PostService {
 
         return new PostListResponseDto(postResponseDtoList, totalPages);
 
+    }
+
+    public PostResponseDto updateStatus(Long userId, Long postId, String status) {
+        Post post = postRepository.findById(postId).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
+        Users user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        if(post.getUser() != user){
+            throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
+        }
+
+        post.setStatus(status);
+
+        return postMapper.postToPostResponseDto(postRepository.save(post));
     }
 }
