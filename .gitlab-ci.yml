@@ -20,7 +20,7 @@ test:
   stage: test
   image: gradle:7.5.1-jdk17
   script:
-    - gradle test
+    - gradle test -Dspring.profiles.active=test
   only:
     - review
 
