@@ -85,6 +85,11 @@ public class GosuService {
         gosu.setGender(gosuUpdateRequestDto.getGender());
         gosu.setGosuInfoAddress(gosuUpdateRequestDto.getGosuInfoAddress());
         gosu.setGosuInfoPhone(gosuUpdateRequestDto.getGosuInfoPhone());
+        gosu.setBusinessName(gosuUpdateRequestDto.getBusinessName());
+        gosu.setBusinessNumber(gosuUpdateRequestDto.getBusinessNumber());
+
+        gosu.setCategory(categoryRepository.findById(gosuUpdateRequestDto.getCategoryId())
+                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND)) );
 
         gosuRepository.save(gosu);
 
