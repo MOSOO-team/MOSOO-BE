@@ -49,13 +49,25 @@ public class BidService {
     @Transactional
     public BidResponseDto createBidByPost(Long userId, Long postId, CreateBidRequestDto createBidRequestDto) {
 
+        // 요청 DTO를 Bid 엔티티로 변환
         Bid bid = bidMapper.createBidRequestDtoToBid(createBidRequestDto);
+
         Post post = postRepository.findById(postId).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
         Users user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // entity 연관 매핑
-        bid.setPost(post);
-        bid.serUser(user);
+        // 기존 Bid 조회
+        Bid existingBid = bidRepository.findByPostAndUser(post, user);
+
+        if (existingBid != null) {
+            existingBid.setPrice(createBidRequestDto.getPrice());
+            existingBid.setDate(createBidRequestDto.getDate());
+            bid = existingBid;
+        }
+        else{
+            // entity 연관 매핑
+            bid.setPost(post);
+            bid.serUser(user);
+        }
 
         Bid createdBid = bidRepository.save(bid);
 
