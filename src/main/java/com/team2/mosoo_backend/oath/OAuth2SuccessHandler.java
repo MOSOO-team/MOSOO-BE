@@ -37,9 +37,9 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
                 .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND)); // 사용자 정보 조회
 
         // accessToken, refreshToken 발급
-        String accessToken = tokenProvider.generateAccessToken(authentication);
+        String accessToken = tokenProvider.generateAccessToken(users.getId(), users.getAuthority());
 
-        String refreshToken = tokenProvider.generateRefreshToken(authentication);
+        String refreshToken = tokenProvider.generateRefreshToken(users.getId(), users.getAuthority());
         refreshTokenCookieUtil.saveRefreshToken(users.getId(), refreshToken); // 리프레시 토큰 저장
         refreshTokenCookieUtil.addRefreshTokenToCookie(request, response, refreshToken); // 리프레시 토큰을 쿠키에 추가
 
