@@ -1,10 +1,13 @@
 package com.team2.mosoo_backend.jwt;
 
 import com.team2.mosoo_backend.user.dto.TokenDto;
+import com.team2.mosoo_backend.user.entity.Users;
+import com.team2.mosoo_backend.user.repository.UserRepository;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -17,12 +20,16 @@ import org.springframework.stereotype.Component;
 import java.security.Key;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.stream.Collectors;
 
 @Slf4j
 @Component
 public class TokenProvider {
+
+    @Autowired
+    private UserRepository userRepository;
 
     private static final String AUTHORITIES_KEY = "auth";
     private static final String BEARER_TYPE = "bearer";
@@ -83,15 +90,20 @@ public class TokenProvider {
         if (claims.get(AUTHORITIES_KEY) == null) {
             throw new RuntimeException("권한 정보가 없는 토큰입니다.");
         }
+        String username = claims.getSubject();
 
-        Collection<? extends GrantedAuthority> authorities =
-                Arrays.stream(claims.get(AUTHORITIES_KEY).toString().split(","))
-                        .map(SimpleGrantedAuthority::new)
-                        .collect(Collectors.toList());
+        // 사용자 정보를 레포지토리에서 조회
+        Users user = userRepository.findById(Long.parseLong(username))
+                .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다."));
 
-        UserDetails principal = new User(claims.getSubject(), "", authorities);
 
-        return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+        // 단일 권한을 가져옴
+        GrantedAuthority authority = new SimpleGrantedAuthority(user.getAuthority().toString());
+
+        // UserDetails 생성
+        UserDetails principal = new User(username, "", Collections.singletonList(authority));
+
+        return new UsernamePasswordAuthenticationToken(principal, "", Collections.singletonList(authority));
     }
 
     public boolean validateToken(String token) {
