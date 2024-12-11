@@ -10,6 +10,7 @@ import com.team2.mosoo_backend.post.entity.Post;
 import com.team2.mosoo_backend.post.mapper.PostMapper;
 import com.team2.mosoo_backend.post.repository.PostRepository;
 import com.team2.mosoo_backend.user.dto.GosuResponseDto;
+import com.team2.mosoo_backend.user.entity.Authority;
 import com.team2.mosoo_backend.user.entity.Gosu;
 import com.team2.mosoo_backend.user.entity.UserInfo;
 import com.team2.mosoo_backend.user.entity.Users;
@@ -51,16 +52,27 @@ public class PostService {
 
 
     // 게시글 전체 조회
-    public PostListResponseDto getAllPosts(int page) {
+    public PostListResponseDto getAllPosts(Long userId, int page) {
 
         Pageable pageable = PageRequest.of(page - 1, 10, Sort.by("id").descending());
 
         Page<Post> posts = postRepository.findAll(pageable);
+        Users user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        // 권한 확인
+        if(user.getAuthority() != Authority.ROLE_ADMIN){
+            throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
+        }
 
         List<PostResponseDto> postResponseDtoList = new ArrayList<>();
 
         for (Post post : posts) {
-            postResponseDtoList.add(postMapper.postToPostResponseDto(post));
+            PostResponseDto postResponseDto = postMapper.postToPostResponseDto(post);
+
+            postResponseDto.setUserId(post.getUser().getId());
+            postResponseDto.setFullName(post.getUser().getFullName());
+
+            postResponseDtoList.add(postResponseDto);
         }
 
         int totalPages = (posts.getTotalPages() == 0 ? 1 : posts.getTotalPages());
@@ -159,7 +171,7 @@ public class PostService {
         Users users = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 작성자 인증
-        if(post.getUser() != users){
+        if(post.getUser() != users && users.getAuthority() != Authority.ROLE_ADMIN){
             throw new CustomException(ErrorCode.USER_NOT_AUTHORIZED);
         }
 
@@ -259,6 +271,7 @@ public class PostService {
     }
 
 
+    // 로그인 유저 게시글 조회
     public PostListResponseDto getPostsByUser(Long userId, int page) {
         Pageable pageable = PageRequest.of(page - 1, 9, Sort.by("id").descending());
 
