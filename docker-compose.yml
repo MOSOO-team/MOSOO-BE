@@ -17,6 +17,8 @@ services:
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
       REDIS_HOST: redis # Redis 호스트 설정
       REDIS_PORT: 6379  # Redis 포트 설정
+      impKey: ${impKey}
+      impSecret: ${impSecret}
     networks:
       - app-network
 

@@ -40,8 +40,8 @@ spring:
       - s3bucket.yml
 
   portone:
-    imp_key : ${secret.impKey}
-    imp_secret: ${secret.impSecret}
+    imp_key : ${impKey}
+    imp_secret: ${impSecret}
     
   security:
     oauth2:
@@ -67,5 +67,5 @@ default:
     url: https://mosoobucket.s3.ap-northeast-2.amazonaws.com/test/752d474e-8c1d-45a8-bd77-b426f61e204e-d283f188e2c88f02.png
 
 secret:
-  impKey: 5561133411260273
-  impSecret: 5sw3JWEyzRDwt4G0Op58u2MeUcbcc7ODoLz3bshwnDjBDvRmrm9AVoCM6KaA33lEvgNeUj162Xt593gh
+  impKey: ${impKey}
+  impSecret: ${impSecret}
