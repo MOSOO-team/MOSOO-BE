@@ -1,10 +1,7 @@
 package com.team2.mosoo_backend.bid.service;
 
 
-import com.team2.mosoo_backend.bid.dto.BidListResponseDto;
-import com.team2.mosoo_backend.bid.dto.BidResponseDto;
-import com.team2.mosoo_backend.bid.dto.CreateBidRequestDto;
-import com.team2.mosoo_backend.bid.dto.UpdateBidRequestDto;
+import com.team2.mosoo_backend.bid.dto.*;
 import com.team2.mosoo_backend.bid.entity.Bid;
 import com.team2.mosoo_backend.bid.mapper.BidMapper;
 import com.team2.mosoo_backend.bid.repository.BidRepository;
@@ -94,17 +91,23 @@ public class BidService {
     }
 
     // 회원 입찰 조회
-    public BidListResponseDto getMyBid(Long userId) {
-        List<BidResponseDto> dtoList = new ArrayList<>();
+    public MyBidListResponseDto getMyBid(Long userId) {
+        List<MyBidResponseDto> dtoList = new ArrayList<>();
         Users user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         List<Bid> bidList = bidRepository.findByUser(user);
 
         for(Bid bid : bidList) {
-            BidResponseDto bidResponseDto = bidMapper.bidToBidResponseDto(bid);
-            bidResponseDto.setFullName(bid.getUser().getFullName());
+            MyBidResponseDto bidResponseDto = bidMapper.bidToMyBidResponseDto(bid);
+
+            Long postId = bid.getPost().getId();
+            Post post = postRepository.findById(postId).orElseGet(() -> null);
+
+            bidResponseDto.setPostId(postId);
+            bidResponseDto.setPostTitle( (post != null) ? post.getTitle() : null);
+
             dtoList.add(bidResponseDto);
         }
 
-        return new BidListResponseDto(dtoList);
+        return new MyBidListResponseDto(dtoList);
     }
 }
