@@ -334,7 +334,7 @@ public class ChatRoomService {
         ChatRoom chatRoom = chatRoomUtils.validateChatRoomOwnership(chatRoomId, loginUser);
 
         // USER의 고수 여부 포함하여 채팅방 나가기
-        chatRoom.quitChatRoom((loginUser.getAuthority() == Authority.ROLE_GOSU));
+        chatRoom.quitChatRoom((loginUserId.equals(chatRoom.getGosuId())));
 
         // 채팅방 퇴장 메세지 생성
         ChatMessageRequestDto chatMessageRequestDto = ChatMessageRequestDto.builder()
@@ -343,9 +343,10 @@ public class ChatRoomService {
                 .content(loginUser.getFullName() + " 님이 채팅방을 나갔습니다.")
                 .createdAt(LocalDateTime.now())
                 .build();
-        ChatMessage quitChatMessage = chatMessageMapper.toEntity(chatMessageRequestDto);
-        quitChatMessage.setChatRoom(chatRoom);
-        chatMessageRepository.save(quitChatMessage);
+
+        String redisKey = "chatRoom:" + chatRoomId + ":messages";
+        chatMessageRequestDto.setChecked(chatMessageService.getConnectionCount(chatRoomId) == 2);
+        redisTemplate.opsForList().leftPush(redisKey, chatMessageRequestDto);
 
         // 채팅방 나갔음을 알리는 메세지 전송
         SimpMessagingTemplate template = applicationContext.getBean(SimpMessagingTemplate.class);
