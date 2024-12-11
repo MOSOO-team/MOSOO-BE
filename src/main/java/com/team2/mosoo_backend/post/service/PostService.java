@@ -9,8 +9,11 @@ import com.team2.mosoo_backend.post.dto.*;
 import com.team2.mosoo_backend.post.entity.Post;
 import com.team2.mosoo_backend.post.mapper.PostMapper;
 import com.team2.mosoo_backend.post.repository.PostRepository;
+import com.team2.mosoo_backend.user.dto.GosuResponseDto;
+import com.team2.mosoo_backend.user.entity.Gosu;
 import com.team2.mosoo_backend.user.entity.UserInfo;
 import com.team2.mosoo_backend.user.entity.Users;
+import com.team2.mosoo_backend.user.repository.GosuRepository;
 import com.team2.mosoo_backend.user.repository.UserInfoRepository;
 import com.team2.mosoo_backend.user.repository.UserRepository;
 import com.team2.mosoo_backend.utils.s3bucket.service.S3BucketService;
@@ -36,6 +39,7 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final UserInfoRepository userInfoRepository;
+    private final GosuRepository gosuRepository;
     @Value("${default.image.url}")
     private String defaultImageUrl;
 
@@ -191,6 +195,14 @@ public class PostService {
 
         postResponseDto.setUserId(post.getUser().getId());
         postResponseDto.setFullName(post.getUser().getFullName());
+
+        if(post.isOffer()){
+            UserInfo userInfo = userInfoRepository.findByUsers(post.getUser()).orElseThrow(() -> new CustomException(ErrorCode.USER_INFO_NOT_FOUND));
+            Gosu gosu = gosuRepository.findByUserInfoId(userInfo.getId()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+            postResponseDto.setBusinessName(gosu.getBusinessName());
+        }
+
 
         return postResponseDto;
     }
