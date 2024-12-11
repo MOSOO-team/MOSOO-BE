@@ -24,6 +24,8 @@ public class PostResponseDto {
     private Long userId;
     private String fullName;
 
+    private String businessName;
+
     private List<String> imgUrls;
 
 }
