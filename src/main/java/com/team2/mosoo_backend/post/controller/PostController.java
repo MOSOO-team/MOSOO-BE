@@ -113,5 +113,11 @@ public class PostController {
         return ResponseEntity.status(201).body(postResponseDto);
     }
 
+    @PutMapping("/{postId}")
+    public ResponseEntity<PostResponseDto> updatePostStatus(@AuthenticationPrincipal UserDetails userDetails, @PathVariable("postId") Long userId, @RequestParam("status") String status) {
+        PostResponseDto postResponseDto = postService.updateStatus(Long.parseLong(userDetails.getUsername()), userId, status);
+
+        return ResponseEntity.status(201).body(postResponseDto);
+    }
 
 }
