@@ -28,7 +28,8 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final TokenProvider tokenProvider;
     private final RefreshTokenCookieUtil refreshTokenCookieUtil;
-    private static final String URI = "http://localhost:3000/tokenCheck";
+    private static final String URI = System.getenv("DOMAIN_URL") != null ? System.getenv("DOMAIN_URL") : "http://localhost:3000/tokenCheck";
+
     private final UserRepository userRepository;
     private final UserInfoRepository userInfoRepository;
 
