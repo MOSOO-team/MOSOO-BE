@@ -4,7 +4,9 @@ package com.team2.mosoo_backend.oath;
 import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
 import com.team2.mosoo_backend.jwt.TokenProvider;
+import com.team2.mosoo_backend.user.entity.UserInfo;
 import com.team2.mosoo_backend.user.entity.Users;
+import com.team2.mosoo_backend.user.repository.UserInfoRepository;
 import com.team2.mosoo_backend.user.repository.UserRepository;
 import com.team2.mosoo_backend.oath.util.RefreshTokenCookieUtil;
 import jakarta.servlet.ServletException;
@@ -28,6 +30,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final RefreshTokenCookieUtil refreshTokenCookieUtil;
     private static final String URI = "http://localhost:3000/tokenCheck";
     private final UserRepository userRepository;
+    private final UserInfoRepository userInfoRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -43,6 +46,12 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         refreshTokenCookieUtil.saveRefreshToken(users.getId(), refreshToken); // 리프레시 토큰 저장
         refreshTokenCookieUtil.addRefreshTokenToCookie(request, response, refreshToken); // 리프레시 토큰을 쿠키에 추가
 
+        UserInfo userInfo = new UserInfo();
+        userInfo.setUsers(users); // 사용자와 연관된 UserInfo 생성
+        userInfo.setAddress(""); // 기본값 설정 (필요 시 수정 가능)
+        userInfo.setIsGosu(false); // 기본값 설정 (필요 시 수정 가능)
+        // UserInfo 저장
+        userInfoRepository.save(userInfo);
 
         // 토큰 전달을 위한 redirect
         String redirectUrl = UriComponentsBuilder.fromUriString(URI)
