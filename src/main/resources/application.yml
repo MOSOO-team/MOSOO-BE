@@ -69,3 +69,4 @@ default:
 secret:
   impKey: ${impKey}
   impSecret: ${impSecret}
+  DOMAIN_URL: ${DOMAIN_URL}
