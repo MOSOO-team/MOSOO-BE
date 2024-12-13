@@ -36,7 +36,7 @@ public class Post extends BaseEntity {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "description",nullable = true, columnDefinition = "TEXT")
+    @Column(name = "description",nullable = true)
     private String description;
 
     @Column(name = "price", nullable = false)
@@ -58,7 +58,7 @@ public class Post extends BaseEntity {
 
     @ElementCollection
     @CollectionTable(name = "post_img_urls", joinColumns = @JoinColumn(name = "post_id"))
-    @Column(name = "post_img_url", columnDefinition = "TEXT")
+    @Column(name = "post_img_url")
     private List<String> ImgUrls = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
