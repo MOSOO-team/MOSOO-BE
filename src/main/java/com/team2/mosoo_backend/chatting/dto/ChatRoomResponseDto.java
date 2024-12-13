@@ -15,7 +15,4 @@ public class ChatRoomResponseDto {
     private LocalDateTime lastChatDate; // 마지막 채팅 날짜
 
     private boolean existUnchecked;     // 읽지 않은 메세지 존재 여부
-
-    private Long postId;
-    private String postTitle;
 }

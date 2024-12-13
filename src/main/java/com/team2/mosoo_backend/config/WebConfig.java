@@ -13,13 +13,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${DEPLOY_FRONT_URL}")
     private String DEPLOY_FRONT_URL;
 
-    @Value("${DOMAIN_URL)")
-    private String DOMAIN_URL;
-
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-            .allowedOrigins(DEVELOP_FRONT_ADDRESS, DEPLOY_FRONT_URL, DOMAIN_URL)
+            .allowedOrigins(DEVELOP_FRONT_ADDRESS, DEPLOY_FRONT_URL)
             .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH")
             .exposedHeaders("location")
             .allowedHeaders("*")

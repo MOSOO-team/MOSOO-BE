@@ -20,7 +20,7 @@ test:
   stage: test
   image: gradle:7.5.1-jdk17
   script:
-    - gradle test -Dspring.profiles.active=test
+    - gradle test
   only:
     - review
 
@@ -57,9 +57,6 @@ deploy:
     - echo "DEPLOY_FRONT_URL=$DEPLOY_FRONT_URL" >> .env
     - echo "GOOGLE_CLIENT_ID=$GOOGLE_CLIENT_ID" >> .env
     - echo "GOOGLE_CLIENT_SECRET=$GOOGLE_CLIENT_SECRET" >> .env
-    - echo "impKey=$impKey" >> .env
-    - echo "impSecret=$impSecret" >> .env
-    - echo "DOMAIN_URL=$DOMAIN_URL" >> .env
     # GCP VM에 전송 및 SSH 접속 후 Docker-compose
     - scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa .env $GCP_USER@$GCP_VM_IP:/path/to/your/project/spring/
     - scp -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa docker-compose.yml $GCP_USER@$GCP_VM_IP:/path/to/your/project/spring/

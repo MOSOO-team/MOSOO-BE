@@ -2,7 +2,6 @@ package com.team2.mosoo_backend.user.mapper;
 
 
 
-import com.team2.mosoo_backend.category.entity.Category;
 import com.team2.mosoo_backend.user.dto.GosuRequestDto;
 import com.team2.mosoo_backend.user.dto.UserInfoDto;
 import com.team2.mosoo_backend.user.dto.UserRequestDto;
@@ -28,18 +27,8 @@ public interface UserMapper {
     @Mapping(source = "users", target = "userId")
     UserInfoDto userInfoToDto(UserInfo userInfo);
 
-    @Mapping(target = "category", source = "categoryId")
+    @Mapping(target = "category", ignore = true)
     Gosu requestToGosu(GosuRequestDto gosuRequestDto);
-
-    // Long을 Category로 변환하는 매핑 메서드
-    default Category map(Long categoryId) {
-        if (categoryId == null) {
-            return null;
-        }
-        Category category = new Category();
-        category.setCategoryId(categoryId);
-        return category; // categoryId를 사용하여 Category 객체 생성
-    }
 
 
 

@@ -1,7 +1,10 @@
 package com.team2.mosoo_backend.bid.service;
 
 
-import com.team2.mosoo_backend.bid.dto.*;
+import com.team2.mosoo_backend.bid.dto.BidListResponseDto;
+import com.team2.mosoo_backend.bid.dto.BidResponseDto;
+import com.team2.mosoo_backend.bid.dto.CreateBidRequestDto;
+import com.team2.mosoo_backend.bid.dto.UpdateBidRequestDto;
 import com.team2.mosoo_backend.bid.entity.Bid;
 import com.team2.mosoo_backend.bid.mapper.BidMapper;
 import com.team2.mosoo_backend.bid.repository.BidRepository;
@@ -49,25 +52,13 @@ public class BidService {
     @Transactional
     public BidResponseDto createBidByPost(Long userId, Long postId, CreateBidRequestDto createBidRequestDto) {
 
-        // 요청 DTO를 Bid 엔티티로 변환
         Bid bid = bidMapper.createBidRequestDtoToBid(createBidRequestDto);
-
         Post post = postRepository.findById(postId).orElseThrow(() -> new CustomException(ErrorCode.POST_NOT_FOUND));
         Users user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
-        // 기존 Bid 조회
-        Bid existingBid = bidRepository.findByPostAndUser(post, user);
-
-        if (existingBid != null) {
-            existingBid.setPrice(createBidRequestDto.getPrice());
-            existingBid.setDate(createBidRequestDto.getDate());
-            bid = existingBid;
-        }
-        else{
-            // entity 연관 매핑
-            bid.setPost(post);
-            bid.serUser(user);
-        }
+        // entity 연관 매핑
+        bid.setPost(post);
+        bid.serUser(user);
 
         Bid createdBid = bidRepository.save(bid);
 
@@ -103,23 +94,17 @@ public class BidService {
     }
 
     // 회원 입찰 조회
-    public MyBidListResponseDto getMyBid(Long userId) {
-        List<MyBidResponseDto> dtoList = new ArrayList<>();
+    public BidListResponseDto getMyBid(Long userId) {
+        List<BidResponseDto> dtoList = new ArrayList<>();
         Users user = userRepository.findById(userId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
         List<Bid> bidList = bidRepository.findByUser(user);
 
         for(Bid bid : bidList) {
-            MyBidResponseDto bidResponseDto = bidMapper.bidToMyBidResponseDto(bid);
-
-            Long postId = bid.getPost().getId();
-            Post post = postRepository.findById(postId).orElseGet(() -> null);
-
-            bidResponseDto.setPostId(postId);
-            bidResponseDto.setPostTitle( (post != null) ? post.getTitle() : null);
-
+            BidResponseDto bidResponseDto = bidMapper.bidToBidResponseDto(bid);
+            bidResponseDto.setFullName(bid.getUser().getFullName());
             dtoList.add(bidResponseDto);
         }
 
-        return new MyBidListResponseDto(dtoList);
+        return new BidListResponseDto(dtoList);
     }
 }
