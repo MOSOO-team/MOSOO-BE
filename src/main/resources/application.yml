@@ -1,0 +1,71 @@
+spring:
+  # h2 비활성화
+  h2:
+    console:
+      enabled: false
+  # 업로드 파일 용령 설정
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 128MB
+      max-request-size: 128MB
+
+  # MySQL 설정
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver # MySQL Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME} # RDS 사용자 이름
+    password: ${DB_PASSWORD} # RDS 사용자 비밀번호
+
+  # JPA 설정
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: update        # DB 초기화 전략 (none, create, create-drop, update, validate)
+    properties:
+      hibernate:
+        format_sql: true      # 쿼리 로그 포맷 (정렬)
+        show_sql: true        # 쿼리 로그 출력
+        jdbc:
+          batch_size: 100      # 배치 사이즈 설정
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: always
+
+
+  config:
+    import:
+      - s3bucket.yml
+
+  portone:
+    imp_key : ${secret.impKey}
+    imp_secret: ${secret.impSecret}
+    
+  security:
+    oauth2:
+      client:
+        registration:
+          google:
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
+            scope:
+              - email
+              - profile
+
+  data:
+    redis:
+      host: redis
+      port: 6379
+
+jwt:
+  secret: KC2XjwwyNLVedIxmh1ys3cOxp5vImhoEDygJdFTcWd3NE3H3pAVnEhxAyKai0oOAwgxkvnb1xnb9dicv8gisd3sAfB9aVd0
+
+default:
+  image:
+    url: https://mosoobucket.s3.ap-northeast-2.amazonaws.com/test/752d474e-8c1d-45a8-bd77-b426f61e204e-d283f188e2c88f02.png
+
+secret:
+  impKey: 5561133411260273
+  impSecret: 5sw3JWEyzRDwt4G0Op58u2MeUcbcc7ODoLz3bshwnDjBDvRmrm9AVoCM6KaA33lEvgNeUj162Xt593gh
