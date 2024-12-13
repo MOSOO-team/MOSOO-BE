@@ -29,6 +29,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final TokenProvider tokenProvider;
     private final RefreshTokenCookieUtil refreshTokenCookieUtil;
     private static final String URI = System.getenv("DOMAIN_URL") != null ? System.getenv("DOMAIN_URL") : "http://localhost:3000/tokenCheck";
+//    private static final String URI = "http://localhost:3000/tokenCheck";
 
     private final UserRepository userRepository;
     private final UserInfoRepository userInfoRepository;
@@ -47,12 +48,16 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
         refreshTokenCookieUtil.saveRefreshToken(users.getId(), refreshToken); // 리프레시 토큰 저장
         refreshTokenCookieUtil.addRefreshTokenToCookie(request, response, refreshToken); // 리프레시 토큰을 쿠키에 추가
 
-        UserInfo userInfo = new UserInfo();
-        userInfo.setUsers(users); // 사용자와 연관된 UserInfo 생성
-        userInfo.setAddress(""); // 기본값 설정 (필요 시 수정 가능)
-        userInfo.setIsGosu(false); // 기본값 설정 (필요 시 수정 가능)
-        // UserInfo 저장
-        userInfoRepository.save(userInfo);
+        // UserInfo 조회 및 생성
+        UserInfo userInfo = userInfoRepository.findByUsersId(users.getId())
+                .orElseGet(() -> {
+                    UserInfo newUserInfo = new UserInfo();
+                    newUserInfo.setUsers(users); // 사용자와 연관된 UserInfo 생성
+                    newUserInfo.setAddress(""); // 기본값 설정 (필요 시 수정 가능)
+                    newUserInfo.setIsGosu(false); // 기본값 설정 (필요 시 수정 가능)
+                    // UserInfo 저장
+                    return userInfoRepository.save(newUserInfo);
+                });
 
         // 토큰 전달을 위한 redirect
         String redirectUrl = UriComponentsBuilder.fromUriString(URI)
