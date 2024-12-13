@@ -3,7 +3,7 @@
 ## 프로젝트 소개
 
 
-![image.png](./wiki/mosooLogo.png)
+![image.png](./wiki/image_logo.png)
 
 안녕하세요! 모수 프로젝트에 관심을 가져주셔서 감사합니다. 🙇‍🙌
 
