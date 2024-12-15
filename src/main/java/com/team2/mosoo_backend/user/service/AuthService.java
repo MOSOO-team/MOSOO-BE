@@ -44,8 +44,6 @@ public class AuthService {
             throw new CustomException(ErrorCode.DUPLICATE_RESOURCE);
         }
 
-
-
         // User 엔티티 생성 및 저장
         Users users = userMapper.requestToUser(requestDto);
         users.setAuthority(Authority.ROLE_USER);
@@ -65,18 +63,13 @@ public class AuthService {
 
     public TokenDto login(HttpServletRequest request, HttpServletResponse response, UserRequestDto requestDto) {
 
-        // 비밀번호 미 입력 시
-        if(requestDto.getPassword() == null || requestDto.getPassword().isEmpty()) {
-            throw new CustomException(ErrorCode.USER_NOT_FOUND);
-        }
-
         UsernamePasswordAuthenticationToken authenticationToken = requestDto.toAuthentication();
         Authentication authentication = managerBuilder.getObject().authenticate(authenticationToken);
 
-        TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
-        String refreshTokenValue = tokenProvider.generateRefreshToken(authentication);
-
         Users users = userRepository.findByEmail(requestDto.getEmail()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        TokenDto tokenDto = tokenProvider.generateTokenDto(users.getId(), users.getAuthority());
+        String refreshTokenValue = tokenProvider.generateRefreshToken(users.getId(), users.getAuthority());
 
         refreshTokenCookieUtil.saveRefreshToken(users.getId(), refreshTokenValue);
         refreshTokenCookieUtil.addRefreshTokenToCookie(request, response, refreshTokenValue); // 리프레시 토큰을 쿠키에 추가

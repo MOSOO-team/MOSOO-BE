@@ -1,10 +1,7 @@
 package com.team2.mosoo_backend.review.controller;
 
 
-import com.team2.mosoo_backend.review.dto.CreateReviewRequestDto;
-import com.team2.mosoo_backend.review.dto.ReviewListResponseDto;
-import com.team2.mosoo_backend.review.dto.ReviewResponseDto;
-import com.team2.mosoo_backend.review.dto.UpdateReviewRequestDto;
+import com.team2.mosoo_backend.review.dto.*;
 import com.team2.mosoo_backend.review.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -32,9 +29,9 @@ public class ReviewController {
 
     // 로그인한 유저의 후기 조회
     @GetMapping("/myReview")
-    public ResponseEntity<ReviewListResponseDto> getReviewByUserId(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<MyReviewListResponseDto> getReviewByUserId(@AuthenticationPrincipal UserDetails userDetails) {
 
-        ReviewListResponseDto reviewListResponseDto = reviewService.getReviewByUserId(Long.parseLong(userDetails.getUsername()));
+        MyReviewListResponseDto reviewListResponseDto = reviewService.getReviewByUserId(Long.parseLong(userDetails.getUsername()));
 
         return ResponseEntity.status(200).body(reviewListResponseDto);
     }
@@ -44,9 +41,9 @@ public class ReviewController {
     public ResponseEntity<ReviewResponseDto> createReview(
             @PathVariable("postId") Long postId,
             @RequestBody CreateReviewRequestDto createReviewRequestDto,
-            @RequestParam("userId") Long userId) {
+            @AuthenticationPrincipal UserDetails userDetails) {
 
-        ReviewResponseDto reviewResponseDto = reviewService.createReview(userId, postId, createReviewRequestDto);
+        ReviewResponseDto reviewResponseDto = reviewService.createReview(Long.parseLong(userDetails.getUsername()), postId, createReviewRequestDto);
 
         return ResponseEntity.status(201).body(reviewResponseDto);
 

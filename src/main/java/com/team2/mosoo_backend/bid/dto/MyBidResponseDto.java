@@ -9,12 +9,12 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class BidResponseDto {
+public class MyBidResponseDto {
 
     private long id;
     private int price;
     private LocalDateTime date;
 
-    private String fullName;
-    private Long userId;
+    private String postTitle;
+    private Long postId;
 }

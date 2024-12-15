@@ -9,9 +9,18 @@ public class GosuUpdateRequestDto {
     private String gender;
 
     @NotNull
+    private String businessName;
+
+    @NotNull
+    private String businessNumber;
+
+    @NotNull
     private String gosuInfoAddress;
 
     @NotNull
     private String gosuInfoPhone;
+
+    @NotNull
+    private Long categoryId;
 
 }

@@ -2,6 +2,7 @@ package com.team2.mosoo_backend.user.controller;
 
 
 import com.team2.mosoo_backend.user.dto.ChangePasswordRequestDto;
+import com.team2.mosoo_backend.user.dto.UserInfoRequestDto;
 import com.team2.mosoo_backend.user.dto.UserResponseDto;
 import com.team2.mosoo_backend.user.entity.UserInfo;
 import com.team2.mosoo_backend.user.service.UserService;
@@ -23,7 +24,6 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<UserResponseDto> getMyMemberInfo(@AuthenticationPrincipal UserDetails userDetails) {
         UserResponseDto myInfoBySecurity = userService.getMyInfoBySecurity(Long.parseLong(userDetails.getUsername()));
-        System.out.println(myInfoBySecurity.getFullName());
         return ResponseEntity.ok((myInfoBySecurity));
     }
 
@@ -34,17 +34,20 @@ public class UserController {
         return ResponseEntity.ok(userService.changeMemberPassword(request.getExPassword(), request.getNewPassword()));
     }
 
-    // 유저 정보 주소 변경
-    @PutMapping("/{id}")
-    public ResponseEntity<UserInfo> updateUserInfoAddress(@PathVariable Long id, @RequestBody UserInfo updatedUserInfo) {
-        UserInfo userInfo = userService.updateUserInfoAddress(id, updatedUserInfo);
+    // 유저 정보 변경
+    @PutMapping("/userinfo")
+    public ResponseEntity<UserInfo> updateUserInfoAddress(@RequestBody UserInfoRequestDto userInfoRequestDto) {
+        Long userId = userService.getUserIdByEmail(userInfoRequestDto.getEmail());
+        UserInfo userInfo = userService.updateUserInfoAddress(userId, userInfoRequestDto);
         return ResponseEntity.ok(userInfo);
     }
 
+
+
     // 유저 탈퇴
-    @DeleteMapping("/delete")
-    public ResponseEntity<UserResponseDto> deleteMember() {
-        return ResponseEntity.ok(userService.deleteMember());
+    @DeleteMapping("/deleted")
+    public ResponseEntity<UserResponseDto> deleteUser(@AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(userService.deleteUser(Long.parseLong(userDetails.getUsername())));
     }
 
 }
