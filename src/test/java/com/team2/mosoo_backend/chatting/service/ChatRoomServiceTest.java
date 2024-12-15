@@ -252,15 +252,14 @@ class ChatRoomServiceTest {
         given(userRepository.findById(user.getId())).willReturn(Optional.of(user));
         given(chatRoomUtils.validateChatRoomOwnership(any(), any())).willReturn(spyChatRoom);
         given(applicationContext.getBean(SimpMessagingTemplate.class)).willReturn(messagingTemplate);
-        given(redisTemplate.opsForList()).willReturn(listOperations);
-        when(listOperations.leftPush(anyString(), any())).thenReturn(0L);
-
+        given(chatMessageMapper.toEntity(any())).willReturn(chatMessage);
 
         // when
         ChatRoomDeleteResponseDto result = chatRoomService.quitChatRoom(user.getId(), chatRoomId);
 
         // then
         verify(spyChatRoom, times(1)).quitChatRoom(false);
+        verify(chatMessageRepository, times(1)).save(any());
         assertThat(result.getChatRoomId()).isEqualTo(chatRoomId);
     }
 
