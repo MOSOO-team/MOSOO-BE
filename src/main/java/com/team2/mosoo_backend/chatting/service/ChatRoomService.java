@@ -130,6 +130,7 @@ public class ChatRoomService {
     }
 
     // 채팅방 목록 조회 메서드
+    // TODO: 가장 최신 메세지 기준 정렬
     public ChatRoomResponseWrapperDto findAllChatRooms(Long loginUserId, int page) {
 
         // 페이지 당 채팅방5개, 최근 수정시간 기준 내림차순 정렬
@@ -177,6 +178,10 @@ public class ChatRoomService {
 
             // 안 읽은 메세지 존재 여부 설정
             dto.setExistUnchecked(!chatMessage.getSourceUserId().equals(loginUserId) && !chatMessage.isChecked());
+
+            // 관련 게시글 정보 설정
+            dto.setPostId(chatRoom.getPost().getId());
+            dto.setPostTitle(chatRoom.getPost().getTitle());
 
             result.add(dto);
 
@@ -237,7 +242,7 @@ public class ChatRoomService {
                     .orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
             UserInfo userInfo = userInfoRepository.findByUsersId(opponentUser.getId())
                     .orElseThrow(() -> new CustomException(ErrorCode.USER_INFO_NOT_FOUND));
-            Gosu gosu = gosuRepository.findByUserInfoId(userInfo.getId()).get(0);
+            Gosu gosu = gosuRepository.findByUserInfoId(userInfo.getId()).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
             chatRoomOpponentInfoResponseDto = new ChatRoomOpponentInfoResponseDto(gosu.getBusinessName(), gosu.getBusinessNumber(), gosu.getGosuInfoAddress(), gosu.getGosuInfoPhone(), gosu.getCategory().getName());
         }
@@ -267,7 +272,7 @@ public class ChatRoomService {
 
             // 해당 게시글에 대한 채팅방이 이미 존재하는 경우
             if(chatRoomRepository.existsByPostIdAndUserIdAndGosuId(post.getId(), loginUserId, chatRoomRequestDto.getGosuId())) {
-                ChatRoom existChatRoom = chatRoomRepository.findByPostIdAndGosuId(post.getId(), chatRoomRequestDto.getGosuId()).get();
+                ChatRoom existChatRoom = chatRoomRepository.findByPostIdAndUserIdAndGosuId(post.getId(), loginUserId, chatRoomRequestDto.getGosuId()).get();
                 existChatRoom.reCreate();
                 return new ChatRoomCreateResponseDto(existChatRoom.getId());
             }
@@ -279,7 +284,7 @@ public class ChatRoomService {
 
             // 해당 입찰에 대한 채팅방이 이미 존재하는 경우
             if(chatRoomRepository.existsByBidIdAndUserIdAndGosuId(bid.getId(), loginUserId, chatRoomRequestDto.getGosuId())) {
-                ChatRoom existChatRoom = chatRoomRepository.findByBidIdAndGosuId(bid.getId(), chatRoomRequestDto.getGosuId()).get();
+                ChatRoom existChatRoom = chatRoomRepository.findByBidIdAndUserIdAndGosuId(bid.getId(), loginUserId, chatRoomRequestDto.getGosuId()).get();
                 existChatRoom.reCreate();
                 return new ChatRoomCreateResponseDto(existChatRoom.getId());
             }
@@ -329,7 +334,7 @@ public class ChatRoomService {
         ChatRoom chatRoom = chatRoomUtils.validateChatRoomOwnership(chatRoomId, loginUser);
 
         // USER의 고수 여부 포함하여 채팅방 나가기
-        chatRoom.quitChatRoom((loginUser.getAuthority() == Authority.ROLE_GOSU));
+        chatRoom.quitChatRoom((loginUserId.equals(chatRoom.getGosuId())));
 
         // 채팅방 퇴장 메세지 생성
         ChatMessageRequestDto chatMessageRequestDto = ChatMessageRequestDto.builder()
@@ -338,9 +343,10 @@ public class ChatRoomService {
                 .content(loginUser.getFullName() + " 님이 채팅방을 나갔습니다.")
                 .createdAt(LocalDateTime.now())
                 .build();
-        ChatMessage quitChatMessage = chatMessageMapper.toEntity(chatMessageRequestDto);
-        quitChatMessage.setChatRoom(chatRoom);
-        chatMessageRepository.save(quitChatMessage);
+
+        String redisKey = "chatRoom:" + chatRoomId + ":messages";
+        chatMessageRequestDto.setChecked(chatMessageService.getConnectionCount(chatRoomId) == 2);
+        redisTemplate.opsForList().leftPush(redisKey, chatMessageRequestDto);
 
         // 채팅방 나갔음을 알리는 메세지 전송
         SimpMessagingTemplate template = applicationContext.getBean(SimpMessagingTemplate.class);

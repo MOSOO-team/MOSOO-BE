@@ -18,7 +18,7 @@ public interface UserRepository extends JpaRepository<Users, Long> {
 
     Page<Users> findAll(Pageable pageable);
 
-    @Query(value = "SELECT * FROM member WHERE is_deleted = true", nativeQuery = true)
+    @Query(value = "SELECT * FROM users WHERE is_deleted = true", nativeQuery = true)
     Page<Users> findAllByIsDeleteTrue(Pageable pageable);
 
 }

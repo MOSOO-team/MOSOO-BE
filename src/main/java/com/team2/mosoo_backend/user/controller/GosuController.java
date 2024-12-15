@@ -3,11 +3,14 @@ package com.team2.mosoo_backend.user.controller;
 import com.team2.mosoo_backend.user.dto.GosuRequestDto;
 import com.team2.mosoo_backend.user.dto.GosuUpdateRequestDto;
 import com.team2.mosoo_backend.user.entity.Gosu;
+import com.team2.mosoo_backend.user.repository.GosuRepository;
 import com.team2.mosoo_backend.user.service.GosuService;
 import lombok.RequiredArgsConstructor;
+import lombok.Value;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import retrofit2.http.Path;
 
@@ -19,20 +22,24 @@ import java.util.Optional;
 @RequestMapping("/api/gosu")
 public class GosuController {
 
-
+    private final GosuRepository gosuRepository;
     private final GosuService gosuService;
 
     // 모든 고수 정보 조회
-    @GetMapping("/all")
+    @GetMapping("/")
     public List<Gosu> getAllGosu() {
         return gosuService.getAllGosu();
     }
 
     // 특정 고수 정보 ID 조회
-    @GetMapping("/{id}")
-    public ResponseEntity<Gosu> getGosuById(@PathVariable(value = "id") Long id) {
-        Optional <Gosu> gosu = gosuService.getGosuById(id);
-        return gosu.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    @GetMapping("/{userInfoId}")
+    public ResponseEntity<Gosu> getGosuById(@PathVariable("userInfoId") Long userInfId) {
+       Gosu gosu = gosuService.getGosuByuserInfoId(userInfId);
+       if (gosu != null) {
+           return ResponseEntity.ok(gosu);
+       } else {
+           return ResponseEntity.notFound().build();
+       }
     }
 
     // 고수 정보 저장
@@ -50,9 +57,9 @@ public class GosuController {
     }
 
     // 고수 정보 삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteGosu(@PathVariable(value = "id") Long id) {
-        gosuService.deleteGosu(id);
+    @DeleteMapping("/deleted/{userInfoId}")
+    public ResponseEntity<Void> deleteGosu(@PathVariable(value = "userInfoId") Long userinfoId) {
+        gosuService.deleteGosu(userinfoId);
         return ResponseEntity.noContent().build();
     }
 }

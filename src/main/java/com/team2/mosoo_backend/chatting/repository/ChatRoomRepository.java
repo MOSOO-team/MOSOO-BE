@@ -14,8 +14,8 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
     boolean existsByBidIdAndUserIdAndGosuId(Long bidId, Long userId, Long gosuId);
     boolean existsByPostIdAndUserIdAndGosuId(Long postId, Long userId, Long gosuId);
 
-    Optional<ChatRoom> findByBidIdAndGosuId(Long bidId, Long gosuId);
-    Optional<ChatRoom> findByPostIdAndGosuId(Long postId, Long gosuId);
+    Optional<ChatRoom> findByBidIdAndUserIdAndGosuId(Long bidId, Long userId, Long gosuId);
+    Optional<ChatRoom> findByPostIdAndUserIdAndGosuId(Long postId, Long userId, Long gosuId);
 
     @Query("SELECT c FROM ChatRoom c " +
                 "WHERE (c.gosuId = :id AND c.gosuDeletedAt IS null) " +

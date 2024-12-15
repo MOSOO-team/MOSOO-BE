@@ -50,7 +50,7 @@ public class QUserInfo extends EntityPathBase<UserInfo> {
 
     public QUserInfo(Class<? extends UserInfo> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.users = inits.isInitialized("users") ? new QUsers(forProperty("users"), inits.get("users")) : null;
+        this.users = inits.isInitialized("users") ? new QUsers(forProperty("users")) : null;
     }
 
 }

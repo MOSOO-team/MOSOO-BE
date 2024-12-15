@@ -34,9 +34,15 @@ public class GosuService {
         return gosuRepository.findAll();
     }
 
+    public Gosu getGosuByuserInfoId (Long userInfoId) {
+       return gosuRepository.findByUserInfoId(userInfoId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+    }
+
+
     // 특정 고수를 ID로 가져오는 메서드
     public Optional<Gosu> getGosuById(Long id) {
-        return gosuRepository.findById(id);
+     Gosu gosu = gosuRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+     return Optional.ofNullable(gosu);
     }
 
     // 고수 정보 생성
@@ -79,6 +85,11 @@ public class GosuService {
         gosu.setGender(gosuUpdateRequestDto.getGender());
         gosu.setGosuInfoAddress(gosuUpdateRequestDto.getGosuInfoAddress());
         gosu.setGosuInfoPhone(gosuUpdateRequestDto.getGosuInfoPhone());
+        gosu.setBusinessName(gosuUpdateRequestDto.getBusinessName());
+        gosu.setBusinessNumber(gosuUpdateRequestDto.getBusinessNumber());
+
+        gosu.setCategory(categoryRepository.findById(gosuUpdateRequestDto.getCategoryId())
+                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND)) );
 
         gosuRepository.save(gosu);
 
@@ -86,9 +97,9 @@ public class GosuService {
     }
 
     // 고수 정보 삭제
-    public void deleteGosu(Long id) {
+    public void deleteGosu(Long userinfoId) {
         // 고수 찾기
-        Gosu gosu = gosuRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Gosu gosu = gosuRepository.findByUserInfoId(userinfoId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 찾은 고수 내부에서 UserInfo 찾기
         UserInfo userInfo = gosu.getUserInfo();
