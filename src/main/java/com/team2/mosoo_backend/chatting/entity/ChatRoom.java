@@ -1,12 +1,11 @@
 package com.team2.mosoo_backend.chatting.entity;
 
 import com.team2.mosoo_backend.bid.entity.Bid;
-import com.team2.mosoo_backend.common.entity.BaseEntity;
 import com.team2.mosoo_backend.post.entity.Post;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.*;
-import lombok.experimental.SuperBuilder;
+import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
@@ -14,11 +13,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Getter @SuperBuilder(toBuilder = true)
+@Getter @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class ChatRoom extends BaseEntity {
+public class ChatRoom {
 
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "chat_room_id")
@@ -27,6 +26,13 @@ public class ChatRoom extends BaseEntity {
     private LocalDateTime userDeletedAt;
 
     private LocalDateTime gosuDeletedAt;
+
+    @CreatedDate
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Setter
+    private LocalDateTime lastChatDate;
 
     @Column(nullable = false)
     private Long userId;

@@ -130,12 +130,10 @@ public class ChatRoomService {
     }
 
     // 채팅방 목록 조회 메서드
-    // TODO: 가장 최신 메세지 기준 정렬
     public ChatRoomResponseWrapperDto findAllChatRooms(Long loginUserId, int page) {
 
-        // 페이지 당 채팅방5개, 최근 수정시간 기준 내림차순 정렬
-        PageRequest pageRequest = PageRequest.of(page - 1, 5,
-                Sort.by("updatedAt").descending());
+        // 페이지 당 채팅방 5개
+        PageRequest pageRequest = PageRequest.of(page - 1, 5);
 
         // 로그인 유저 정보 가져옴
         Users loginUser = userRepository.findById(loginUserId)
@@ -150,7 +148,7 @@ public class ChatRoomService {
         for (ChatRoom chatRoom : chatRooms) {
             ChatRoomResponseDto dto = chatRoomMapper.toChatRoomResponseDto(chatRoom);
 
-            // 로그인한 유저가 고수인 경우 (상대방이 일반 유저인 경우)
+            // 채팅 상대 이름 저장
             dto.setOpponentFullName(chatRoomUtils.getOpponentFullName(chatRoom, loginUser));
 
             ChatMessage chatMessage;
@@ -174,7 +172,7 @@ public class ChatRoomService {
             }
 
             // 가장 마지막 채팅 시간 설정
-            dto.setLastChatDate(chatMessage.getCreatedAt());
+            dto.setLastChatDate(chatRoom.getLastChatDate());
 
             // 안 읽은 메세지 존재 여부 설정
             dto.setExistUnchecked(!chatMessage.getSourceUserId().equals(loginUserId) && !chatMessage.isChecked());
@@ -319,6 +317,8 @@ public class ChatRoomService {
         chatMessageRepository.save(userEnterChatMessage);
         chatMessageRepository.save(gosuEnterChatMessage);
 
+        // 마지막 채팅 날짜 설정
+        savedChatRoom.setLastChatDate(gosuEnterChatMessage.getCreatedAt());
         return new ChatRoomCreateResponseDto(savedChatRoom.getId());
     }
 
