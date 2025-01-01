@@ -4,7 +4,9 @@ package com.team2.mosoo_backend.oath;
 import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
 import com.team2.mosoo_backend.jwt.TokenProvider;
+import com.team2.mosoo_backend.user.entity.UserInfo;
 import com.team2.mosoo_backend.user.entity.Users;
+import com.team2.mosoo_backend.user.repository.UserInfoRepository;
 import com.team2.mosoo_backend.user.repository.UserRepository;
 import com.team2.mosoo_backend.oath.util.RefreshTokenCookieUtil;
 import jakarta.servlet.ServletException;
@@ -28,6 +30,7 @@ public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
     private final RefreshTokenCookieUtil refreshTokenCookieUtil;
     private static final String URI = "http://localhost:3000/tokenCheck";
     private final UserRepository userRepository;
+    private final UserInfoRepository userInfoRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
