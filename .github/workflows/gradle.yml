@@ -31,10 +31,14 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
+    # Docker 네트워크 생성
+    - name: Create Docker Network
+      run: docker network create my-network || true
+
     # redis 시작
     - name: Start Redis
       run: |
-        docker run --name redis -d -p 6379:6379 redis:latest
+        docker run --name redis --network my-network -d -p 6379:6379 redis:latest
 
     # Gradle Build (test 제외)
     - name: Build with Gradle
@@ -71,7 +75,7 @@ jobs:
           sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}
 
           # Redis 컨테이너 실행
-          sudo docker run -d --name redis -p 6379:6379 redis:latest
+          sudo docker run -d --name redis --network my-network -p 6379:6379 redis:latest
 
           sudo docker run -p ${{ secrets.PORT }}:${{ secrets.PORT }} \
           --name ${{ secrets.PROJECT_NAME }} \
