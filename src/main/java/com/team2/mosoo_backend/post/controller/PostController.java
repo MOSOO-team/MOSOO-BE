@@ -21,7 +21,7 @@ public class PostController {
     private final PostService postService;
 
     // 게시글 전체 조회 요청
-    @GetMapping("/posts")
+    @GetMapping("/s")
     public ResponseEntity<PostListResponseDto> getAllPosts(
             @RequestParam(required = false, value = "page", defaultValue = "1") @Positive int page) {
 
