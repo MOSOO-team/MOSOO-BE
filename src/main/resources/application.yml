@@ -62,7 +62,7 @@ jwt:
 
 default:
   image:
-    url: https://mosoobucket.s3.ap-northeast-2.amazonaws.com/test/752d474e-8c1d-45a8-bd77-b426f61e204e-d283f188e2c88f02.png
+    url: https://mosoobucket.s3.ap-northeast-2.amazonaws.com/test/%E1%84%83%E1%85%A1%E1%84%8B%E1%85%AE%E1%86%AB%E1%84%85%E1%85%A9%E1%84%83%E1%85%B3+(8).jpeg
 
 secret:
   impKey: ${IMP_KEY}
