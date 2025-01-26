@@ -83,15 +83,20 @@ public class GosuService {
         gosu.setGosuInfoAddress(gosuUpdateRequestDto.getGosuInfoAddress());
         gosu.setGosuInfoPhone(gosuUpdateRequestDto.getGosuInfoPhone());
 
+        gosu.setBusinessName(gosuUpdateRequestDto.getBusinessName());
+        gosu.setBusinessNumber(gosuUpdateRequestDto.getBusinessNumber());
+        gosu.setCategory(categoryRepository.findById(gosuUpdateRequestDto.getCategoryId())
+                .orElseThrow(() -> new CustomException(ErrorCode.CATEGORY_NOT_FOUND)) );
+
         gosuRepository.save(gosu);
 
         return gosu.getId();
     }
 
     // 고수 정보 삭제
-    public void deleteGosu(Long id) {
+    public void deleteGosu(Long userinfoId) {
         // 고수 찾기
-        Gosu gosu = gosuRepository.findById(id).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+        Gosu gosu = gosuRepository.findByUserInfoId(userinfoId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
 
         // 찾은 고수 내부에서 UserInfo 찾기
         UserInfo userInfo = gosu.getUserInfo();

@@ -4,6 +4,7 @@ import com.team2.mosoo_backend.user.dto.GosuInfoResponseDto;
 import com.team2.mosoo_backend.user.dto.GosuRequestDto;
 import com.team2.mosoo_backend.user.dto.GosuUpdateRequestDto;
 import com.team2.mosoo_backend.user.entity.Gosu;
+import com.team2.mosoo_backend.user.repository.GosuRepository;
 import com.team2.mosoo_backend.user.service.GosuService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,7 @@ import java.util.Optional;
 @RequestMapping("/api/gosu")
 public class GosuController {
 
-
+    private final GosuRepository gosuRepository;
     private final GosuService gosuService;
 
     // 모든 고수 정보 조회
@@ -51,9 +52,9 @@ public class GosuController {
     }
 
     // 고수 정보 삭제
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteGosu(@PathVariable(value = "id") Long id) {
-        gosuService.deleteGosu(id);
+    @DeleteMapping("/deleted/{userInfoId}")
+    public ResponseEntity<Void> deleteGosu(@PathVariable(value = "userInfoId") Long userinfoId) {
+        gosuService.deleteGosu(userinfoId);
         return ResponseEntity.noContent().build();
     }
 }
