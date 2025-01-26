@@ -2,10 +2,7 @@ package com.team2.mosoo_backend.user.mapper;
 
 
 
-import com.team2.mosoo_backend.user.dto.GosuRequestDto;
-import com.team2.mosoo_backend.user.dto.UserInfoDto;
-import com.team2.mosoo_backend.user.dto.UserRequestDto;
-import com.team2.mosoo_backend.user.dto.UserResponseDto;
+import com.team2.mosoo_backend.user.dto.*;
 import com.team2.mosoo_backend.user.entity.Gosu;
 import com.team2.mosoo_backend.user.entity.Users;
 import com.team2.mosoo_backend.user.entity.UserInfo;
@@ -30,6 +27,8 @@ public interface UserMapper {
     @Mapping(target = "category", ignore = true)
     Gosu requestToGosu(GosuRequestDto gosuRequestDto);
 
+    @Mapping(target = "categoryId", ignore = true)
+    GosuInfoResponseDto gosuToResponseDto(Gosu gosu);
 
 
     default Long mapUsersToLong(Users users) { return users != null ? users.getId() : null; }

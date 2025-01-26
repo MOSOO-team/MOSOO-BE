@@ -4,6 +4,7 @@ import com.team2.mosoo_backend.category.entity.Category;
 import com.team2.mosoo_backend.category.repository.CategoryRepository;
 import com.team2.mosoo_backend.exception.CustomException;
 import com.team2.mosoo_backend.exception.ErrorCode;
+import com.team2.mosoo_backend.user.dto.GosuInfoResponseDto;
 import com.team2.mosoo_backend.user.dto.GosuRequestDto;
 import com.team2.mosoo_backend.user.dto.GosuUpdateRequestDto;
 import com.team2.mosoo_backend.user.entity.Authority;
@@ -35,8 +36,10 @@ public class GosuService {
     }
 
     // 특정 고수를 ID로 가져오는 메서드
-    public Optional<Gosu> getGosuByUserInfoId(Long userInfoId) {
-        return gosuRepository.findByUserInfoId(userInfoId);
+    public GosuInfoResponseDto getGosuByUserInfoId(Long userInfoId) {
+        Gosu foundGosu = gosuRepository.findByUserInfoId(userInfoId).orElseThrow(() -> new CustomException(ErrorCode.USER_NOT_FOUND));
+
+        return userMapper.gosuToResponseDto(foundGosu);
     }
 
     // 고수 정보 생성

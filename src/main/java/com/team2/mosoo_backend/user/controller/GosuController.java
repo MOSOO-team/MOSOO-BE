@@ -1,5 +1,6 @@
 package com.team2.mosoo_backend.user.controller;
 
+import com.team2.mosoo_backend.user.dto.GosuInfoResponseDto;
 import com.team2.mosoo_backend.user.dto.GosuRequestDto;
 import com.team2.mosoo_backend.user.dto.GosuUpdateRequestDto;
 import com.team2.mosoo_backend.user.entity.Gosu;
@@ -30,9 +31,9 @@ public class GosuController {
 
     // 특정 고수 정보 ID 조회
     @GetMapping("/{userInfoId}")
-    public ResponseEntity<Gosu> getGosuById(@PathVariable(value = "userInfoId") Long userInfoId) {
-        Optional <Gosu> gosu = gosuService.getGosuByUserInfoId(userInfoId);
-        return gosu.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<GosuInfoResponseDto> getGosuById(@PathVariable(value = "userInfoId") Long userInfoId) {
+        GosuInfoResponseDto dto = gosuService.getGosuByUserInfoId(userInfoId);
+        return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 
     // 고수 정보 저장
