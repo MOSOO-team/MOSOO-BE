@@ -29,9 +29,9 @@ public class GosuController {
     }
 
     // 특정 고수 정보 ID 조회
-    @GetMapping("/{gosuId}")
-    public ResponseEntity<Gosu> getGosuById(@PathVariable(value = "gosuId") Long gosuId) {
-        Optional <Gosu> gosu = gosuService.getGosuById(gosuId);
+    @GetMapping("/{userInfoId}")
+    public ResponseEntity<Gosu> getGosuById(@PathVariable(value = "userInfoId") Long userInfoId) {
+        Optional <Gosu> gosu = gosuService.getGosuByUserInfoId(userInfoId);
         return gosu.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
