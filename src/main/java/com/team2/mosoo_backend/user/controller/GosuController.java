@@ -30,7 +30,7 @@ public class GosuController {
 
     // 특정 고수 정보 ID 조회
     @GetMapping("/{gosuId}")
-    public ResponseEntity<Gosu> getGosuById(@PathVariable(value = "id") Long gosuId) {
+    public ResponseEntity<Gosu> getGosuById(@PathVariable(value = "gosuId") Long gosuId) {
         Optional <Gosu> gosu = gosuService.getGosuById(gosuId);
         return gosu.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
