@@ -35,8 +35,8 @@ public class GosuService {
     }
 
     // 특정 고수를 ID로 가져오는 메서드
-    public Optional<Gosu> getGosuById(Long id) {
-        return gosuRepository.findById(id);
+    public Optional<Gosu> getGosuByUserInfoId(Long userInfoId) {
+        return gosuRepository.findByUserInfoId(userInfoId);
     }
 
     // 고수 정보 생성
