@@ -25,7 +25,7 @@ import java.io.IOException;
 public class OAuth2SuccessHandler implements AuthenticationSuccessHandler {
 
     private final TokenProvider tokenProvider;
-    private static final String URI = "http://localhost:3000/tokenCheck";
+    private static final String URI = "https://mosooo.netlify.app/tokenCheck";
     private final UserRepository userRepository;
     private final UserInfoRepository userInfoRepository;
 
