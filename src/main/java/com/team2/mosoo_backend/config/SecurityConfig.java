@@ -27,17 +27,29 @@ import static org.springframework.boot.autoconfigure.security.servlet.PathReques
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
-    @Autowired
+
     private CustomUserDetailsService customUserDetailsService;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler successHandler;
     private final JwtFilter jwtFilter;
-    @Value("${address.url}")
-    private static String DEVELOP_FRONT_ADDRESS;
+    private final String DEVELOP_FRONT_ADDRESS;
+
+    public SecurityConfig(
+            CustomUserDetailsService customUserDetailsService,
+            CustomOAuth2UserService customOAuth2UserService,
+            OAuth2SuccessHandler oAuth2SuccessHandler,
+            JwtFilter jwtFilter,
+            @Value("${address.url}") String DEVELOP_FRONT_ADDRESS
+    ){
+        this.customUserDetailsService = customUserDetailsService;
+        this.customOAuth2UserService = customOAuth2UserService;
+        this.successHandler = oAuth2SuccessHandler;
+        this.jwtFilter = jwtFilter;
+        this.DEVELOP_FRONT_ADDRESS = DEVELOP_FRONT_ADDRESS;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
