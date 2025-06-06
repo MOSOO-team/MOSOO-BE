@@ -10,7 +10,7 @@ public class WebConfig implements WebMvcConfigurer {
 
 
     @Value("${address.url}")
-    private static String DEVELOP_FRONT_ADDRESS;
+    private String DEVELOP_FRONT_ADDRESS;
 
     private static final String DEPLOY_FRONT_URL = "https://mosooo.netlify.app";
 
