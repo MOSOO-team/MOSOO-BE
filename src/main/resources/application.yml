@@ -1,7 +1,7 @@
 spring:
   config:
     import:
-      - calsspath:/env.properties
+      - classpath:/env.properties
       - s3bucket.yml
   # h2 비활성화
   h2:
