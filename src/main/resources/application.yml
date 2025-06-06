@@ -1,4 +1,8 @@
 spring:
+  config:
+    import:
+      - calsspath:/env.properties
+      - s3bucket.yml
   # h2 비활성화
   h2:
     console:
@@ -35,11 +39,6 @@ spring:
       mode: always
 
 
-  config:
-    import:
-      - s3bucket.yml
-
-
   security:
     oauth2:
       client:
@@ -69,4 +68,7 @@ secret:
   impSecret: ${IMP_SECRET}
 #  DOMAIN_URL: ${DOMAIN_URL}
 server:
-  port: 8081
+  port: 8080
+
+address:
+  url: ${FE_URL}
