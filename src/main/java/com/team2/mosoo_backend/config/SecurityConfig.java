@@ -36,6 +36,8 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final OAuth2SuccessHandler successHandler;
     private final JwtFilter jwtFilter;
+    @Value("${address.url}")
+    private static String DEVELOP_FRONT_ADDRESS;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -76,7 +78,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
 
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000", "https://mosooo.netlify.app")); // 허용할 출처
+        configuration.setAllowedOrigins(List.of(DEVELOP_FRONT_ADDRESS, "https://mosooo.netlify.app")); // 허용할 출처
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH")); // 허용할 메서드
         configuration.setAllowCredentials(true); // 인증 정보 포함 여부
         configuration.setAllowedHeaders(List.of("*")); // 허용할 헤더
