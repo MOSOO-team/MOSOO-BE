@@ -1,6 +1,6 @@
 aws:
   s3:
-    bucket: mosoobucket
+    bucket: mosoo-image-bucket
     stack.auto: false
     region: ap-northeast-2
     credentials:

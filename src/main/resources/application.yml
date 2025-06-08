@@ -1,4 +1,8 @@
 spring:
+  config:
+    import:
+      - classpath:/env.properties
+      - s3bucket.yml
   # h2 비활성화
   h2:
     console:
@@ -35,11 +39,6 @@ spring:
       mode: always
 
 
-  config:
-    import:
-      - s3bucket.yml
-
-
   security:
     oauth2:
       client:
@@ -58,7 +57,7 @@ spring:
       port: 6379
 
 jwt:
-  secret: KC2XjwwyNLVedIxmh1ys3cOxp5vImhoEDygJdFTcWd3NE3H3pAVnEhxAyKai0oOAwgxkvnb1xnb9dicv8gisd3sAfB9aVd0
+  secret: ${JWT_SECRET}
 
 default:
   image:
@@ -67,6 +66,9 @@ default:
 secret:
   impKey: ${IMP_KEY}
   impSecret: ${IMP_SECRET}
-#  DOMAIN_URL: ${DOMAIN_URL}
+
 server:
-  port: 8081
+  port: 8080
+
+address:
+  url: ${FE_URL}
