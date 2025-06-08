@@ -57,7 +57,7 @@ spring:
       port: 6379
 
 jwt:
-  secret: KC2XjwwyNLVedIxmh1ys3cOxp5vImhoEDygJdFTcWd3NE3H3pAVnEhxAyKai0oOAwgxkvnb1xnb9dicv8gisd3sAfB9aVd0
+  secret: ${JWT_SECRET}
 
 default:
   image:
@@ -66,7 +66,7 @@ default:
 secret:
   impKey: ${IMP_KEY}
   impSecret: ${IMP_SECRET}
-#  DOMAIN_URL: ${DOMAIN_URL}
+
 server:
   port: 8080
 
